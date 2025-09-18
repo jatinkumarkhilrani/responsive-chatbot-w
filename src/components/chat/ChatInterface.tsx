@@ -55,9 +55,10 @@ interface ChatInterfaceProps {
   chatId: string
   userConsents: Record<string, boolean>
   onBack: () => void
+  onChatUpdate?: (chatId: string, lastMessage: string) => void
 }
 
-export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfaceProps) {
+export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: ChatInterfaceProps) {
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [isSending, setIsSending] = useState(false)
@@ -68,7 +69,7 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
   }
   
   const sanitizedChatId = sanitizeKVKey(chatId)
-  const [messages, setMessages] = useKV<Message[]>(`messages-${sanitizedChatId}`, [])
+  const [messages, setMessages] = useKV<Message[]>(`chat-messages-${sanitizedChatId}`, [])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const aiService = useAIService()
@@ -87,7 +88,7 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       }
     }
     initializeAI()
-  }, [])
+  }, [aiService])
 
   const sendMessage = async () => {
     if (!message.trim() || isSending) return
@@ -165,6 +166,9 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
           const currentMessages = prev || []
           return [...currentMessages, aiMessage]
         })
+        
+        // Update the chat's last message in the chat list
+        onChatUpdate?.(chatId, aiMessage.content.substring(0, 100))
       } catch (error) {
         const appError = handleKVError(error, 'add AI message')
         toast.error(appError.message)
@@ -175,13 +179,13 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       // Provide a fallback response
       const fallbackMessage: Message = {
         id: `msg-${Date.now() + 1}`,
-        content: "I'm sorry, I'm having trouble processing your request right now. This could be due to AI configuration issues.\n\n**Quick troubleshooting:**\n• Check AI configuration in Settings\n• Verify your internet connection\n• Try a simpler question\n\n**Based on your message, here are some suggestions:**" + getFallbackSuggestion(currentMessage),
+        content: "I'm currently having trouble connecting to the AI service. This could be because:\n\n🔧 **Configuration needed:** Go to Settings → AI Configuration to set up your AI provider\n\n🌐 **Connection issues:** Check your internet connection\n\n⚙️ **Service temporarily unavailable:** Please try again in a moment\n\n**Based on your message, here are some immediate suggestions:**" + getFallbackSuggestion(currentMessage),
         sender: 'ai',
         timestamp: new Date().toISOString(),
         type: 'text',
         metadata: {
           confidence: 0.1,
-          disclaimer: 'This is a fallback response due to AI service unavailability.'
+          disclaimer: 'This is a fallback response due to AI service unavailability. Please configure your AI provider in Settings for full functionality.'
         }
       }
       

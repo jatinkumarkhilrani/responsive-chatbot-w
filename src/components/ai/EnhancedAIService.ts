@@ -54,7 +54,7 @@ const defaultConfig: AIConfig = {
 }
 
 export class EnhancedAIService {
-  private config: AIConfig
+  public config: AIConfig
 
   constructor() {
     // This will be initialized from KV storage
@@ -62,29 +62,35 @@ export class EnhancedAIService {
   }
 
   public async callExternalAI(messages: { system: string; user: string }, expectJSON: boolean = false): Promise<any> {
-    // If no endpoint or API key, and provider is ai-foundry, use built-in AI
-    if (this.config.provider === 'ai-foundry' && (!this.config.endpoint || !this.config.apiKey)) {
-      const prompt = (window as any).spark.llmPrompt`${messages.system}
+    try {
+      // If no endpoint or API key, and provider is ai-foundry, use built-in AI
+      if (this.config.provider === 'ai-foundry' && (!this.config.endpoint || !this.config.apiKey)) {
+        try {
+          const prompt = (window as any).spark.llmPrompt`${messages.system}
 
 ${messages.user}`
-      const response = await (window as any).spark.llm(prompt, this.config.model || 'gpt-4o', expectJSON)
-      
-      if (expectJSON) {
-        try {
-          return JSON.parse(response)
-        } catch (e) {
-          throw new Error('Built-in AI returned invalid JSON')
+          const response = await (window as any).spark.llm(prompt, this.config.model || 'gpt-4o', expectJSON)
+          
+          if (expectJSON) {
+            try {
+              return JSON.parse(response)
+            } catch (e) {
+              console.warn('Built-in AI returned invalid JSON, falling back to text response')
+              return { response }
+            }
+          }
+          
+          return response
+        } catch (builtInError) {
+          console.error('Built-in AI failed:', builtInError)
+          throw new Error('Built-in AI service is currently unavailable. Please try again later or configure an external AI provider in Settings.')
         }
       }
-      
-      return response
-    }
 
-    if (!this.config.endpoint || !this.config.apiKey) {
-      throw new Error('AI provider not configured. Please set endpoint and API key in settings.')
-    }
+      if (!this.config.endpoint || !this.config.apiKey) {
+        throw new Error('AI provider not configured. Please set endpoint and API key in Settings → AI Configuration.')
+      }
 
-    try {
       let apiUrl = this.config.endpoint
       let headers: Record<string, string> = {
         'Content-Type': 'application/json'
@@ -163,8 +169,20 @@ ${messages.user}`
 
       if (!response.ok) {
         const errorText = await response.text()
+        let errorMessage = `API request failed (${response.status})`
+        
+        if (response.status === 401) {
+          errorMessage = 'Invalid API key. Please check your credentials in Settings.'
+        } else if (response.status === 404) {
+          errorMessage = 'AI endpoint not found. Please verify your endpoint URL in Settings.'
+        } else if (response.status === 429) {
+          errorMessage = 'Rate limit exceeded. Please try again later.'
+        } else if (response.status >= 500) {
+          errorMessage = 'AI provider server error. Please try again later.'
+        }
+        
         throw handleNetworkError(
-          new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`),
+          new Error(`${errorMessage}: ${errorText}`),
           apiUrl
         )
       }
@@ -181,7 +199,8 @@ ${messages.user}`
         try {
           return JSON.parse(content)
         } catch (e) {
-          throw new Error('AI provider returned invalid JSON')
+          console.warn('AI provider returned invalid JSON, falling back to text response')
+          return { response: content }
         }
       }
 
@@ -492,7 +511,8 @@ export function useAIService() {
   // Update service config when KV changes (use useEffect to avoid infinite re-renders)
   useEffect(() => {
     if (config) {
-      aiService.updateConfig(config).catch(console.error)
+      // Update config directly without triggering the validation/save cycle
+      aiService.config = { ...defaultConfig, ...config }
     }
   }, [config])
 

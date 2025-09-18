@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ChatCircle, Gear, ShieldCheck, Robot, Users, Plus, TestTube } from '@phosphor-icons/react'
+import { useState, useEffect } from 'react'
+import { ChatCircle, Gear, ShieldCheck, Robot, Users, Plus, TestTube, Brain, MapPin } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -34,7 +34,7 @@ export function MessagingApp() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className={`w-full md:w-80 border-r border-border bg-card flex flex-col md:flex-none ${
+      <div className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col md:flex-none ${
         activeChatId ? 'hidden md:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
         <div className="p-4 border-b border-border">
@@ -78,6 +78,9 @@ export function MessagingApp() {
               <ChatList 
                 activeChatId={activeChatId || null} 
                 onChatSelect={setActiveChatId}
+                onChatUpdate={(chatId, lastMessage) => {
+                  // This will be handled inside ChatList component
+                }}
                 userConsents={userConsents || {}}
               />
             </TabsContent>
@@ -107,15 +110,37 @@ export function MessagingApp() {
             chatId={activeChatId} 
             userConsents={userConsents || {}}
             onBack={() => setActiveChatId(null)}
+            onChatUpdate={(chatId, lastMessage) => {
+              // Find and update the chat in the list
+              // This is a bit hacky but works for the current architecture
+              const event = new CustomEvent('updateChatLastMessage', { 
+                detail: { chatId, lastMessage } 
+              })
+              window.dispatchEvent(event)
+            }}
           />
         ) : (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center">
+          <div className="h-full flex items-center justify-center p-8">
+            <div className="text-center max-w-md">
               <Robot className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Welcome to Sahaay</h2>
-              <p className="text-muted-foreground max-w-md">
+              <p className="text-muted-foreground mb-6">
                 Your privacy-first AI messaging companion. Select a chat to start or create a new conversation.
               </p>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2 justify-center">
+                  <ShieldCheck className="w-4 h-4 text-primary" />
+                  <span>Privacy-first design</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center">
+                  <Brain className="w-4 h-4 text-primary" />
+                  <span>AI-powered assistance</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span>Hyperlocal intelligence</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -137,11 +162,42 @@ interface Chat {
 interface ChatListProps {
   activeChatId: string | null
   onChatSelect: (chatId: string) => void
+  onChatUpdate?: (chatId: string, lastMessage: string) => void
   userConsents: Record<string, boolean>
 }
 
-function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
+function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: ChatListProps) {
   const [chats, setChats] = useKV<Chat[]>('user-chats', [])
+
+  const updateChatLastMessage = (chatId: string, lastMessage: string) => {
+    setChats(prev => {
+      const currentChats = prev || []
+      return currentChats.map(chat => 
+        chat.id === chatId 
+          ? { ...chat, lastMessage: lastMessage.substring(0, 100), timestamp: new Date().toISOString() }
+          : chat
+      )
+    })
+  }
+
+  // Listen for chat updates
+  useEffect(() => {
+    const handleChatUpdate = (event: CustomEvent) => {
+      const { chatId, lastMessage } = event.detail
+      updateChatLastMessage(chatId, lastMessage)
+    }
+
+    window.addEventListener('updateChatLastMessage', handleChatUpdate as EventListener)
+    
+    return () => {
+      window.removeEventListener('updateChatLastMessage', handleChatUpdate as EventListener)
+    }
+  }, [])
+
+  // Cleanup duplicates on component mount
+  useEffect(() => {
+    cleanupDuplicateChats()
+  }, [])
 
   const createNewChat = async () => {
     try {
@@ -150,7 +206,7 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
         id: chatId,
         name: 'Sahaay Assistant',
         type: 'ai',
-        lastMessage: 'Ready to help with your queries',
+        lastMessage: 'I can help with routes, bills, group summaries and more.',
         timestamp: new Date().toISOString(),
         unread: 0,
         isAI: true
@@ -158,6 +214,20 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
       
       setChats(prev => {
         const currentChats = prev || []
+        // Check if there's already an active chat with Sahaay Assistant that has no messages
+        const existingEmptyChat = currentChats.find(chat => 
+          chat.isAI && 
+          chat.name === 'Sahaay Assistant' && 
+          (chat.lastMessage === 'Ready to help with your queries' || 
+           chat.lastMessage === 'I can help with routes, bills, group summaries and more.')
+        )
+        
+        // If there's an empty chat, don't create a new one, just select it
+        if (existingEmptyChat) {
+          onChatSelect(existingEmptyChat.id)
+          return currentChats
+        }
+        
         // Limit to maximum 50 chats to prevent memory issues
         const newChats = [newChat, ...currentChats]
         return newChats.slice(0, 50)
@@ -170,6 +240,25 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
       console.error('Error creating new chat:', appError)
       toast.error('Failed to create new chat. Please try again.')
     }
+  }
+
+  const cleanupDuplicateChats = () => {
+    setChats(prev => {
+      const currentChats = prev || []
+      // Remove duplicate chats based on name and empty lastMessage
+      const seen = new Set()
+      return currentChats.filter(chat => {
+        if (chat.isAI && chat.name === 'Sahaay Assistant' && 
+            (chat.lastMessage === 'Ready to help with your queries' || 
+             chat.lastMessage === 'I can help with routes, bills, group summaries and more.')) {
+          if (seen.has('empty-sahaay')) {
+            return false // Remove duplicate
+          }
+          seen.add('empty-sahaay')
+        }
+        return true
+      })
+    })
   }
 
   const chatList = chats || []

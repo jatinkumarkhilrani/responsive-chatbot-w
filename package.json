@@ -12,13 +12,14 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "build:github": "tsc -b && vite build --base=/responsive-chatbot-w/",
+        "build:github": "tsc -b && vite build --config vite.config.github.ts",
+        "build:standalone": "tsc -b && vite build --config vite.config.github.ts && touch dist/.nojekyll && cp dist/index.html dist/404.html",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",
-        "predeploy": "npm run build:github",
+        "predeploy": "npm run build:standalone",
         "deploy": "gh-pages -d dist",
-        "deploy:setup": "npm install --legacy-peer-deps && npm run build:github && touch dist/.nojekyll && cp dist/index.html dist/404.html",
+        "deploy:setup": "npm install --legacy-peer-deps && npm run build:standalone",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {

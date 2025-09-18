@@ -11,9 +11,8 @@
     },
     "scripts": {
         "dev": "vite",
-        "kill": "fuser -k 5000/tcp",
-        "build": "tsc -b --noCheck && vite build",
-        "build:github": "GITHUB_PAGES=true tsc -b --noCheck && vite build --base=/sahaay-ai-messaging/ --outDir=dist",
+        "build": "tsc -b && vite build",
+        "build:github": "GITHUB_PAGES=true tsc -b && vite build --base=/sahaay-ai-messaging/ --outDir=dist",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",
@@ -101,10 +100,5 @@
         "typescript": "~5.7.2",
         "typescript-eslint": "^8.38.0",
         "vite": "^6.3.5"
-    },
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ]
     }
 }

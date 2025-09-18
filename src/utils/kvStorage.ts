@@ -3,6 +3,29 @@
  * Falls back to localStorage when Spark KV is not available
  */
 
+// Type declarations for Spark API
+declare global {
+  interface Window {
+    spark?: {
+      kv: {
+        get<T>(key: string): Promise<T | undefined>
+        set<T>(key: string, value: T): Promise<void>
+        delete(key: string): Promise<void>
+        keys(): Promise<string[]>
+      }
+      llm(prompt: string, model?: string, jsonMode?: boolean): Promise<string>
+      llmPrompt(strings: TemplateStringsArray, ...values: any[]): string
+      user(): Promise<{
+        avatarUrl: string
+        email: string
+        id: string
+        isOwner: boolean
+        login: string
+      }>
+    }
+  }
+}
+
 export class KVStorageError extends Error {
   constructor(message: string, public originalError?: Error) {
     super(message)

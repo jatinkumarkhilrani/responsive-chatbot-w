@@ -40,6 +40,16 @@ export default defineConfig(({ command, mode }) => {
     preview: {
       port: 4173,
       host: true
+    },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        '@phosphor-icons/react',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-tabs',
+        '@radix-ui/react-select'
+      ]
     }
   }
 });

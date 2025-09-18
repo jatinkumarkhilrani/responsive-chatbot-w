@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { useKV } from '../../hooks/useKV'
 import { toast } from 'sonner'
+import { isValidChatId, handleKVError, handleAIError, sanitizeKVKey } from '../../utils/errorHandling'
+import { aiService } from '../ai/EnhancedAIService'
 
 interface TestResult {
   name: string
@@ -151,8 +153,6 @@ export function HealthChecker() {
 
   const testChatValidation = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
     try {
-      const { isValidChatId } = await import('../../utils/errorHandling')
-      
       const validIds = ['chat-1234567890', 'chat-123']
       const invalidIds = ['invalid-id', 'chat-', 'chat-abc', '']
       
@@ -176,8 +176,6 @@ export function HealthChecker() {
 
   const testAIService = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
     try {
-      // Import the AI service
-      const { aiService } = await import('../ai/EnhancedAIService')
       await aiService.initializeConfig()
       
       const config = aiService.getConfig()
@@ -214,8 +212,6 @@ export function HealthChecker() {
 
   const testErrorHandling = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
     try {
-      const { handleKVError, handleAIError, sanitizeKVKey } = await import('../../utils/errorHandling')
-      
       const testError = new Error('Test error')
       const kvError = handleKVError(testError, 'test operation')
       

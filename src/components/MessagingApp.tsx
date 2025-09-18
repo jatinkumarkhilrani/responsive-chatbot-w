@@ -104,9 +104,9 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area - Ensure full width usage */}
-      <div className={`main-content-area flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      <div className={`main-content-area flex-1 w-full min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
-          <div className="chat-interface-wrapper w-full h-full">
+          <div className="chat-interface-wrapper w-full h-full flex flex-col overflow-hidden">
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}

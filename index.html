@@ -21,11 +21,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Sahaay">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="./manifest.json">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="alternate icon" href="./favicon.ico">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link href="/src/index.css" rel="stylesheet" />
+    <link href="./src/index.css" rel="stylesheet" />
     
     <!-- GitHub Pages SPA routing -->
     <script type="text/javascript">
@@ -54,7 +54,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('./sw.js')
             .then(function(registration) {
               console.log('SW registered: ', registration);
             })
@@ -68,7 +68,7 @@
 
 <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
 </body>
 
 </html>

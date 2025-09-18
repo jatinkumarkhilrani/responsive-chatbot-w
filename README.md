@@ -33,7 +33,7 @@ Sahaay is a privacy-first AI messaging companion designed for India with hyperlo
 ## Quick Start
 
 ### For Users
-1. **Visit the App**: [https://jatin-kumar-khilrani.github.io/sahaay-ai-messaging/](https://jatin-kumar-khilrani.github.io/sahaay-ai-messaging/)
+1. **Visit the App**: [https://jatin-kumar-khilrani.github.io/responsive-chatbot-w/](https://jatin-kumar-khilrani.github.io/responsive-chatbot-w/)
 2. **Set Privacy Preferences**: Configure your consent settings on first launch
 3. **Configure AI Provider**: Set up your preferred AI service in Settings → AI Config
 4. **Start Chatting**: Create a new chat and begin using Sahaay
@@ -41,8 +41,8 @@ Sahaay is a privacy-first AI messaging companion designed for India with hyperlo
 ### For Developers
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/jatin-kumar-khilrani/sahaay-ai-messaging.git
-   cd sahaay-ai-messaging
+   git clone https://github.com/jatin-kumar-khilrani/responsive-chatbot-w.git
+   cd responsive-chatbot-w
    ```
 
 2. **Install Dependencies**:
@@ -121,7 +121,7 @@ VITE_BASE_PATH=/your-custom-path/
 1. Fork this repository
 2. Enable GitHub Pages in repository settings
 3. Push to main branch - automatic deployment via GitHub Actions
-4. Access your app at `https://yourusername.github.io/sahaay-ai-messaging/`
+4. Access your app at `https://yourusername.github.io/responsive-chatbot-w/`
 
 ### Custom Deployment
 1. Build the application: `npm run build`
@@ -174,7 +174,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For support, please:
-1. Check the [Issues](https://github.com/jatin-kumar-khilrani/sahaay-ai-messaging/issues) page
+1. Check the [Issues](https://github.com/jatin-kumar-khilrani/responsive-chatbot-w/issues) page
 2. Create a new issue with detailed description
 3. Include browser console logs if reporting bugs
 4. Specify your browser and device information

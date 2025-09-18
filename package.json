@@ -4,20 +4,21 @@
     "version": "1.0.0",
     "type": "module",
     "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
-    "homepage": "https://jatin-kumar-khilrani.github.io/sahaay-ai-messaging/",
+    "homepage": "https://jatin-kumar-khilrani.github.io/responsive-chatbot-w/",
     "repository": {
         "type": "git",
-        "url": "https://github.com/jatin-kumar-khilrani/sahaay-ai-messaging.git"
+        "url": "https://github.com/jatin-kumar-khilrani/responsive-chatbot-w.git"
     },
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "build:github": "GITHUB_PAGES=true tsc -b && vite build --base=/sahaay-ai-messaging/",
+        "build:github": "tsc -b && vite build --base=/responsive-chatbot-w/",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",
         "predeploy": "npm run build:github",
         "deploy": "gh-pages -d dist",
+        "deploy:setup": "npm install && npm run build:github && touch dist/.nojekyll && cp dist/index.html dist/404.html",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {

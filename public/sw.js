@@ -1,10 +1,10 @@
 const CACHE_NAME = 'sahaay-v1.0.0'
 const STATIC_CACHE_URLS = [
-  '/',
-  '/src/main.tsx',
-  '/src/main.css',
-  '/src/index.css',
-  '/manifest.json'
+  './',
+  './src/main.tsx',
+  './src/main.css',
+  './src/index.css',
+  './manifest.json'
 ]
 
 // Install event - cache static assets

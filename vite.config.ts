@@ -19,10 +19,11 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       alias: {
-        '@': resolve(projectRoot, 'src')
+        '@': resolve(projectRoot, 'src'),
+        '@github/spark/hooks': resolve(projectRoot, 'src/lib/spark-hooks.ts')
       }
     },
-    base: isGitHubPages ? '/sahaay-ai-messaging/' : '/',
+    base: isGitHubPages ? '/responsive-chatbot-w/' : '/',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',

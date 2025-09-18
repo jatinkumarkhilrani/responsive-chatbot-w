@@ -2,21 +2,21 @@
   "name": "Sahaay - Privacy-First AI Messaging",
   "short_name": "Sahaay",
   "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence, mood detection, and group insights.",
-  "start_url": "/sahaay-ai-messaging/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4338ca",
   "orientation": "portrait",
-  "scope": "/sahaay-ai-messaging/",
+  "scope": "./",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "./icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "./icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -28,10 +28,10 @@
       "name": "New Chat",
       "short_name": "New Chat",
       "description": "Start a new conversation",
-      "url": "/sahaay-ai-messaging/chat/new",
+      "url": "./",
       "icons": [
         {
-          "src": "/icon-192x192.png",
+          "src": "./icon-192x192.png",
           "sizes": "192x192",
           "type": "image/png"
         }

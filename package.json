@@ -12,7 +12,7 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",
-        "build:github": "GITHUB_PAGES=true tsc -b && vite build --base=/sahaay-ai-messaging/ --outDir=dist",
+        "build:github": "GITHUB_PAGES=true tsc -b && vite build --base=/sahaay-ai-messaging/",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",

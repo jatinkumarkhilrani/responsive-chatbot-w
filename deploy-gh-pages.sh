@@ -1,31 +1,34 @@
 #!/bin/bash
 
-# GitHub Pages Deployment Script
+# GitHub Pages Deployment Script for Sahaay AI Messaging
 set -e
 
 echo "🚀 Starting GitHub Pages deployment..."
 
-# Clean previous build
+# Clean previous builds
 rm -rf dist
 
-# Set environment variables
+# Set environment for GitHub Pages
 export GITHUB_PAGES=true
 export NODE_ENV=production
 
-# Install dependencies
 echo "📦 Installing dependencies..."
-npm ci
+npm install --legacy-peer-deps
 
-# Build for GitHub Pages
-echo "🏗️ Building application..."
+echo "🔨 Building for GitHub Pages..."
 npm run build:github
 
-# Create .nojekyll file
-echo "📝 Creating .nojekyll file..."
-touch dist/.nojekyll
+echo "📁 Preparing dist directory..."
+# Copy additional files needed for GitHub Pages
+cp public/404.html dist/
+cp public/.nojekyll dist/ 2>/dev/null || echo "<!-- GitHub Pages -->" > dist/.nojekyll
 
-# Create CNAME if custom domain is needed
-# echo "yourdomain.com" > dist/CNAME
+echo "✅ Build complete! Ready for deployment."
+echo "📂 Files in dist directory:"
+ls -la dist/
 
-echo "✅ Build complete! Files ready in dist/ directory"
-echo "📂 Deploy the dist/ directory to GitHub Pages"
+echo ""
+echo "🌐 To deploy manually, run:"
+echo "  gh-pages -d dist"
+echo ""
+echo "💡 Or commit and push to trigger automatic deployment via GitHub Actions."

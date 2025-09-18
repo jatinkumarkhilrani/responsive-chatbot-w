@@ -10,7 +10,7 @@ const projectRoot = process.env.PROJECT_ROOT || __dirname
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
-  const isGitHubPages = process.env.GITHUB_PAGES === 'true' || process.argv.includes('--base=/sahaay-ai-messaging/')
+  const isGitHubPages = process.env.GITHUB_PAGES === 'true'
   
   return {
     plugins: [
@@ -27,6 +27,7 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: false,
+      copyPublicDir: true,
       rollupOptions: {
         output: {
           manualChunks: {
@@ -37,6 +38,7 @@ export default defineConfig(({ command, mode }) => {
         }
       }
     },
+    publicDir: 'public',
     preview: {
       port: 4173,
       host: true

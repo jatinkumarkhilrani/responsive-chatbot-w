@@ -96,12 +96,24 @@ body {
 
 /* Better viewport handling */
 .messaging-app-container {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   min-height: 100vh;
   max-height: 100vh;
   overflow: hidden;
   position: relative;
+  display: flex;
+}
+
+/* Ensure main content always takes remaining space */
+.main-content-area {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Ensure chat interface takes full available space */
@@ -120,11 +132,14 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+.scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.settings-tabs-container::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
@@ -135,6 +150,39 @@ body {
   width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
+}
+
+/* Ensure sidebars don't break layout */
+@media (max-width: 640px) {
+  .sidebar-container.has-active-chat {
+    display: none !important;
+  }
+  
+  .main-content-area {
+    width: 100vw !important;
+    flex: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .sidebar-container {
+    width: 20rem; /* 320px */
+    flex-shrink: 0;
+  }
+  
+  .main-content-area {
+    width: calc(100vw - 20rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar-container {
+    width: 24rem; /* 384px */
+  }
+  
+  .main-content-area {
+    width: calc(100vw - 24rem);
+  }
 }
 
 @media (max-width: 768px) {

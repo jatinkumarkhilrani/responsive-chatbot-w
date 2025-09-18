@@ -32,9 +32,9 @@ export function MessagingApp() {
   }
 
   return (
-    <div className="messaging-app-container flex h-screen w-full bg-background overflow-hidden">
+    <div className="messaging-app-container w-full h-screen flex bg-background overflow-hidden">
       {/* Sidebar */}
-      <div className={`sidebar-container w-full sm:w-80 lg:w-96 ${
+      <div className={`sidebar-container ${
         activeChatId ? 'has-active-chat hidden sm:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
         <div className="p-3 sm:p-4 border-b border-border">
@@ -104,7 +104,7 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area - Ensure full width usage */}
-      <div className={`main-content-area flex-1 w-full min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      <div className={`main-content-area flex-1 min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
           <div className="chat-interface-wrapper w-full h-full flex flex-col overflow-hidden">
             <ChatInterface 

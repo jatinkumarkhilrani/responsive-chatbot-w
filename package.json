@@ -5,16 +5,21 @@
     "type": "module",
     "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
     "homepage": "https://username.github.io/sahaay-ai-messaging",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/username/sahaay-ai-messaging.git"
+    },
     "scripts": {
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
-        "build:github": "tsc -b --noCheck && vite build --base=/sahaay-ai-messaging/",
+        "build:github": "tsc -b --noCheck && vite build --mode production",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",
         "predeploy": "npm run build:github",
-        "deploy": "gh-pages -d dist"
+        "deploy": "gh-pages -d dist",
+        "type-check": "tsc --noEmit"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",
@@ -82,8 +87,11 @@
     "devDependencies": {
         "@eslint/js": "^9.21.0",
         "@tailwindcss/postcss": "^4.1.8",
+        "@types/d3": "^7.4.3",
         "@types/react": "^19.0.10",
         "@types/react-dom": "^19.0.4",
+        "@types/three": "^0.180.0",
+        "@types/uuid": "^10.0.0",
         "@vitejs/plugin-react": "^4.3.4",
         "@vitejs/plugin-react-swc": "^3.10.1",
         "eslint": "^9.28.0",

@@ -38,46 +38,51 @@ export const MessagingApp = memo(function MessagingApp() {
 
   return (
     <div className="messaging-app-container w-full h-screen flex bg-background overflow-hidden">
-      {/* Sidebar */}
-      <div className={`sidebar-container ${
-        activeChatId ? 'has-active-chat hidden sm:flex' : 'flex'
+      {/* Sidebar - Fixed width with proper responsive behavior */}
+      <div className={`sidebar-container w-full sm:w-80 lg:w-96 border-r border-border flex flex-col ${
+        activeChatId ? 'hidden sm:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
-        <div className="p-3 sm:p-4 border-b border-border">
+        {/* Header */}
+        <div className="flex-shrink-0 p-3 sm:p-4 border-b border-border">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-primary flex items-center justify-center">
               <ShieldCheck className="w-3 h-3 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="font-bold text-sm sm:text-base md:text-lg">Sahaay</h1>
-              <p className="text-xs text-muted-foreground">Privacy-first messaging</p>
+              <h1 className="font-bold text-sm sm:text-base md:text-lg truncate">Sahaay</h1>
+              <p className="text-xs text-muted-foreground truncate">Privacy-first messaging</p>
             </div>
           </div>
         </div>
 
+        {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-5 mx-2 sm:mx-4 mt-2 sm:mt-4 h-auto p-1">
-            <TabsTrigger value="chats" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
-              <ChatCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">Chats</span>
-            </TabsTrigger>
-            <TabsTrigger value="groups" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
-              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">Groups</span>
-            </TabsTrigger>
-            <TabsTrigger value="ai" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
-              <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">AI</span>
-            </TabsTrigger>
-            <TabsTrigger value="debug" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
-              <TestTube className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">Debug</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
-              <Gear className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">Settings</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex-shrink-0 p-2 sm:p-4">
+            <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+              <TabsTrigger value="chats" className="flex flex-col items-center gap-1 text-xs py-2 px-1">
+                <ChatCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline text-xs">Chats</span>
+              </TabsTrigger>
+              <TabsTrigger value="groups" className="flex flex-col items-center gap-1 text-xs py-2 px-1">
+                <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline text-xs">Groups</span>
+              </TabsTrigger>
+              <TabsTrigger value="ai" className="flex flex-col items-center gap-1 text-xs py-2 px-1">
+                <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline text-xs">AI</span>
+              </TabsTrigger>
+              <TabsTrigger value="debug" className="flex flex-col items-center gap-1 text-xs py-2 px-1">
+                <TestTube className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline text-xs">Debug</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex flex-col items-center gap-1 text-xs py-2 px-1">
+                <Gear className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline text-xs">Settings</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
+          {/* Tab Content */}
           <div className="flex-1 overflow-hidden min-h-0">
             <TabsContent value="chats" className="h-full m-0">
               <ChatList 
@@ -86,16 +91,16 @@ export const MessagingApp = memo(function MessagingApp() {
                 userConsents={userConsents || {}}
               />
             </TabsContent>
-            <TabsContent value="groups" className="h-full m-0">
+            <TabsContent value="groups" className="h-full m-0 overflow-auto">
               <GroupManagement userConsents={userConsents || {}} />
             </TabsContent>
-            <TabsContent value="ai" className="h-full m-0">
+            <TabsContent value="ai" className="h-full m-0 overflow-auto">
               <AICompanion userConsents={userConsents || {}} />
             </TabsContent>
-            <TabsContent value="debug" className="h-full m-0">
+            <TabsContent value="debug" className="h-full m-0 overflow-auto">
               <DebugPanel />
             </TabsContent>
-            <TabsContent value="settings" className="h-full m-0">
+            <TabsContent value="settings" className="h-full m-0 overflow-auto">
               <SettingsPanel 
                 userConsents={userConsents || {}}
                 onConsentUpdate={setUserConsents}
@@ -105,10 +110,12 @@ export const MessagingApp = memo(function MessagingApp() {
         </Tabs>
       </div>
 
-      {/* Main Chat Area - Ensure full width usage */}
-      <div className={`main-content-area flex-1 min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      {/* Main Content Area - Takes remaining space */}
+      <div className={`main-content-area flex-1 min-w-0 bg-background ${
+        activeChatId ? 'flex' : 'hidden sm:flex'
+      }`}>
         {activeChatId ? (
-          <div className="chat-interface-wrapper w-full h-full flex flex-col overflow-hidden">
+          <div className="chat-interface-wrapper w-full h-full flex flex-col">
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}

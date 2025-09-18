@@ -13,7 +13,7 @@
         "dev": "vite",
         "build": "tsc -b && vite build --config vite.config.github.ts",
         "build:github": "tsc -b && vite build --config vite.config.github.ts",
-        "build:standalone": "tsc -b && vite build --config vite.config.github.ts && touch dist/.nojekyll && cp dist/index.html dist/404.html",
+        "build:standalone": "npm run build:github && cp dist/index.html dist/404.html",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",

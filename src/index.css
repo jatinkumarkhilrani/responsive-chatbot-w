@@ -72,3 +72,83 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Custom utilities for better responsive behavior */
+.messaging-app-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+.sidebar-container {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.main-content-area {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+}
+
+.chat-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.chat-header {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+}
+
+.chat-messages-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.chat-input-area {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .messaging-app-container {
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .sidebar-container {
+    width: 100%;
+  }
+  
+  .main-content-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+  }
+}
+
+@media (min-width: 641px) {
+  .sidebar-container {
+    width: 20rem; /* 320px */
+    max-width: 24rem; /* 384px */
+  }
+}

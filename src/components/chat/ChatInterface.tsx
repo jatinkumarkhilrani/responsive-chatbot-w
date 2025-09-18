@@ -340,51 +340,61 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
   }
 
   return (
-    <div className="chat-container h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="p-4 border-b border-border bg-card flex items-center gap-3" role="banner">
-        <Button variant="ghost" size="icon" onClick={onBack} aria-label="Go back to chat list">
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div className="flex-1">
-          <h2 className="font-semibold">Sahaay Assistant</h2>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Privacy-protected conversation</span>
+    <div className="chat-container w-full h-full flex flex-col bg-background">
+      {/* Header - Fixed height */}
+      <div className="chat-header flex-shrink-0 p-3 sm:p-4 border-b border-border bg-card" role="banner">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Button variant="ghost" size="sm" onClick={onBack} aria-label="Go back to chat list" className="sm:hidden">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          </Button>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-sm sm:text-base truncate">Sahaay Assistant</h2>
+            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+              <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+              <span className="truncate">Privacy-protected conversation</span>
+            </div>
           </div>
+          <Badge variant="secondary" className="text-xs shrink-0">
+            AI
+          </Badge>
         </div>
-        <Badge variant="secondary" className="text-xs">
-          AI Companion
-        </Badge>
       </div>
 
-      {/* Messages */}
-      <div className="chat-messages-area flex-1 overflow-y-auto p-4 space-y-4" role="main" aria-live="polite" aria-label="Chat messages">
+      {/* Messages - Flexible height with scroll */}
+      <div className="chat-messages-area flex-1 overflow-y-auto p-2 sm:p-4 space-y-3 sm:space-y-4 min-h-0" role="main" aria-live="polite" aria-label="Chat messages">
         {messages?.length === 0 && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <ShieldCheck className="w-8 h-8 text-primary" />
+          <div className="text-center py-4 sm:py-8 px-2">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <ShieldCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             </div>
-            <h3 className="font-semibold mb-2">Privacy-First AI Assistant</h3>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">Privacy-First AI Assistant</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm max-w-md mx-auto mb-4">
               I'm here to help with routes, bills, group summaries, and more. All interactions are consent-based and privacy-protected.
             </p>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto text-xs">
-              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 max-w-2xl mx-auto text-xs">
+              <div className="p-2 sm:p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
                    onClick={() => setMessage("I need to go from Koramangala to Whitefield by 9 AM")}>
-                <strong>📍 Route Planning:</strong> "I need to go from Koramangala to Whitefield by 9 AM"
+                <strong>📍 Route Planning:</strong><br className="hidden xs:block" /> 
+                <span className="xs:hidden">Route help</span>
+                <span className="hidden xs:inline">"I need to go from Koramangala to Whitefield by 9 AM"</span>
               </div>
-              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+              <div className="p-2 sm:p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
                    onClick={() => fileInputRef.current?.click()}>
-                <strong>💰 Bill Processing:</strong> Click to upload bill photos for payment assistance
+                <strong>💰 Bill Processing:</strong><br className="hidden xs:block" />
+                <span className="xs:hidden">Upload bills</span>
+                <span className="hidden xs:inline">Click to upload bill photos for payment assistance</span>
               </div>
-              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+              <div className="p-2 sm:p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
                    onClick={() => setMessage("@Sahaay summary of last 2 days")}>
-                <strong>👥 Group Summary:</strong> "@Sahaay summary of last 2 days"
+                <strong>👥 Group Summary:</strong><br className="hidden xs:block" />
+                <span className="xs:hidden">Chat summaries</span>
+                <span className="hidden xs:inline">"@Sahaay summary of last 2 days"</span>
               </div>
-              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+              <div className="p-2 sm:p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
                    onClick={() => setMessage("How's the weather in Bangalore today?")}>
-                <strong>🌤️ Quick Questions:</strong> "How's the weather in Bangalore today?"
+                <strong>🌤️ Quick Questions:</strong><br className="hidden xs:block" />
+                <span className="xs:hidden">Weather & more</span>
+                <span className="hidden xs:inline">"How's the weather in Bangalore today?"</span>
               </div>
             </div>
           </div>
@@ -395,15 +405,15 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
         ))}
 
         {isTyping && (
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-primary" />
+          <div className="flex items-start gap-2 sm:gap-3">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
             </div>
-            <div className="bg-muted p-3 rounded-lg max-w-xs">
+            <div className="bg-muted p-2 sm:p-3 rounded-lg max-w-xs">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -411,25 +421,25 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="chat-input-area p-4 border-t border-border bg-card" role="form" aria-label="Message input">
-        <div className="flex items-end gap-2">
+      {/* Input Area - Fixed height */}
+      <div className="chat-input-area flex-shrink-0 p-2 sm:p-4 border-t border-border bg-card" role="form" aria-label="Message input">
+        <div className="flex items-end gap-2 mb-2">
           <Button
             variant="outline"
             size="icon"
             onClick={handleFileUpload}
-            className="flex-shrink-0"
+            className="flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10"
             aria-label="Attach file"
           >
-            <Paperclip className="w-4 h-4" />
+            <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
           </Button>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Message Sahaay..."
-              className="resize-none"
+              className="resize-none h-9 sm:h-10 text-sm"
               aria-label="Type your message"
             />
           </div>
@@ -437,12 +447,13 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
             onClick={sendMessage} 
             disabled={!message.trim() || isSending} 
             aria-label="Send message"
-            className={isSending ? 'animate-pulse' : ''}
+            size="icon"
+            className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 ${isSending ? 'animate-pulse' : ''}`}
           >
-            <PaperPlaneTilt className="w-4 h-4" />
+            <PaperPlaneTilt className="w-3 h-3 sm:w-4 sm:h-4" />
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2 text-center">
+        <p className="text-xs text-muted-foreground text-center leading-tight">
           AI responses may contain errors. Not for medical/financial/legal advice.
         </p>
       </div>

@@ -121,10 +121,11 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   const providerStatus = getAIProviderStatus()
 
   return (
-    <div className="settings-tab-content h-full flex flex-col bg-background overflow-hidden">
+    <div className="settings-panel h-full flex flex-col bg-background overflow-hidden">
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="settings-content w-full max-w-none p-2 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
-          <div className="flex flex-col gap-2 mb-3 sm:mb-4 md:mb-6">
+        <div className="settings-content w-full p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          {/* Header */}
+          <div className="flex flex-col gap-2 mb-4 sm:mb-6">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-primary flex items-center justify-center shrink-0">
                 <Gear className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary-foreground" />
@@ -138,8 +139,10 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
             </div>
           </div>
 
-          <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4 md:space-y-6 w-full">
-            <div className="w-full overflow-x-auto scrollbar-hide">
+          {/* Settings Tabs */}
+          <Tabs defaultValue="ai" className="space-y-4 sm:space-y-6 w-full">
+            {/* Tab Navigation - Responsive horizontal scroll */}
+            <div className="w-full overflow-x-auto">
               <TabsList className="h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg gap-1">
                 <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0">
                   <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -160,7 +163,8 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </TabsList>
             </div>
 
-            <TabsContent value="ai" className="settings-tab-content space-y-4 sm:space-y-6 mt-0">
+            {/* AI Configuration Tab */}
+            <TabsContent value="ai" className="space-y-4 sm:space-y-6 mt-0">
               <Card>
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -172,7 +176,8 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6">
-                  <div className="provider-status-layout w-full">
+                  {/* Current Provider Status */}
+                  <div className="w-full">
                     <div className="flex flex-col sm:flex-row items-start gap-3 p-3 sm:p-4 border rounded-lg bg-card/50 w-full">
                       <div className={`w-3 h-3 rounded-full shrink-0 mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
@@ -183,7 +188,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
-                      <div className="shrink-0 self-start mt-1 sm:mt-0">
+                      <div className="shrink-0 self-start">
                         <Badge variant={providerStatus.color as any} className="text-xs whitespace-nowrap">
                           {providerStatus.status}
                         </Badge>
@@ -191,6 +196,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     </div>
                   </div>
 
+                  {/* Configuration Actions */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                     <AIConfigDialog />
                     <TestConfigButton aiConfig={aiConfig} />
@@ -206,6 +212,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </CardContent>
               </Card>
 
+              {/* AI Features Status */}
               <Card>
                 <CardHeader className="pb-4">
                   <CardTitle className="text-base sm:text-lg">AI Features Status</CardTitle>
@@ -227,7 +234,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                       </div>
                       <div className="text-xs sm:text-sm text-muted-foreground">Hyperlocal AI</div>
                     </div>
-                    <div className="p-3 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
+                    <div className="p-3 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center sm:col-span-2 lg:col-span-1">
                       <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
@@ -238,8 +245,9 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
             </TabsContent>
 
-            <TabsContent value="privacy" className="settings-tab-content space-y-4 sm:space-y-6 mt-0">
-              <div className="max-w-none w-full">
+            {/* Privacy Settings Tab */}
+            <TabsContent value="privacy" className="space-y-4 sm:space-y-6 mt-0">
+              <div className="w-full">
                 <PrivacySettings 
                   initialConsents={userConsents}
                   onComplete={onConsentUpdate}
@@ -248,6 +256,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </div>
             </TabsContent>
 
+            {/* Data Management Tab */}
             <TabsContent value="data" className="space-y-4 sm:space-y-6 mt-0">
               <Card>
                 <CardHeader className="pb-4">
@@ -319,6 +328,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
             </TabsContent>
 
+            {/* About Tab */}
             <TabsContent value="about" className="space-y-4 sm:space-y-6 mt-0">
               <Card>
                 <CardHeader className="pb-6">

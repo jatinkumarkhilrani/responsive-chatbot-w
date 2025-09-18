@@ -12,7 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@github/spark/hooks': resolve(__dirname, 'src/lib/spark-hooks.ts')
+      '@github/spark/hooks': resolve(__dirname, 'src/hooks/useKV.ts')
     }
   },
   base: '/responsive-chatbot-w/',

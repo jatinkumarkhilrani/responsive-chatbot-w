@@ -20,7 +20,7 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         '@': resolve(projectRoot, 'src'),
-        '@github/spark/hooks': resolve(projectRoot, 'src/lib/spark-hooks.ts')
+        '@github/spark/hooks': resolve(projectRoot, 'src/hooks/useKV.ts')
       }
     },
     base: isGitHubPages ? '/responsive-chatbot-w/' : '/',

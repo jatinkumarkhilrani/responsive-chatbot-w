@@ -27,7 +27,9 @@ export function MessagingApp() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className={`w-full md:w-80 border-r border-border bg-card flex flex-col md:flex-none ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`w-full md:w-80 border-r border-border bg-card flex flex-col md:flex-none ${
+        activeChatId ? 'hidden md:flex' : 'flex'
+      }`} role="navigation" aria-label="Chat navigation">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">

@@ -53,6 +53,10 @@ export function AIConfigDialog() {
 
   const updateConfig = (updates: Partial<AIConfig>) => {
     setConfig((current) => ({ ...(current || defaultConfig), ...updates }))
+    // Reset connection status when provider changes
+    if (updates.provider) {
+      setConnectionStatus('idle')
+    }
   }
 
   const testConnection = async () => {
@@ -232,19 +236,40 @@ export function AIConfigDialog() {
                   <Input
                     id="endpoint"
                     type="url"
-                    placeholder="https://your-resource.openai.azure.com/"
+                    placeholder={
+                      currentConfig.provider === 'azure' 
+                        ? 'https://your-resource.openai.azure.com'
+                        : currentConfig.provider === 'openai'
+                        ? 'https://api.openai.com'
+                        : currentConfig.provider === 'ai-foundry'
+                        ? 'https://your-foundry.cognitiveservices.azure.com'
+                        : 'https://your-api-endpoint.com'
+                    }
                     value={currentConfig.endpoint}
                     onChange={(e) => updateConfig({ endpoint: e.target.value })}
+                    disabled={currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
+                      'Leave empty to use built-in Spark AI' : 
+                      'Full API endpoint URL including https://'}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="model">Model</Label>
                   <Input
                     id="model"
-                    placeholder="gpt-4o"
+                    placeholder={
+                      currentConfig.provider === 'azure' ? 'your-deployment-name' :
+                      currentConfig.provider === 'openai' ? 'gpt-4o' :
+                      'gpt-4o'
+                    }
                     value={currentConfig.model}
                     onChange={(e) => updateConfig({ model: e.target.value })}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {currentConfig.provider === 'azure' ? 'Azure deployment name' : 'Model identifier'}
+                  </p>
                 </div>
               </div>
 
@@ -254,13 +279,19 @@ export function AIConfigDialog() {
                   <Input
                     id="api-key"
                     type="password"
-                    placeholder="sk-..."
+                    placeholder={
+                      currentConfig.provider === 'azure' ? 'Azure API key' :
+                      currentConfig.provider === 'openai' ? 'sk-...' :
+                      currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 'Not required for built-in AI' :
+                      'API key'
+                    }
                     value={currentConfig.apiKey}
                     onChange={(e) => updateConfig({ apiKey: e.target.value })}
+                    disabled={currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint}
                   />
                   <Button 
                     onClick={testConnection} 
-                    disabled={isTestingConnection}
+                    disabled={isTestingConnection || (currentConfig.provider !== 'ai-foundry' && (!currentConfig.endpoint || !currentConfig.apiKey))}
                     variant="outline"
                     size="sm"
                     className="gap-2"
@@ -269,6 +300,11 @@ export function AIConfigDialog() {
                     {isTestingConnection ? 'Testing...' : 'Test'}
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
+                    'Built-in AI requires no API key' : 
+                    'Your API key is stored locally and never shared'}
+                </p>
                 {connectionStatus === 'success' && (
                   <Alert className="border-success text-success">
                     <CheckCircle className="h-4 w-4" />

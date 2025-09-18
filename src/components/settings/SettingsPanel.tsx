@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Gear, Robot, Shield, Trash, Download, Upload, TestTube } from '@phosphor-icons/react'
+import { Gear, Robot, Shield, Trash, Download, Upload, TestTube, CheckCircle, Warning } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -85,15 +85,27 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
       return { status: 'Not configured', color: 'secondary' }
     }
 
+    // For ai-foundry, check if it's using built-in or custom endpoint
     if (aiConfig.provider === 'ai-foundry') {
-      return { status: 'Spark AI (Built-in)', color: 'default' }
+      if (!aiConfig.endpoint && !aiConfig.apiKey) {
+        return { status: 'Spark AI (Built-in)', color: 'default' }
+      } else if (aiConfig.endpoint && aiConfig.apiKey) {
+        return { status: 'AI Foundry (Custom)', color: 'default' }
+      } else {
+        return { status: 'AI Foundry (Incomplete)', color: 'secondary' }
+      }
     }
 
-    if (aiConfig.endpoint && aiConfig.apiKey) {
-      return { status: `${aiConfig.provider} - Configured`, color: 'default' }
+    // For external providers, both endpoint and API key are required
+    if (aiConfig.endpoint && aiConfig.apiKey && aiConfig.model) {
+      return { status: `${aiConfig.provider.toUpperCase()} - Ready`, color: 'default' }
     }
 
-    return { status: 'Partially configured', color: 'secondary' }
+    if (aiConfig.endpoint || aiConfig.apiKey) {
+      return { status: `${aiConfig.provider.toUpperCase()} - Incomplete`, color: 'secondary' }
+    }
+
+    return { status: `${aiConfig.provider.toUpperCase()} - Not configured`, color: 'secondary' }
   }
 
   const providerStatus = getAIProviderStatus()
@@ -135,12 +147,17 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Current Provider</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {aiConfig?.provider || 'ai-foundry'} - {aiConfig?.model || 'gpt-4o'}
-                    </p>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
+                    }`} />
+                    <div>
+                      <h3 className="font-medium">Current Provider</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
+                      </p>
+                    </div>
                   </div>
                   <Badge variant={providerStatus.color as any}>
                     {providerStatus.status}
@@ -149,10 +166,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
 
                 <div className="flex gap-2">
                   <AIConfigDialog />
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <TestTube className="w-4 h-4" />
-                    Test Configuration
-                  </Button>
+                  <TestConfigButton aiConfig={aiConfig} />
                 </div>
 
                 <Alert>
@@ -322,5 +336,139 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
         </Tabs>
       </div>
     </div>
+  )
+}
+
+function TestConfigButton({ aiConfig }: { aiConfig: any }) {
+  const [isTestingConnection, setIsTestingConnection] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const testConnection = async () => {
+    if (!aiConfig) {
+      toast.error('AI configuration not found')
+      return
+    }
+
+    // For ai-foundry with no custom endpoint, use built-in AI
+    if (aiConfig.provider === 'ai-foundry' && !aiConfig.endpoint && !aiConfig.apiKey) {
+      setIsTestingConnection(true)
+      try {
+        const testPrompt = (window as any).spark.llmPrompt`Test connection - respond with "Connection successful"`
+        const response = await (window as any).spark.llm(testPrompt, aiConfig.model || 'gpt-4o')
+        
+        if (response && response.trim()) {
+          setConnectionStatus('success')
+          toast.success('Built-in AI connected successfully!')
+        } else {
+          throw new Error('Empty response received')
+        }
+      } catch (error) {
+        setConnectionStatus('error')
+        toast.error('Connection failed: Built-in AI unavailable')
+      } finally {
+        setIsTestingConnection(false)
+      }
+      return
+    }
+
+    // For external providers, require endpoint and API key
+    if (!aiConfig.endpoint || !aiConfig.apiKey) {
+      toast.error('Please configure endpoint and API key first')
+      return
+    }
+
+    setIsTestingConnection(true)
+    setConnectionStatus('idle')
+
+    try {
+      let apiUrl = aiConfig.endpoint
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      }
+      
+      let requestBody: any
+
+      // Configure request based on provider
+      switch (aiConfig.provider) {
+        case 'azure':
+          apiUrl = `${aiConfig.endpoint}/openai/deployments/${aiConfig.model || 'gpt-4o'}/chat/completions?api-version=2024-08-01-preview`
+          headers['api-key'] = aiConfig.apiKey
+          requestBody = {
+            messages: [{ role: 'user', content: 'Test connection' }],
+            max_tokens: 10
+          }
+          break
+
+        case 'openai':
+          apiUrl = `${aiConfig.endpoint}/v1/chat/completions`
+          headers['Authorization'] = `Bearer ${aiConfig.apiKey}`
+          requestBody = {
+            model: aiConfig.model || 'gpt-4o',
+            messages: [{ role: 'user', content: 'Test connection' }],
+            max_tokens: 10
+          }
+          break
+
+        case 'ai-foundry':
+        case 'custom':
+          apiUrl = `${aiConfig.endpoint}/chat/completions`
+          headers['Authorization'] = `Bearer ${aiConfig.apiKey}`
+          requestBody = {
+            model: aiConfig.model || 'gpt-4o',
+            messages: [{ role: 'user', content: 'Test connection' }],
+            max_tokens: 10
+          }
+          break
+
+        default:
+          throw new Error(`Unsupported AI provider: ${aiConfig.provider}`)
+      }
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        setConnectionStatus('success')
+        toast.success(`${aiConfig.provider.toUpperCase()} connected successfully!`)
+      } else {
+        throw new Error('Invalid response format from AI provider')
+      }
+    } catch (error: any) {
+      setConnectionStatus('error')
+      const errorMessage = error?.message || 'Unknown connection error'
+      toast.error(`Connection failed: ${errorMessage}`)
+      console.error('AI connection test failed:', error)
+    } finally {
+      setIsTestingConnection(false)
+    }
+  }
+
+  return (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="gap-2"
+      onClick={testConnection}
+      disabled={isTestingConnection}
+    >
+      {connectionStatus === 'success' ? (
+        <CheckCircle className="w-4 h-4 text-success" />
+      ) : connectionStatus === 'error' ? (
+        <Warning className="w-4 h-4 text-destructive" />
+      ) : (
+        <TestTube className="w-4 h-4" />
+      )}
+      {isTestingConnection ? 'Testing...' : 'Test Connection'}
+    </Button>
   )
 }

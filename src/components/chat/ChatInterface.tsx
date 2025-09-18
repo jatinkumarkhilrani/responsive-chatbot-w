@@ -9,6 +9,33 @@ import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { useAIService } from '../ai/EnhancedAIService'
 
+// Helper function for fallback suggestions
+function getFallbackSuggestion(message: string): string {
+  const lowerMessage = message.toLowerCase()
+  
+  if (lowerMessage.includes('route') || lowerMessage.includes('traffic') || lowerMessage.includes('direction')) {
+    return '\n\n🗺️ **For route planning:** Try "I need to go from [location] to [destination]" or check Google Maps/Ola Maps for live navigation.'
+  }
+  
+  if (lowerMessage.includes('bill') || lowerMessage.includes('payment') || lowerMessage.includes('electricity') || lowerMessage.includes('water')) {
+    return '\n\n💰 **For bill processing:** Upload a clear photo of your bill, or try describing the bill details (amount, due date, provider).'
+  }
+  
+  if (lowerMessage.includes('summary') || lowerMessage.includes('group') || lowerMessage.includes('@sahaay')) {
+    return '\n\n👥 **For group features:** Try "@Sahaay summary of last 3 days" or "summarize recent messages" for conversation insights.'
+  }
+  
+  if (lowerMessage.includes('weather') || lowerMessage.includes('temperature')) {
+    return '\n\n🌤️ **For weather:** Check weather apps or try "What\'s the weather like in [city]?"'
+  }
+  
+  if (lowerMessage.includes('translate') || lowerMessage.includes('meaning')) {
+    return '\n\n🌍 **For translation:** Try Google Translate or specify the languages: "Translate [text] from [language] to [language]"'
+  }
+  
+  return '\n\n💡 **Try asking about:** Routes, bills, weather, translations, or group summaries. Be specific for better results!'
+}
+
 interface Message {
   id: string
   content: string
@@ -32,6 +59,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfaceProps) {
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isSending, setIsSending] = useState(false)
   const [messages, setMessages] = useKV<Message[]>(`chat-messages-${chatId}`, [])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -47,8 +75,9 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
   }, [])
 
   const sendMessage = async () => {
-    if (!message.trim()) return
+    if (!message.trim() || isSending) return
 
+    setIsSending(true)
     const userMessage: Message = {
       id: `msg-${Date.now()}`,
       content: message.trim(),
@@ -58,6 +87,7 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
     }
 
     setMessages(prev => [...(prev || []), userMessage])
+    const currentMessage = message.trim()
     setMessage('')
     setIsTyping(true)
 
@@ -67,8 +97,8 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
 
       // Use the enhanced AI service for generating responses
       const [moodAnalysis, locationContext] = await Promise.all([
-        userConsents.moodDetection ? aiService.detectMood(userMessage.content) : Promise.resolve({ mood: 'neutral' as const, confidence: 0, suggestions: [] }),
-        userConsents.locationServices ? aiService.getHyperlocalContext('Bangalore', userMessage.content) : Promise.resolve({ area: '', suggestions: [] })
+        userConsents.moodDetection ? aiService.detectMood(currentMessage) : Promise.resolve({ mood: 'neutral' as const, confidence: 0, suggestions: [] }),
+        userConsents.locationServices ? aiService.getHyperlocalContext('Bangalore', currentMessage) : Promise.resolve({ area: '', suggestions: [] })
       ])
 
       // Convert messages to AI service format
@@ -82,13 +112,13 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       }))
 
       const aiResponseContent = await aiService.generateResponse(
-        userMessage.content,
+        currentMessage,
         {
           mood: moodAnalysis,
           location: locationContext,
           messageHistory: aiServiceMessages as any,
-          isGroupMention: userMessage.content.toLowerCase().includes('@sahaay'),
-          specificRequest: userMessage.content
+          isGroupMention: currentMessage.toLowerCase().includes('@sahaay'),
+          specificRequest: currentMessage
         }
       )
 
@@ -111,12 +141,12 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       // Provide a fallback response
       const fallbackMessage: Message = {
         id: `msg-${Date.now() + 1}`,
-        content: "I'm sorry, I'm having trouble processing your request right now. This could be due to AI configuration issues. Please check your AI settings or try again later.\n\nHere are some things you can do:\n• Check AI configuration in Settings\n• Verify your internet connection\n• Try a simpler question",
+        content: "I'm sorry, I'm having trouble processing your request right now. This could be due to AI configuration issues.\n\n**Quick troubleshooting:**\n• Check AI configuration in Settings\n• Verify your internet connection\n• Try a simpler question\n\n**Based on your message, here are some suggestions:**" + getFallbackSuggestion(currentMessage),
         sender: 'ai',
         timestamp: new Date().toISOString(),
         type: 'text',
         metadata: {
-          confidence: 0,
+          confidence: 0.1,
           disclaimer: 'This is a fallback response due to AI service unavailability.'
         }
       }
@@ -125,6 +155,7 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       toast.error('Failed to get AI response. Using fallback response.')
     } finally {
       setIsTyping(false)
+      setIsSending(false)
     }
   }
 
@@ -132,6 +163,10 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
+    }
+    // Escape key to clear message
+    if (e.key === 'Escape') {
+      setMessage('')
     }
   }
 
@@ -239,18 +274,22 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
               I'm here to help with routes, bills, group summaries, and more. All interactions are consent-based and privacy-protected.
             </p>
-            <div className="mt-4 grid grid-cols-2 gap-2 max-w-lg mx-auto text-xs">
-              <div className="p-2 bg-muted rounded">
-                <strong>📍 Route Help:</strong> "Need to reach Silk Board from Hoodi"
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto text-xs">
+              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                   onClick={() => setMessage("I need to go from Koramangala to Whitefield by 9 AM")}>
+                <strong>📍 Route Planning:</strong> "I need to go from Koramangala to Whitefield by 9 AM"
               </div>
-              <div className="p-2 bg-muted rounded">
-                <strong>💰 Bill Processing:</strong> Upload bill photos for payment links
+              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                   onClick={() => fileInputRef.current?.click()}>
+                <strong>💰 Bill Processing:</strong> Click to upload bill photos for payment assistance
               </div>
-              <div className="p-2 bg-muted rounded">
+              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                   onClick={() => setMessage("@Sahaay summary of last 2 days")}>
                 <strong>👥 Group Summary:</strong> "@Sahaay summary of last 2 days"
               </div>
-              <div className="p-2 bg-muted rounded">
-                <strong>🛡️ Safety Alerts:</strong> Location-based safety monitoring
+              <div className="p-3 bg-muted rounded cursor-pointer hover:bg-muted/80 transition-colors"
+                   onClick={() => setMessage("How's the weather in Bangalore today?")}>
+                <strong>🌤️ Quick Questions:</strong> "How's the weather in Bangalore today?"
               </div>
             </div>
           </div>
@@ -299,7 +338,12 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
               aria-label="Type your message"
             />
           </div>
-          <Button onClick={sendMessage} disabled={!message.trim()} aria-label="Send message">
+          <Button 
+            onClick={sendMessage} 
+            disabled={!message.trim() || isSending} 
+            aria-label="Send message"
+            className={isSending ? 'animate-pulse' : ''}
+          >
             <PaperPlaneTilt className="w-4 h-4" />
           </Button>
         </div>

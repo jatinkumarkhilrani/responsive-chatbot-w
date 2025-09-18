@@ -121,229 +121,239 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   const providerStatus = getAIProviderStatus()
 
   return (
-    <div className="h-full overflow-y-auto p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-              <Gear className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Settings</h1>
-              <p className="text-muted-foreground">
-                Manage your privacy, AI configuration, and app preferences
-              </p>
+    <div className="h-full flex flex-col bg-background">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-full lg:max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary flex items-center justify-center">
+                <Gear className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold">Settings</h1>
+                <p className="text-sm text-muted-foreground">
+                  Manage your privacy, AI configuration, and app preferences
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <Tabs defaultValue="ai" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="ai">AI Configuration</TabsTrigger>
-            <TabsTrigger value="privacy">Privacy & Consent</TabsTrigger>
-            <TabsTrigger value="data">Data Management</TabsTrigger>
-            <TabsTrigger value="about">About</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="ai" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+              <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 py-2">
+                AI Config
+              </TabsTrigger>
+              <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 py-2">
+                Privacy
+              </TabsTrigger>
+              <TabsTrigger value="data" className="text-xs sm:text-sm px-2 py-2">
+                Data
+              </TabsTrigger>
+              <TabsTrigger value="about" className="text-xs sm:text-sm px-2 py-2">
+                About
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="ai" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Robot className="w-5 h-5" />
-                  AI Provider Configuration
-                </CardTitle>
-                <CardDescription>
-                  Configure your AI provider for enhanced functionality and customization
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${
-                      providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
-                    }`} />
+            <TabsContent value="ai" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Robot className="w-4 h-4 sm:w-5 sm:h-5" />
+                    AI Provider Configuration
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Configure your AI provider for enhanced functionality and customization
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
+                      }`} />
+                      <div>
+                        <h3 className="font-medium text-sm sm:text-base">Current Provider</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant={providerStatus.color as any} className="text-xs">
+                      {providerStatus.status}
+                    </Badge>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <AIConfigDialog />
+                    <TestConfigButton aiConfig={aiConfig} />
+                  </div>
+
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
+                      <strong>Privacy Note:</strong> When using external AI providers, your API key is stored locally 
+                      and never shared. All communication happens directly between your device and the AI provider.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base sm:text-lg">AI Features Status</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Current status of AI-powered features based on your configuration
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="text-center p-3 border rounded-lg">
+                      <div className="text-sm sm:text-lg font-bold">
+                        {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Mood Detection</div>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <div className="text-sm sm:text-lg font-bold">
+                        {userConsents.locationServices ? 'Enabled' : 'Disabled'}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Hyperlocal AI</div>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <div className="text-sm sm:text-lg font-bold">
+                        {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Group Intelligence</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="privacy" className="space-y-4">
+              <PrivacySettings 
+                initialConsents={userConsents}
+                onComplete={onConsentUpdate}
+                isUpdate={true}
+              />
+            </TabsContent>
+
+            <TabsContent value="data" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base sm:text-lg">Data Overview</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Current data stored in your Sahaay app
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-lg sm:text-2xl font-bold">{(chats || []).length}</div>
+                      <div className="text-xs text-muted-foreground">Conversations</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-2xl font-bold">{(groups || []).length}</div>
+                      <div className="text-xs text-muted-foreground">Groups</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-2xl font-bold">{(contextPacks || []).length}</div>
+                      <div className="text-xs text-muted-foreground">Context Packs</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg sm:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
+                      <div className="text-xs text-muted-foreground">Privacy Settings</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base sm:text-lg">Data Management</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Export or clear your data
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button onClick={exportUserData} disabled={isExporting} className="gap-2 text-sm">
+                      <Download className="w-4 h-4" />
+                      {isExporting ? 'Exporting...' : 'Export All Data'}
+                    </Button>
+                    <Button variant="outline" className="gap-2 text-sm" disabled>
+                      <Upload className="w-4 h-4" />
+                      Import Data (Coming Soon)
+                    </Button>
+                  </div>
+
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
+                      Your data is stored locally on your device and never shared with external services 
+                      without your explicit consent. Exports include all your conversations, settings, and preferences.
+                    </AlertDescription>
+                  </Alert>
+
+                  <div className="pt-4 border-t">
+                    <h4 className="font-medium text-destructive mb-2 text-sm sm:text-base">Danger Zone</h4>
+                    <Button variant="destructive" onClick={clearAllData} className="gap-2 text-sm">
+                      <Trash className="w-4 h-4" />
+                      Clear All Data
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      This will permanently delete all your conversations, groups, and settings. This action cannot be undone.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="about" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base sm:text-lg">About Sahaay</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Privacy-first AI messaging companion for India
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <h3 className="font-medium">Current Provider</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
-                      </p>
+                      <h4 className="font-medium text-sm">Version</h4>
+                      <p className="text-xs text-muted-foreground">1.0.0 Beta</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm">Build</h4>
+                      <p className="text-xs text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
                     </div>
                   </div>
-                  <Badge variant={providerStatus.color as any}>
-                    {providerStatus.status}
-                  </Badge>
-                </div>
 
-                <div className="flex gap-2">
-                  <AIConfigDialog />
-                  <TestConfigButton aiConfig={aiConfig} />
-                </div>
-
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>Privacy Note:</strong> When using external AI providers, your API key is stored locally 
-                    and never shared. All communication happens directly between your device and the AI provider.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Features Status</CardTitle>
-                <CardDescription>
-                  Current status of AI-powered features based on your configuration
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-lg font-bold">
-                      {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Mood Detection</div>
-                  </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-lg font-bold">
-                      {userConsents.locationServices ? 'Enabled' : 'Disabled'}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Hyperlocal AI</div>
-                  </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-lg font-bold">
-                      {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Group Intelligence</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="privacy" className="space-y-4">
-            <PrivacySettings 
-              initialConsents={userConsents}
-              onComplete={onConsentUpdate}
-              isUpdate={true}
-            />
-          </TabsContent>
-
-          <TabsContent value="data" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Overview</CardTitle>
-                <CardDescription>
-                  Current data stored in your Sahaay app
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{(chats || []).length}</div>
-                    <div className="text-sm text-muted-foreground">Conversations</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{(groups || []).length}</div>
-                    <div className="text-sm text-muted-foreground">Groups</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{(contextPacks || []).length}</div>
-                    <div className="text-sm text-muted-foreground">Context Packs</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
-                    <div className="text-sm text-muted-foreground">Privacy Settings</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Management</CardTitle>
-                <CardDescription>
-                  Export or clear your data
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Button onClick={exportUserData} disabled={isExporting} className="gap-2">
-                    <Download className="w-4 h-4" />
-                    {isExporting ? 'Exporting...' : 'Export All Data'}
-                  </Button>
-                  <Button variant="outline" className="gap-2" disabled>
-                    <Upload className="w-4 h-4" />
-                    Import Data (Coming Soon)
-                  </Button>
-                </div>
-
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    Your data is stored locally on your device and never shared with external services 
-                    without your explicit consent. Exports include all your conversations, settings, and preferences.
-                  </AlertDescription>
-                </Alert>
-
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium text-destructive mb-2">Danger Zone</h4>
-                  <Button variant="destructive" onClick={clearAllData} className="gap-2">
-                    <Trash className="w-4 h-4" />
-                    Clear All Data
-                  </Button>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    This will permanently delete all your conversations, groups, and settings. This action cannot be undone.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="about" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>About Sahaay</CardTitle>
-                <CardDescription>
-                  Privacy-first AI messaging companion for India
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium">Version</h4>
-                    <p className="text-sm text-muted-foreground">1.0.0 Beta</p>
+                    <h4 className="font-medium mb-2 text-sm">Key Features</h4>
+                    <ul className="list-disc list-inside space-y-1 text-xs text-muted-foreground">
+                      <li>Privacy-first design with local data storage</li>
+                      <li>Configurable AI providers (Azure, OpenAI, AI Foundry)</li>
+                      <li>Hyperlocal intelligence for Indian context</li>
+                      <li>Mood detection and contextual responses</li>
+                      <li>Group intelligence and conversation summaries</li>
+                      <li>Bill processing and payment assistance</li>
+                      <li>Route optimization and traffic insights</li>
+                    </ul>
                   </div>
-                  <div>
-                    <h4 className="font-medium">Build</h4>
-                    <p className="text-sm text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
-                  </div>
-                </div>
 
-                <div>
-                  <h4 className="font-medium mb-2">Key Features</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    <li>Privacy-first design with local data storage</li>
-                    <li>Configurable AI providers (Azure, OpenAI, AI Foundry)</li>
-                    <li>Hyperlocal intelligence for Indian context</li>
-                    <li>Mood detection and contextual responses</li>
-                    <li>Group intelligence and conversation summaries</li>
-                    <li>Bill processing and payment assistance</li>
-                    <li>Route optimization and traffic insights</li>
-                  </ul>
-                </div>
-
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertDescription>
-                    Sahaay is designed with privacy as the foundation. All data processing happens on your device, 
-                    and you have complete control over what information is shared and processed.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
+                      Sahaay is designed with privacy as the foundation. All data processing happens on your device, 
+                      and you have complete control over what information is shared and processed.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   )
@@ -467,7 +477,7 @@ function TestConfigButton({ aiConfig }: { aiConfig: any }) {
     <Button 
       variant="outline" 
       size="sm" 
-      className="gap-2"
+      className="gap-2 text-sm"
       onClick={testConnection}
       disabled={isTestingConnection}
     >

@@ -1,15 +1,20 @@
 {
-    "name": "spark-template",
-    "private": true,
-    "version": "0.0.0",
+    "name": "sahaay-ai-messaging",
+    "private": false,
+    "version": "1.0.0",
     "type": "module",
+    "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
+    "homepage": "https://username.github.io/sahaay-ai-messaging",
     "scripts": {
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
+        "build:github": "tsc -b --noCheck && vite build --base=/sahaay-ai-messaging/",
         "lint": "eslint .",
         "optimize": "vite optimize",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "predeploy": "npm run build:github",
+        "deploy": "gh-pages -d dist"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",
@@ -84,6 +89,7 @@
         "eslint": "^9.28.0",
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.19",
+        "gh-pages": "^6.3.0",
         "globals": "^16.0.0",
         "tailwindcss": "^4.1.11",
         "typescript": "~5.7.2",

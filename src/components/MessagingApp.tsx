@@ -32,48 +32,48 @@ export function MessagingApp() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar */}
-      <div className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col md:flex-none ${
-        activeChatId ? 'hidden md:flex' : 'flex'
+      <div className={`w-full sm:w-80 lg:w-96 border-r border-border bg-card flex flex-col sm:flex-none ${
+        activeChatId ? 'hidden sm:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
-        <div className="p-4 border-b border-border">
+        <div className="p-3 sm:p-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-primary-foreground" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-primary flex items-center justify-center">
+              <ShieldCheck className="w-3 h-3 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-bold text-lg">Sahaay</h1>
+              <h1 className="font-bold text-base sm:text-lg">Sahaay</h1>
               <p className="text-xs text-muted-foreground">Privacy-first messaging</p>
             </div>
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-5 mx-4 mt-4">
-            <TabsTrigger value="chats" className="flex items-center gap-1">
-              <ChatCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Chats</span>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="grid w-full grid-cols-5 mx-2 sm:mx-4 mt-2 sm:mt-4 h-auto">
+            <TabsTrigger value="chats" className="flex items-center gap-1 text-xs py-2">
+              <ChatCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Chats</span>
             </TabsTrigger>
-            <TabsTrigger value="groups" className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Groups</span>
+            <TabsTrigger value="groups" className="flex items-center gap-1 text-xs py-2">
+              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="ai" className="flex items-center gap-1">
-              <Robot className="w-4 h-4" />
-              <span className="hidden sm:inline">AI</span>
+            <TabsTrigger value="ai" className="flex items-center gap-1 text-xs py-2">
+              <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">AI</span>
             </TabsTrigger>
-            <TabsTrigger value="debug" className="flex items-center gap-1">
-              <TestTube className="w-4 h-4" />
-              <span className="hidden sm:inline">Debug</span>
+            <TabsTrigger value="debug" className="flex items-center gap-1 text-xs py-2">
+              <TestTube className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Debug</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-1">
-              <Gear className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
+            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs py-2">
+              <Gear className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Settings</span>
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-h-0">
             <TabsContent value="chats" className="h-full m-0">
               <ChatList 
                 activeChatId={activeChatId || null} 
@@ -104,7 +104,7 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area */}
-      <div className={`flex-1 ${activeChatId ? 'flex' : 'hidden md:flex'}`}>
+      <div className={`flex-1 min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
           <ChatInterface 
             chatId={activeChatId} 
@@ -120,14 +120,14 @@ export function MessagingApp() {
             }}
           />
         ) : (
-          <div className="h-full flex items-center justify-center p-8">
+          <div className="h-full flex items-center justify-center p-4 sm:p-8">
             <div className="text-center max-w-md">
-              <Robot className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Welcome to Sahaay</h2>
-              <p className="text-muted-foreground mb-6">
+              <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
+              <p className="text-sm sm:text-base text-muted-foreground mb-6">
                 Your privacy-first AI messaging companion. Select a chat to start or create a new conversation.
               </p>
-              <div className="space-y-3 text-sm">
+              <div className="space-y-3 text-xs sm:text-sm">
                 <div className="flex items-center gap-2 justify-center">
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span>Privacy-first design</span>

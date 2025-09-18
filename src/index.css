@@ -61,9 +61,19 @@
   --radius-xl: calc(var(--radius) * 2);
   --radius-2xl: calc(var(--radius) * 3);
   --radius-full: 9999px;
+
+  /* Custom breakpoints for better mobile support */
+  --breakpoint-xs: 475px;
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Custom responsive utilities */
+@media (min-width: 475px) {
+  .xs\:inline {
+    display: inline;
+  }
 }

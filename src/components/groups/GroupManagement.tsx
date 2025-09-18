@@ -34,6 +34,12 @@ export function GroupManagement({ userConsents }: GroupManagementProps) {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
 
   const createSampleGroups = () => {
+    // Check if groups already exist
+    if ((groups || []).length > 0) {
+      toast.info('Sample groups already exist')
+      return
+    }
+
     const sampleGroups: Group[] = [
       {
         id: 'family-group',
@@ -82,8 +88,13 @@ export function GroupManagement({ userConsents }: GroupManagementProps) {
       }
     ]
     
-    setGroups(sampleGroups)
-    toast.success('Sample groups created')
+    try {
+      setGroups(sampleGroups)
+      toast.success('Sample groups created successfully!')
+    } catch (error) {
+      toast.error('Failed to create sample groups')
+      console.error('Error creating groups:', error)
+    }
   }
 
   const toggleGroupAI = (groupId: string) => {

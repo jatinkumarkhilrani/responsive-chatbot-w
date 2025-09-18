@@ -56,8 +56,8 @@ export function AIConfigDialog() {
   }
 
   const testConnection = async () => {
-    if (!currentConfig.endpoint || !currentConfig.apiKey) {
-      toast.error('Please provide endpoint and API key')
+    if (!currentConfig.endpoint && !currentConfig.apiKey) {
+      toast.error('Please provide endpoint and API key first')
       return
     }
 
@@ -71,15 +71,16 @@ export function AIConfigDialog() {
       // Use the configured model if available, otherwise default to gpt-4o
       const response = await (window as any).spark.llm(testPrompt, currentConfig.model || 'gpt-4o')
       
-      if (response) {
+      if (response && response.trim()) {
         setConnectionStatus('success')
         toast.success('AI provider connected successfully!')
       } else {
-        throw new Error('No response received')
+        throw new Error('Empty response received')
       }
-    } catch (error) {
+    } catch (error: any) {
       setConnectionStatus('error')
-      toast.error('Failed to connect to AI provider')
+      const errorMessage = error?.message || 'Unknown connection error'
+      toast.error(`Connection failed: ${errorMessage}`)
       console.error('AI connection test failed:', error)
     } finally {
       setIsTestingConnection(false)
@@ -105,14 +106,14 @@ export function AIConfigDialog() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
-          <Gear weight="bold" />
+          <Gear className="w-4 h-4" />
           AI Settings
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Robot weight="bold" className="text-primary" />
+            <Robot className="w-5 h-5 text-primary" />
             AI Configuration
           </DialogTitle>
           <DialogDescription>
@@ -190,7 +191,7 @@ export function AIConfigDialog() {
                     size="sm"
                     className="gap-2"
                   >
-                    <TestTube weight="bold" />
+                    <TestTube className="w-4 h-4" />
                     {isTestingConnection ? 'Testing...' : 'Test'}
                   </Button>
                 </div>
@@ -257,7 +258,7 @@ export function AIConfigDialog() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Shield weight="bold" />
+                <Shield className="w-5 h-5" />
                 Privacy-First Features
               </CardTitle>
               <CardDescription>

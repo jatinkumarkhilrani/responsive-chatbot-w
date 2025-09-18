@@ -120,11 +120,18 @@ export function PrivacySettings({ onComplete, initialConsents = {}, isUpdate = f
     }
   }
 
-  const clearAllData = () => {
+  const clearAllData = async () => {
     if (confirm('This will delete all your data and reset the app. Continue?')) {
-      // Clear all stored data
-      localStorage.clear()
-      window.location.reload()
+      // Clear all stored data using Spark KV
+      try {
+        const allKeys = await (window as any).spark.kv.keys()
+        await Promise.all(allKeys.map(key => (window as any).spark.kv.delete(key)))
+        toast.success('All data cleared successfully')
+        window.location.reload()
+      } catch (error) {
+        toast.error('Failed to clear data')
+        console.error('Error clearing data:', error)
+      }
     }
   }
 
@@ -308,7 +315,7 @@ export function PrivacySettings({ onComplete, initialConsents = {}, isUpdate = f
       <Separator className="my-8" />
 
       <div className="flex flex-col sm:flex-row gap-4 justify-end">
-        <Button variant="outline" onClick={() => window.open('/privacy-policy', '_blank')}>
+        <Button variant="outline" onClick={() => toast.info('Privacy policy coming soon')}>
           Read Full Privacy Policy
         </Button>
         <Button onClick={handleComplete} className="min-w-32">

@@ -24,7 +24,7 @@ export function MessagingApp() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-80 border-r border-border bg-card flex flex-col">
+      <div className={`w-full md:w-80 border-r border-border bg-card flex flex-col md:flex-none ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
@@ -83,7 +83,7 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1">
+      <div className={`flex-1 ${activeChatId ? 'flex' : 'hidden md:flex'}`}>
         {activeChatId ? (
           <ChatInterface 
             chatId={activeChatId} 
@@ -205,62 +205,3 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
   )
 }
 
-// Placeholder components for now
-function PrivacySetupComponent({ onComplete, initialConsents, isUpdate }: any) {
-  return (
-    <div className="h-full flex items-center justify-center p-8">
-      <Card className="max-w-lg w-full p-6">
-        <div className="text-center mb-6">
-          <ShieldCheck className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Privacy First</h2>
-          <p className="text-muted-foreground">
-            Before we start, let's set up your privacy preferences.
-          </p>
-        </div>
-        <Button 
-          onClick={() => onComplete({ moodDetection: true, locationServices: true, groupSummary: true })}
-          className="w-full"
-        >
-          Continue with Default Settings
-        </Button>
-      </Card>
-    </div>
-  )
-}
-
-function ChatInterfaceComponent({ chatId, userConsents, onBack }: any) {
-  return (
-    <div className="h-full flex items-center justify-center">
-      <div className="text-center">
-        <Robot className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h3 className="text-xl font-semibold mb-2">Chat Interface</h3>
-        <p className="text-muted-foreground">Chat ID: {chatId}</p>
-        <Button onClick={onBack} className="mt-4">Back to Chat List</Button>
-      </div>
-    </div>
-  )
-}
-
-function GroupManagementComponent({ userConsents }: any) {
-  return (
-    <div className="h-full flex items-center justify-center p-4">
-      <div className="text-center">
-        <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-xl font-semibold mb-2">Group Management</h3>
-        <p className="text-muted-foreground">Manage your group chats and settings</p>
-      </div>
-    </div>
-  )
-}
-
-function AICompanionComponent({ userConsents }: any) {
-  return (
-    <div className="h-full flex items-center justify-center p-4">
-      <div className="text-center">
-        <Robot className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-xl font-semibold mb-2">AI Companion Settings</h3>
-        <p className="text-muted-foreground">Configure your AI assistant preferences</p>
-      </div>
-    </div>
-  )
-}

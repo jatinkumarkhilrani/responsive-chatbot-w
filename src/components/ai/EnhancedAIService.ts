@@ -1,4 +1,5 @@
 import { useKV } from '@github/spark/hooks'
+import { useEffect } from 'react'
 
 interface AIConfig {
   provider: 'azure' | 'openai' | 'ai-foundry' | 'custom'
@@ -274,10 +275,12 @@ export const aiService = new EnhancedAIService()
 export function useAIService() {
   const [config] = useKV<AIConfig>('ai-config', defaultConfig)
   
-  // Update service config when KV changes
-  if (config) {
-    aiService.updateConfig(config)
-  }
+  // Update service config when KV changes (use useEffect to avoid infinite re-renders)
+  useEffect(() => {
+    if (config) {
+      aiService.updateConfig(config)
+    }
+  }, [config])
 
   return aiService
 }

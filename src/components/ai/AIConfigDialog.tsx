@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { validateAIConfig, handleAIError } from '../../utils/errorHandling'
 
 interface AIConfig {
   provider: 'azure' | 'openai' | 'ai-foundry' | 'custom'
@@ -437,8 +438,21 @@ export function AIConfigDialog() {
               Cancel
             </Button>
             <Button onClick={() => {
-              toast.success('AI configuration saved successfully!')
-              setIsOpen(false)
+              const validation = validateAIConfig(currentConfig)
+              
+              if (!validation.isValid) {
+                toast.error(`Configuration invalid: ${validation.errors.join(', ')}`)
+                return
+              }
+
+              try {
+                setConfig(currentConfig)
+                toast.success('AI configuration saved successfully!')
+                setIsOpen(false)
+              } catch (error) {
+                const appError = handleAIError(error, 'save configuration')
+                toast.error(appError.message)
+              }
             }}>
               Save Configuration
             </Button>

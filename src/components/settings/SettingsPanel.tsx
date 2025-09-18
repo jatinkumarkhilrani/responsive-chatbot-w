@@ -62,9 +62,19 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
     try {
       // Clear all KV storage
       const keys = await (window as any).spark.kv.keys()
-      for (const key of keys) {
-        if (key.startsWith('user-') || key.startsWith('chat-') || key.startsWith('ai-') || key.startsWith('context-')) {
+      const keysToDelete = keys.filter((key: string) => 
+        key.startsWith('user-') || 
+        key.startsWith('chat-') || 
+        key.startsWith('ai-') || 
+        key.startsWith('context-') ||
+        key.startsWith('active-')
+      )
+      
+      for (const key of keysToDelete) {
+        try {
           await (window as any).spark.kv.delete(key)
+        } catch (error) {
+          console.warn(`Failed to delete key ${key}:`, error)
         }
       }
 

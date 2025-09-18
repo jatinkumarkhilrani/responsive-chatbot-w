@@ -12,6 +12,7 @@ import { AICompanion } from './ai/AICompanion'
 import { GroupManagement } from './groups/GroupManagement'
 import { DebugPanel } from './Debug/DebugPanel'
 import { SettingsPanel } from './settings/SettingsPanel'
+import { handleKVError } from '../utils/errorHandling'
 
 export function MessagingApp() {
   const [activeTab, setActiveTab] = useState('chats')
@@ -20,8 +21,14 @@ export function MessagingApp() {
 
   const hasPrivacySetup = Object.keys(userConsents || {}).length > 0
 
+  // Handle consent completion
+  const handleConsentComplete = (consents: Record<string, boolean>) => {
+    setUserConsents(consents)
+    toast.success('Privacy settings saved successfully!')
+  }
+
   if (!hasPrivacySetup) {
-    return <PrivacySettings onComplete={(consents) => setUserConsents(consents)} />
+    return <PrivacySettings onComplete={handleConsentComplete} />
   }
 
   return (
@@ -138,8 +145,9 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
 
   const createNewChat = async () => {
     try {
+      const chatId = `chat-${Date.now()}`
       const newChat: Chat = {
-        id: `chat-${Date.now()}`,
+        id: chatId,
         name: 'Sahaay Assistant',
         type: 'ai',
         lastMessage: 'Ready to help with your queries',
@@ -155,9 +163,11 @@ function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
         return newChats.slice(0, 50)
       })
       
-      onChatSelect(newChat.id)
+      onChatSelect(chatId)
+      toast.success('New chat created!')
     } catch (error) {
-      console.error('Error creating new chat:', error)
+      const appError = handleKVError(error, 'create new chat')
+      console.error('Error creating new chat:', appError)
       toast.error('Failed to create new chat. Please try again.')
     }
   }

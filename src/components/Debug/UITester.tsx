@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TestTube, CheckCircle, XCircle, Warning, Info } from '@phosphor-icons/react'
+import { TestTube, CheckCircle, X, Warning, Info } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -290,7 +290,7 @@ export function UITester() {
       case 'pass':
         return <CheckCircle className="w-5 h-5 text-green-500" />
       case 'fail':
-        return <XCircle className="w-5 h-5 text-red-500" />
+        return <X className="w-5 h-5 text-red-500" />
       case 'warning':
         return <Warning className="w-5 h-5 text-yellow-500" />
     }

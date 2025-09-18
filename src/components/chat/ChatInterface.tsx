@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { useAIService } from '../ai/EnhancedAIService'
+import { handleKVError, sanitizeKVKey, isValidChatId } from '../../utils/errorHandling'
 
 // Helper function for fallback suggestions
 function getFallbackSuggestion(message: string): string {
@@ -60,7 +61,14 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [isSending, setIsSending] = useState(false)
-  const [messages, setMessages] = useKV<Message[]>(`chat-messages-${chatId}`, [])
+  
+  // Validate and sanitize chat ID
+  if (!isValidChatId(chatId)) {
+    console.warn('Invalid chat ID format:', chatId)
+  }
+  
+  const sanitizedChatId = sanitizeKVKey(chatId)
+  const [messages, setMessages] = useKV<Message[]>(`messages-${sanitizedChatId}`, [])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const aiService = useAIService()
@@ -71,7 +79,14 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
 
   useEffect(() => {
     // Initialize AI service with current config
-    aiService.initializeConfig()
+    const initializeAI = async () => {
+      try {
+        await aiService.initializeConfig()
+      } catch (error) {
+        console.error('Failed to initialize AI service:', error)
+      }
+    }
+    initializeAI()
   }, [])
 
   const sendMessage = async () => {
@@ -86,7 +101,18 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       type: 'text'
     }
 
-    setMessages(prev => [...(prev || []), userMessage])
+    try {
+      setMessages(prev => {
+        const currentMessages = prev || []
+        return [...currentMessages, userMessage]
+      })
+    } catch (error) {
+      const appError = handleKVError(error, 'add user message')
+      toast.error(appError.message)
+      setIsSending(false)
+      return
+    }
+
     const currentMessage = message.trim()
     setMessage('')
     setIsTyping(true)
@@ -134,7 +160,15 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
         }
       }
 
-      setMessages(prev => [...(prev || []), aiMessage])
+      try {
+        setMessages(prev => {
+          const currentMessages = prev || []
+          return [...currentMessages, aiMessage]
+        })
+      } catch (error) {
+        const appError = handleKVError(error, 'add AI message')
+        toast.error(appError.message)
+      }
     } catch (error) {
       console.error('AI response error:', error)
       
@@ -151,7 +185,16 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
         }
       }
       
-      setMessages(prev => [...(prev || []), fallbackMessage])
+      try {
+        setMessages(prev => {
+          const currentMessages = prev || []
+          return [...currentMessages, fallbackMessage]
+        })
+      } catch (kvError) {
+        const appError = handleKVError(kvError, 'add fallback message')
+        toast.error(appError.message)
+      }
+      
       toast.error('Failed to get AI response. Using fallback response.')
     } finally {
       setIsTyping(false)
@@ -193,7 +236,17 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
         type: 'image'
       }
 
-      setMessages(prev => [...(prev || []), imageMessage])
+      try {
+        setMessages(prev => {
+          const currentMessages = prev || []
+          return [...currentMessages, imageMessage]
+        })
+      } catch (error) {
+        const appError = handleKVError(error, 'add image message')
+        toast.error(appError.message)
+        return
+      }
+
       setIsTyping(true)
 
       // Validate file size (max 10MB)
@@ -220,7 +273,17 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
             disclaimer: 'Bill processing is automated. Please verify details before payment.'
           }
         }
-        setMessages(prev => [...(prev || []), billResponse])
+        
+        try {
+          setMessages(prev => {
+            const currentMessages = prev || []
+            return [...currentMessages, billResponse]
+          })
+        } catch (error) {
+          const appError = handleKVError(error, 'add bill response')
+          toast.error(appError.message)
+        }
+        
         setIsTyping(false)
       }, 2000)
     } catch (error) {
@@ -240,7 +303,16 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
           disclaimer: 'Error occurred during file processing.'
         }
       }
-      setMessages(prev => [...(prev || []), errorResponse])
+      
+      try {
+        setMessages(prev => {
+          const currentMessages = prev || []
+          return [...currentMessages, errorResponse]
+        })
+      } catch (kvError) {
+        const appError = handleKVError(kvError, 'add error message')
+        console.error(appError.message)
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import { useKV } from '@github/spark/hooks'
 import { useEffect } from 'react'
+import { handleAIError, handleNetworkError, validateAIConfig } from '../../utils/errorHandling'
 
 interface AIConfig {
   provider: 'azure' | 'openai' | 'ai-foundry' | 'custom'
@@ -162,7 +163,10 @@ ${messages.user}`
 
       if (!response.ok) {
         const errorText = await response.text()
-        throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+        throw handleNetworkError(
+          new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`),
+          apiUrl
+        )
       }
 
       const data = await response.json()
@@ -192,10 +196,13 @@ ${messages.user}`
     try {
       const storedConfig = await (window as any).spark.kv.get('ai-config') as AIConfig | undefined
       if (storedConfig) {
-        this.config = storedConfig
+        this.config = { ...defaultConfig, ...storedConfig }
+      } else {
+        this.config = defaultConfig
       }
     } catch (error) {
       console.warn('Failed to load AI config, using defaults:', error)
+      this.config = defaultConfig
     }
   }
 
@@ -457,8 +464,21 @@ Be specific and actionable. Provide 2-3 route options with pros/cons.`
   }
 
   async updateConfig(newConfig: Partial<AIConfig>) {
-    this.config = { ...this.config, ...newConfig }
-    await (window as any).spark.kv.set('ai-config', this.config)
+    const updatedConfig = { ...this.config, ...newConfig }
+    const validation = validateAIConfig(updatedConfig)
+    
+    if (!validation.isValid) {
+      const error = new Error(`Invalid AI configuration: ${validation.errors.join(', ')}`)
+      throw handleAIError(error, 'config validation')
+    }
+    
+    this.config = updatedConfig
+    
+    try {
+      await (window as any).spark.kv.set('ai-config', this.config)
+    } catch (error) {
+      throw handleAIError(error, 'save config')
+    }
   }
 }
 
@@ -472,7 +492,7 @@ export function useAIService() {
   // Update service config when KV changes (use useEffect to avoid infinite re-renders)
   useEffect(() => {
     if (config) {
-      aiService.updateConfig(config)
+      aiService.updateConfig(config).catch(console.error)
     }
   }, [config])
 

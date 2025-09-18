@@ -1,99 +1,202 @@
-# Sahaay - Privacy-First AI Messaging Platform PRD
+# Sahaay - Privacy-First AI Messaging Companion
 
-## Core Purpose & Success
-- **Mission Statement**: Provide a WhatsApp-like messaging experience enhanced with privacy-first AI capabilities tailored for the Indian market
-- **Success Indicators**: Seamless AI integration, robust privacy controls, working external AI provider connectivity, error-free user experience
-- **Experience Qualities**: Trustworthy, Intelligent, Contextually-aware
+## Overview
+Sahaay is a comprehensive WhatsApp-like messaging infrastructure enhanced with privacy-first AI capabilities for Indian users. It provides intelligent assistance while maintaining strict data privacy and user consent controls.
 
-## Project Classification & Approach
-- **Complexity Level**: Complex Application (advanced AI functionality, configurable providers, privacy controls)
-- **Primary User Activity**: Communicating with AI assistance, creating contextual conversations, managing privacy preferences
+## Key Features
 
-## Current Issues Identified & Solutions
+### 🔒 Privacy-First Design
+- **Local Data Storage**: All user data stored locally using Spark KV storage
+- **Consent-Based Processing**: Explicit consent required for all AI features
+- **DPDPB Compliance**: Aligned with India's Data Protection framework
+- **No External Data Sharing**: User data never leaves the device without explicit consent
 
-### Critical Bugs to Fix
-1. **AI Configuration Issues**
-   - Settings panel shows hardcoded provider status
-   - External AI providers not properly connecting
-   - Test connection functionality incomplete
-   - Need configurable model name, API key, and endpoint
+### 🤖 Advanced AI Capabilities
+- **Multi-Provider Support**: Azure OpenAI, OpenAI API, Microsoft AI Foundry, and custom endpoints
+- **Mood Detection**: Contextual response adaptation based on user sentiment
+- **Hyperlocal Intelligence**: Location-aware suggestions for Indian cities
+- **Group Intelligence**: Conversation summaries and group dynamics analysis
+- **Bill Processing**: Automated utility bill processing with UPI payment integration
 
-2. **UI/UX Improvements Needed**
-   - Better error handling and user feedback
-   - Improved responsive design
-   - Enhanced accessibility
-   - Missing loading states and visual feedback
+### 🌍 India-Focused Features
+- **Hyperlocal Context**: Route optimization, traffic insights, local services
+- **UPI Payment Integration**: Secure payment link generation for bills
+- **Cultural Adaptation**: India-specific communication patterns and cultural awareness
+- **Multi-Language Support**: Prepared for regional language integration
 
-3. **AI Service Functionality**
-   - Mood detection needs better fallbacks
-   - Hyperlocal intelligence requires more robust implementation
-   - Group intelligence features need proper conversation analysis
-   - Bill processing needs actual image analysis integration
+### 📱 Modern UI/UX
+- **WhatsApp-like Interface**: Familiar chat experience with enhanced features
+- **Responsive Design**: Optimized for mobile and desktop
+- **Accessibility**: WCAG compliance and screen reader support
+- **Dark/Light Theme**: System preference detection
 
-4. **Privacy & Security**
-   - Ensure API keys are properly secured
-   - Improve consent management interface
-   - Add data export/import functionality
-   - Better privacy transparency
+## Technical Architecture
 
-## Essential Features
+### Frontend Stack
+- **React 19**: Latest React with concurrent features
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling framework
+- **Shadcn/UI**: High-quality component library
+- **Framer Motion**: Smooth animations and transitions
 
-### Current Working Features
-- Basic chat interface with AI responses
-- Privacy consent management
-- Local data storage with KV
-- Settings panel with AI configuration
-- File upload handling
-- Message history persistence
+### Backend Integration
+- **Spark Platform**: GitHub Spark runtime for KV storage and AI access
+- **External AI APIs**: Support for multiple AI providers
+- **Error Handling**: Comprehensive error boundary and logging
+- **Performance Monitoring**: Built-in health checks and diagnostics
 
-### Features Requiring Fixes
-- **AI Provider Configuration**: Complete integration with Azure, OpenAI, AI Foundry, and custom endpoints
-- **Mood Detection**: Robust emotion analysis with proper fallbacks
-- **Hyperlocal Intelligence**: Context-aware responses for Indian locations
-- **Group Intelligence**: Conversation summarization and analysis
-- **Bill Processing**: Image-based bill extraction and payment links
-- **Route Optimization**: Traffic-aware navigation suggestions
+### Data Management
+- **KV Storage**: Persistent local storage with Spark KV
+- **Message History**: Efficient chat message storage and retrieval
+- **User Preferences**: Consent management and settings persistence
+- **Context Packs**: Personalized AI behavior configuration
 
-## Design Direction
+## Privacy & Compliance
 
-### Visual Tone & Identity
-- **Emotional Response**: Professional trust with approachable warmth
-- **Design Personality**: Clean, modern, privacy-focused
-- **Visual Metaphors**: Shield for privacy, Brain for AI intelligence
-- **Simplicity Spectrum**: Minimal interface with progressive disclosure
+### Data Protection
+- **Purpose Limitation**: Data used only for explicitly consented purposes
+- **Data Minimization**: Collect only necessary data for functionality
+- **User Rights**: Access, correction, and erasure capabilities
+- **Transparency**: Clear data usage disclaimers
 
-### Color Strategy
-- **Color Scheme Type**: Monochromatic with blue accent
-- **Primary Color**: Deep blue (oklch(0.45 0.15 240)) - trust and technology
-- **Secondary Colors**: Light grays for backgrounds
-- **Accent Color**: Orange (oklch(0.70 0.15 50)) - for CTAs and highlights
-- **Color Psychology**: Blue conveys trust and security, essential for privacy-focused app
-- **Accessibility**: WCAG AA compliant contrast ratios
+### Consent Management
+- **Granular Consent**: Individual feature consent controls
+- **Revocable Consent**: Easy opt-out from any feature
+- **Consent Audit**: Track and log all consent decisions
+- **Default Privacy**: Opt-in model for all advanced features
 
-### Typography System
-- **Font Pairing Strategy**: Inter for all text (clean, modern, Indian language support)
-- **Typographic Hierarchy**: Clear distinction between headings, body, and metadata
-- **Readability Focus**: 1.5x line height, optimal reading width
-- **Selected Font**: Inter (Google Fonts) for universal readability
+### Security Features
+- **Local Processing**: Sensitive data processed on-device
+- **Secure Communication**: HTTPS-only external communications
+- **API Key Protection**: Secure storage of user credentials
+- **Error Sanitization**: No sensitive data in error logs
 
-### UI Elements & Component Selection
-- **Component Usage**: Shadcn components for consistency and accessibility
-- **Primary Actions**: Blue background with white text
-- **Secondary Actions**: Outlined buttons with blue borders
-- **Interactive States**: Smooth transitions, hover effects, focus indicators
-- **Icon Selection**: Phosphor icons for consistent visual language
+## AI Provider Configuration
 
-## Edge Cases & Problem Scenarios
-- **AI Provider Failures**: Graceful fallbacks to local AI or hardcoded responses
-- **Network Connectivity Issues**: Offline mode with cached responses
-- **Invalid User Inputs**: Input validation and helpful error messages
-- **Large Conversation Histories**: Pagination and performance optimization
-- **Privacy Violations**: Clear warnings and consent mechanisms
+### Supported Providers
+1. **Microsoft AI Foundry** (Default)
+   - Built-in Spark AI for basic functionality
+   - Custom endpoints for advanced features
+   - Enterprise-grade security
 
-## Implementation Considerations
-- **Scalability**: Modular AI service architecture for easy provider switching
-- **Testing Focus**: AI integration testing, error handling validation
-- **Critical Questions**: How to maintain privacy while providing personalized AI responses?
+2. **Azure OpenAI**
+   - Enterprise security and compliance
+   - Custom deployment support
+   - API key and endpoint configuration
 
-## Reflection
-This approach balances advanced AI capabilities with strict privacy controls, creating a unique messaging experience tailored for Indian users while maintaining global privacy standards.
+3. **OpenAI API**
+   - Direct OpenAI API integration
+   - Latest model access
+   - Rate limiting awareness
+
+4. **Custom Endpoints**
+   - Self-hosted AI models
+   - Third-party compatible APIs
+   - Flexible configuration options
+
+### Configuration Options
+- **Model Selection**: Choose from available models
+- **Temperature Control**: Response creativity adjustment
+- **System Prompts**: Custom AI behavior instructions
+- **Feature Toggles**: Enable/disable specific AI capabilities
+
+## User Experience Features
+
+### Chat Interface
+- **Real-time Messaging**: Instant message delivery and AI responses
+- **File Upload**: Image processing for bill analysis
+- **Quick Actions**: Contextual action buttons
+- **Message History**: Persistent conversation storage
+
+### AI Assistance
+- **Route Planning**: Traffic-aware navigation suggestions
+- **Bill Processing**: Automated utility bill parsing
+- **Group Summaries**: Conversation insights and highlights
+- **Context Awareness**: Location and mood-based responses
+
+### Settings & Controls
+- **Privacy Settings**: Granular consent management
+- **AI Configuration**: Provider and model selection
+- **Data Management**: Export and clear data options
+- **Debug Tools**: Health checks and performance monitoring
+
+## Development Features
+
+### Quality Assurance
+- **Health Check System**: Comprehensive system diagnostics
+- **Error Handling**: Graceful degradation and error recovery
+- **UI Testing**: Automated functionality verification
+- **Performance Monitoring**: Memory usage and optimization
+
+### Debug & Diagnostics
+- **Health Checker**: KV storage, AI service, and network testing
+- **UI Tester**: Component functionality and accessibility checks
+- **Error Logging**: Comprehensive error tracking and reporting
+- **Performance Metrics**: Memory usage and optimization suggestions
+
+### Accessibility
+- **Keyboard Navigation**: Full keyboard accessibility
+- **Screen Reader Support**: ARIA labels and descriptions
+- **Color Contrast**: WCAG AA compliance
+- **Focus Management**: Logical tab order and focus indicators
+
+## Getting Started
+
+### Prerequisites
+- Modern web browser with ES2020 support
+- Internet connection for AI provider APIs (optional for basic features)
+- GitHub Spark runtime environment
+
+### Initial Setup
+1. **Privacy Consent**: Complete initial privacy setup
+2. **AI Configuration**: Configure AI provider (optional)
+3. **Create Chat**: Start conversation with Sahaay assistant
+4. **Explore Features**: Try route planning, bill processing, etc.
+
+### Basic Usage
+1. **Send Messages**: Type and send messages to AI assistant
+2. **Upload Bills**: Drag and drop utility bills for processing
+3. **Get Routes**: Ask for travel suggestions and traffic updates
+4. **Group Features**: Use @Sahaay mentions for group summaries
+
+## Privacy Notice
+
+Sahaay is designed with privacy as the foundation:
+
+- **Local Processing**: All data processing happens on your device
+- **Consent Required**: You control what data is processed and how
+- **No Tracking**: No user behavior tracking or analytics
+- **Transparent AI**: Clear disclaimers for all AI-generated content
+- **Data Ownership**: You own and control all your data
+
+## Support & Feedback
+
+For support, feedback, or feature requests:
+- Use the built-in debug tools for troubleshooting
+- Check AI configuration for connectivity issues
+- Review privacy settings for feature availability
+- Export data for backup purposes
+
+## Technical Specifications
+
+### Performance
+- **Memory Efficient**: Optimized for long-running sessions
+- **Offline Capable**: Core features work without internet
+- **Responsive**: < 100ms UI response times
+- **Scalable**: Handles 1000+ messages efficiently
+
+### Compatibility
+- **Modern Browsers**: Chrome 90+, Firefox 88+, Safari 14+
+- **Mobile Devices**: iOS 14+, Android 10+
+- **Screen Sizes**: 320px to 4K displays
+- **Input Methods**: Touch, mouse, keyboard
+
+### API Limits
+- **Message History**: 50 chats, 10,000 messages max
+- **File Uploads**: 10MB per image
+- **AI Requests**: Rate limited by provider
+- **KV Storage**: Platform-specific limits apply
+
+---
+
+*Sahaay - Your Privacy-First AI Companion for India*

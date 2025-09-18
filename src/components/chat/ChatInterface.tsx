@@ -62,9 +62,12 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
     setIsTyping(true)
 
     try {
+      // Initialize AI service and ensure it's configured
+      await aiService.initializeConfig()
+
       // Use the enhanced AI service for generating responses
       const [moodAnalysis, locationContext] = await Promise.all([
-        aiService.detectMood(userMessage.content),
+        userConsents.moodDetection ? aiService.detectMood(userMessage.content) : Promise.resolve({ mood: 'neutral' as const, confidence: 0, suggestions: [] }),
         userConsents.locationServices ? aiService.getHyperlocalContext('Bangalore', userMessage.content) : Promise.resolve({ area: '', suggestions: [] })
       ])
 
@@ -102,11 +105,26 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       }
 
       setMessages(prev => [...(prev || []), aiMessage])
-      setIsTyping(false)
     } catch (error) {
-      setIsTyping(false)
-      toast.error('Failed to get AI response. Check your AI configuration in settings.')
       console.error('AI response error:', error)
+      
+      // Provide a fallback response
+      const fallbackMessage: Message = {
+        id: `msg-${Date.now() + 1}`,
+        content: "I'm sorry, I'm having trouble processing your request right now. This could be due to AI configuration issues. Please check your AI settings or try again later.\n\nHere are some things you can do:\n• Check AI configuration in Settings\n• Verify your internet connection\n• Try a simpler question",
+        sender: 'ai',
+        timestamp: new Date().toISOString(),
+        type: 'text',
+        metadata: {
+          confidence: 0,
+          disclaimer: 'This is a fallback response due to AI service unavailability.'
+        }
+      }
+      
+      setMessages(prev => [...(prev || []), fallbackMessage])
+      toast.error('Failed to get AI response. Using fallback response.')
+    } finally {
+      setIsTyping(false)
     }
   }
 
@@ -131,34 +149,64 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
   }
 
   const processImageUpload = async (file: File) => {
-    const imageMessage: Message = {
-      id: `msg-${Date.now()}`,
-      content: `📷 Image uploaded: ${file.name}`,
-      sender: 'user',
-      timestamp: new Date().toISOString(),
-      type: 'image'
-    }
+    try {
+      const imageMessage: Message = {
+        id: `msg-${Date.now()}`,
+        content: `📷 Image uploaded: ${file.name}`,
+        sender: 'user',
+        timestamp: new Date().toISOString(),
+        type: 'image'
+      }
 
-    setMessages(prev => [...(prev || []), imageMessage])
-    setIsTyping(true)
+      setMessages(prev => [...(prev || []), imageMessage])
+      setIsTyping(true)
 
-    // Simulate bill processing
-    setTimeout(() => {
-      const billResponse: Message = {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('File size too large. Please select an image under 10MB.')
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Invalid file type. Please select an image file.')
+      }
+
+      // Simulate bill processing
+      setTimeout(() => {
+        const billResponse: Message = {
+          id: `msg-${Date.now() + 1}`,
+          content: "I can see this is a BESCOM electricity bill. Here's what I found:\n\n💡 **Bill Amount**: ₹734\n📅 **Due Date**: 22 Sep 2024\n🏠 **Service Connection**: 1234567890\n\nWould you like me to create a UPI payment link or set a reminder?",
+          sender: 'ai',
+          timestamp: new Date().toISOString(),
+          type: 'text',
+          metadata: {
+            confidence: 0.95,
+            actionItems: ['Create UPI Payment Link', 'Set Reminder', 'View Bill Details'],
+            disclaimer: 'Bill processing is automated. Please verify details before payment.'
+          }
+        }
+        setMessages(prev => [...(prev || []), billResponse])
+        setIsTyping(false)
+      }, 2000)
+    } catch (error) {
+      setIsTyping(false)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      toast.error(errorMessage)
+      
+      // Add error message to chat
+      const errorResponse: Message = {
         id: `msg-${Date.now() + 1}`,
-        content: "I can see this is a BESCOM electricity bill. Here's what I found:\n\n💡 **Bill Amount**: ₹734\n📅 **Due Date**: 22 Sep 2024\n🏠 **Service Connection**: 1234567890\n\nWould you like me to create a UPI payment link or set a reminder?",
+        content: `❌ Error processing image: ${errorMessage}`,
         sender: 'ai',
         timestamp: new Date().toISOString(),
         type: 'text',
         metadata: {
-          confidence: 0.95,
-          actionItems: ['Create UPI Payment Link', 'Set Reminder', 'View Bill Details'],
-          disclaimer: 'Bill processing is automated. Please verify details before payment.'
+          confidence: 0,
+          disclaimer: 'Error occurred during file processing.'
         }
       }
-      setMessages(prev => [...(prev || []), billResponse])
-      setIsTyping(false)
-    }, 2000)
+      setMessages(prev => [...(prev || []), errorResponse])
+    }
   }
 
   return (

@@ -56,7 +56,7 @@ export function AIConfigDialog() {
   }
 
   const testConnection = async () => {
-    if (!currentConfig.endpoint && !currentConfig.apiKey) {
+    if (currentConfig.provider !== 'ai-foundry' && (!currentConfig.endpoint || !currentConfig.apiKey)) {
       toast.error('Please provide endpoint and API key first')
       return
     }
@@ -65,17 +65,91 @@ export function AIConfigDialog() {
     setConnectionStatus('idle')
 
     try {
-      // Test the AI connection with a simple prompt using the Spark API
-      const testPrompt = (window as any).spark.llmPrompt`Test connection - respond with "Connected successfully"`
-      
-      // Use the configured model if available, otherwise default to gpt-4o
-      const response = await (window as any).spark.llm(testPrompt, currentConfig.model || 'gpt-4o')
-      
-      if (response && response.trim()) {
-        setConnectionStatus('success')
-        toast.success('AI provider connected successfully!')
+      if (currentConfig.provider === 'ai-foundry') {
+        // Test using Spark's built-in AI
+        const testPrompt = (window as any).spark.llmPrompt`Test connection - respond with "Connected successfully"`
+        const response = await (window as any).spark.llm(testPrompt, currentConfig.model || 'gpt-4o')
+        
+        if (response && response.trim()) {
+          setConnectionStatus('success')
+          toast.success('AI provider connected successfully!')
+        } else {
+          throw new Error('Empty response received')
+        }
       } else {
-        throw new Error('Empty response received')
+        // Test external AI provider by making a simple API call
+        let apiUrl = currentConfig.endpoint
+        let headers: Record<string, string> = {
+          'Content-Type': 'application/json'
+        }
+        
+        let requestBody: any
+
+        // Configure request based on provider
+        switch (currentConfig.provider) {
+          case 'azure':
+            apiUrl = `${currentConfig.endpoint}/openai/deployments/${currentConfig.model}/chat/completions?api-version=2024-08-01-preview`
+            headers['api-key'] = currentConfig.apiKey
+            requestBody = {
+              messages: [{ role: 'user', content: 'Test connection' }],
+              max_tokens: 10
+            }
+            break
+
+          case 'openai':
+            apiUrl = `${currentConfig.endpoint}/v1/chat/completions`
+            headers['Authorization'] = `Bearer ${currentConfig.apiKey}`
+            requestBody = {
+              model: currentConfig.model,
+              messages: [{ role: 'user', content: 'Test connection' }],
+              max_tokens: 10
+            }
+            break
+
+          case 'custom':
+            apiUrl = currentConfig.endpoint
+            headers['Authorization'] = `Bearer ${currentConfig.apiKey}`
+            requestBody = {
+              model: currentConfig.model,
+              messages: [{ role: 'user', content: 'Test connection' }],
+              max_tokens: 10
+            }
+            break
+
+          default:
+            // For ai-foundry with custom endpoint
+            if (currentConfig.endpoint && currentConfig.apiKey) {
+              apiUrl = `${currentConfig.endpoint}/chat/completions`
+              headers['Authorization'] = `Bearer ${currentConfig.apiKey}`
+              requestBody = {
+                model: currentConfig.model,
+                messages: [{ role: 'user', content: 'Test connection' }],
+                max_tokens: 10
+              }
+            } else {
+              throw new Error(`Unsupported AI provider: ${currentConfig.provider}`)
+            }
+        }
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody)
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+        }
+
+        const data = await response.json()
+        
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+          setConnectionStatus('success')
+          toast.success('External AI provider connected successfully!')
+        } else {
+          throw new Error('Invalid response format from AI provider')
+        }
       }
     } catch (error: any) {
       setConnectionStatus('error')

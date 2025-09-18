@@ -1,14 +1,17 @@
 import { useState } from 'react'
-import { ChatCircle, Gear, ShieldCheck, Robot, Users, Plus } from '@phosphor-icons/react'
+import { ChatCircle, Gear, ShieldCheck, Robot, Users, Plus, TestTube } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { useKV } from '@github/spark/hooks'
+import { toast } from 'sonner'
 import { ChatInterface } from './chat/ChatInterface'
 import { PrivacySettings } from './privacy/PrivacySettings'
 import { AICompanion } from './ai/AICompanion'
 import { GroupManagement } from './groups/GroupManagement'
+import { DebugPanel } from './Debug/DebugPanel'
+import { SettingsPanel } from './settings/SettingsPanel'
 
 export function MessagingApp() {
   const [activeTab, setActiveTab] = useState('chats')
@@ -38,7 +41,7 @@ export function MessagingApp() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
+          <TabsList className="grid w-full grid-cols-5 mx-4 mt-4">
             <TabsTrigger value="chats" className="flex items-center gap-1">
               <ChatCircle className="w-4 h-4" />
               <span className="hidden sm:inline">Chats</span>
@@ -50,6 +53,10 @@ export function MessagingApp() {
             <TabsTrigger value="ai" className="flex items-center gap-1">
               <Robot className="w-4 h-4" />
               <span className="hidden sm:inline">AI</span>
+            </TabsTrigger>
+            <TabsTrigger value="debug" className="flex items-center gap-1">
+              <TestTube className="w-4 h-4" />
+              <span className="hidden sm:inline">Debug</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-1">
               <Gear className="w-4 h-4" />
@@ -71,11 +78,13 @@ export function MessagingApp() {
             <TabsContent value="ai" className="h-full m-0">
               <AICompanion userConsents={userConsents || {}} />
             </TabsContent>
+            <TabsContent value="debug" className="h-full m-0">
+              <DebugPanel />
+            </TabsContent>
             <TabsContent value="settings" className="h-full m-0">
-              <PrivacySettings 
-                initialConsents={userConsents || {}}
-                onComplete={setUserConsents}
-                isUpdate={true}
+              <SettingsPanel 
+                userConsents={userConsents || {}}
+                onConsentUpdate={setUserConsents}
               />
             </TabsContent>
           </div>
@@ -125,18 +134,30 @@ interface ChatListProps {
 function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
   const [chats, setChats] = useKV<Chat[]>('user-chats', [])
 
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: `chat-${Date.now()}`,
-      name: 'Sahaay Assistant',
-      type: 'ai',
-      lastMessage: 'Ready to help with your queries',
-      timestamp: new Date().toISOString(),
-      unread: 0,
-      isAI: true
+  const createNewChat = async () => {
+    try {
+      const newChat: Chat = {
+        id: `chat-${Date.now()}`,
+        name: 'Sahaay Assistant',
+        type: 'ai',
+        lastMessage: 'Ready to help with your queries',
+        timestamp: new Date().toISOString(),
+        unread: 0,
+        isAI: true
+      }
+      
+      setChats(prev => {
+        const currentChats = prev || []
+        // Limit to maximum 50 chats to prevent memory issues
+        const newChats = [newChat, ...currentChats]
+        return newChats.slice(0, 50)
+      })
+      
+      onChatSelect(newChat.id)
+    } catch (error) {
+      console.error('Error creating new chat:', error)
+      toast.error('Failed to create new chat. Please try again.')
     }
-    setChats(prev => [newChat, ...(prev || [])])
-    onChatSelect(newChat.id)
   }
 
   const chatList = chats || []

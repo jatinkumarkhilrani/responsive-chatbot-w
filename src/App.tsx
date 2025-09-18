@@ -1,7 +1,12 @@
 import { MessagingApp } from './components/MessagingApp'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 function App() {
-    return <MessagingApp />
+    return (
+        <ErrorBoundary>
+            <MessagingApp />
+        </ErrorBoundary>
+    )
 }
 
 export default App

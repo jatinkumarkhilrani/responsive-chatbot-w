@@ -60,6 +60,124 @@ export class EnhancedAIService {
     this.config = defaultConfig
   }
 
+  public async callExternalAI(messages: { system: string; user: string }, expectJSON: boolean = false): Promise<any> {
+    if (!this.config.endpoint || !this.config.apiKey) {
+      throw new Error('AI provider not configured. Please set endpoint and API key in settings.')
+    }
+
+    try {
+      let apiUrl = this.config.endpoint
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      }
+      
+      let requestBody: any
+
+      // Configure request based on provider
+      switch (this.config.provider) {
+        case 'azure':
+          // Azure OpenAI format
+          apiUrl = `${this.config.endpoint}/openai/deployments/${this.config.model}/chat/completions?api-version=2024-08-01-preview`
+          headers['api-key'] = this.config.apiKey
+          requestBody = {
+            messages: [
+              { role: 'system', content: messages.system },
+              { role: 'user', content: messages.user }
+            ],
+            temperature: this.config.temperature,
+            max_tokens: 1000
+          }
+          if (expectJSON) {
+            requestBody.response_format = { type: 'json_object' }
+          }
+          break
+
+        case 'openai':
+          // OpenAI API format
+          apiUrl = `${this.config.endpoint}/v1/chat/completions`
+          headers['Authorization'] = `Bearer ${this.config.apiKey}`
+          requestBody = {
+            model: this.config.model,
+            messages: [
+              { role: 'system', content: messages.system },
+              { role: 'user', content: messages.user }
+            ],
+            temperature: this.config.temperature,
+            max_tokens: 1000
+          }
+          if (expectJSON) {
+            requestBody.response_format = { type: 'json_object' }
+          }
+          break
+
+        case 'ai-foundry':
+          // Microsoft AI Foundry format
+          apiUrl = `${this.config.endpoint}/chat/completions`
+          headers['Authorization'] = `Bearer ${this.config.apiKey}`
+          requestBody = {
+            model: this.config.model,
+            messages: [
+              { role: 'system', content: messages.system },
+              { role: 'user', content: messages.user }
+            ],
+            temperature: this.config.temperature,
+            max_tokens: 1000
+          }
+          break
+
+        case 'custom':
+          // Custom endpoint - assume OpenAI-compatible format
+          apiUrl = this.config.endpoint
+          headers['Authorization'] = `Bearer ${this.config.apiKey}`
+          requestBody = {
+            model: this.config.model,
+            messages: [
+              { role: 'system', content: messages.system },
+              { role: 'user', content: messages.user }
+            ],
+            temperature: this.config.temperature,
+            max_tokens: 1000
+          }
+          break
+
+        default:
+          throw new Error(`Unsupported AI provider: ${this.config.provider}`)
+      }
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
+      }
+
+      const data = await response.json()
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from AI provider')
+      }
+
+      const content = data.choices[0].message.content
+
+      if (expectJSON) {
+        try {
+          return JSON.parse(content)
+        } catch (e) {
+          throw new Error('AI provider returned invalid JSON')
+        }
+      }
+
+      return content
+    } catch (error) {
+      console.error('External AI API call failed:', error)
+      throw error
+    }
+  }
+
   async initializeConfig() {
     try {
       const storedConfig = await (window as any).spark.kv.get('ai-config') as AIConfig | undefined
@@ -77,6 +195,15 @@ export class EnhancedAIService {
     }
 
     try {
+      // If using custom AI provider, use external API
+      if (this.config.provider !== 'ai-foundry' && this.config.endpoint && this.config.apiKey) {
+        return await this.callExternalAI({
+          system: 'You are a mood detection system. Analyze the mood and return JSON with mood (happy/sad/angry/stressed/neutral/excited/worried), confidence (0-1), and suggestions array.',
+          user: `Analyze mood: "${message}"`
+        }, true) as MoodAnalysis
+      }
+
+      // Use Spark's built-in AI
       const prompt = (window as any).spark.llmPrompt`Analyze the mood and emotion in this message: "${message}"
 
 Return a JSON response with:
@@ -106,24 +233,36 @@ Consider Indian communication patterns and cultural context.`
     }
 
     try {
-      const prompt = (window as any).spark.llmPrompt`Provide hyperlocal context for ${location} in India regarding: ${query || 'general assistance'}
+      const systemPrompt = 'You are a hyperlocal assistant for India. Return JSON with area, suggestions array, trafficInfo, and localServices array.'
+      const userPrompt = `Provide hyperlocal context for ${location} in India regarding: ${query || 'general assistance'}
 
-Return JSON with:
-- area: location description
-- suggestions: array of 3-4 relevant local suggestions
-- trafficInfo: current traffic context (if relevant)
-- localServices: array of relevant local services/places
+Consider:
+- Indian traffic patterns and peak hours
+- Public transport options (metro, bus, auto)
+- Local services and amenities
+- Cultural aspects and regional preferences
 
 Focus on Indian context: metros, local transport, services, cultural aspects.`
 
-      const response = await (window as any).spark.llm(prompt, this.config.model, true)
-      const context = JSON.parse(response)
+      let response
+      if (this.config.provider !== 'ai-foundry' && this.config.endpoint && this.config.apiKey) {
+        response = await this.callExternalAI({
+          system: systemPrompt,
+          user: userPrompt
+        }, true)
+      } else {
+        const prompt = (window as any).spark.llmPrompt`${systemPrompt}
+
+${userPrompt}`
+        const apiResponse = await (window as any).spark.llm(prompt, this.config.model, true)
+        response = JSON.parse(apiResponse)
+      }
       
       return {
-        area: context.area || location,
-        suggestions: context.suggestions || [],
-        trafficInfo: context.trafficInfo,
-        localServices: context.localServices || []
+        area: response.area || location,
+        suggestions: response.suggestions || [],
+        trafficInfo: response.trafficInfo,
+        localServices: response.localServices || []
       }
     } catch (error) {
       console.error('Hyperlocal context failed:', error)
@@ -142,7 +281,8 @@ Focus on Indian context: metros, local transport, services, cultural aspects.`
         `${m.sender}: ${m.content} (${m.timestamp.toLocaleTimeString()})`
       ).join('\n')
 
-      const prompt = (window as any).spark.llmPrompt`You are Sahaay, analyzing this group conversation to respond to: "${request}"
+      const systemPrompt = 'You are Sahaay, a privacy-first AI assistant analyzing group conversations. Be helpful, concise, and respect privacy. Provide actionable responses with appropriate disclaimers.'
+      const userMessage = `Analyze this group conversation to respond to: "${request}"
 
 Recent messages:
 ${messageContext}
@@ -156,7 +296,19 @@ Provide a helpful response that:
 
 Be concise and actionable.`
 
-      const response = await (window as any).spark.llm(prompt, this.config.model)
+      let response
+      if (this.config.provider !== 'ai-foundry' && this.config.endpoint && this.config.apiKey) {
+        response = await this.callExternalAI({
+          system: systemPrompt,
+          user: userMessage
+        })
+      } else {
+        const prompt = (window as any).spark.llmPrompt`${systemPrompt}
+
+${userMessage}`
+        response = await (window as any).spark.llm(prompt, this.config.model)
+      }
+
       return response
     } catch (error) {
       console.error('Group intelligence failed:', error)
@@ -195,13 +347,21 @@ Be concise and actionable.`
         return await this.processGroupIntelligence(context.messageHistory, context.specificRequest || message)
       }
 
-      const prompt = (window as any).spark.llmPrompt`${contextualPrompt}
+      const userMessage = `User message: "${message}"\n\nRespond as Sahaay, being helpful while respecting privacy and Indian cultural context.`
 
-User message: "${message}"
+      let response
+      if (this.config.provider !== 'ai-foundry' && this.config.endpoint && this.config.apiKey) {
+        response = await this.callExternalAI({
+          system: contextualPrompt,
+          user: userMessage
+        })
+      } else {
+        const prompt = (window as any).spark.llmPrompt`${contextualPrompt}
 
-Respond as Sahaay, being helpful while respecting privacy and Indian cultural context.`
+${userMessage}`
+        response = await (window as any).spark.llm(prompt, this.config.model)
+      }
 
-      const response = await (window as any).spark.llm(prompt, this.config.model)
       return response
     } catch (error) {
       console.error('AI response generation failed:', error)

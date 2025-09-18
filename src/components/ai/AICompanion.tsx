@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { AIConfigDialog } from './AIConfigDialog'
 
 interface AICompanionProps {
   userConsents: Record<string, boolean>
@@ -83,16 +84,19 @@ export function AICompanion({ userConsents }: AICompanionProps) {
     <div className="h-full overflow-y-auto p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-            <Robot className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+              <Robot className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">AI Companion</h1>
+              <p className="text-muted-foreground">
+                Manage your privacy-first AI assistant and learning preferences
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">AI Companion</h1>
-            <p className="text-muted-foreground">
-              Manage your privacy-first AI assistant and learning preferences
-            </p>
-          </div>
+          <AIConfigDialog />
         </div>
 
         <Tabs defaultValue="overview" className="space-y-4">

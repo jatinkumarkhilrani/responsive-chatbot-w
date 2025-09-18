@@ -20,11 +20,18 @@ Privacy-first messaging infrastructure with hyperlocal AI assistance, designed f
 - **Success criteria**: Messages deliver instantly, encryption status visible, offline sync works
 
 ### AI Companion (Sahaay)
-- **Functionality**: Context-aware AI assistant with mood detection, route optimization, bill processing, group summarization
-- **Purpose**: Provide intelligent assistance without compromising user privacy
+- **Functionality**: Context-aware AI assistant with mood detection, route optimization, bill processing, group summarization, configurable AI provider integration
+- **Purpose**: Provide intelligent assistance without compromising user privacy, with enterprise-grade AI customization
 - **Trigger**: @mention in groups, direct message to bot, specific keywords, or user request
-- **Progression**: User mentions @Sahaay → AI analyzes context → provides relevant response → offers follow-up actions
-- **Success criteria**: Responses are contextual, respectful, and actionable with clear disclaimers
+- **Progression**: User mentions @Sahaay → AI analyzes context & mood → provides relevant response → offers follow-up actions
+- **Success criteria**: Responses are contextual, respectful, and actionable with clear disclaimers, AI provider seamlessly configurable
+
+### AI Configuration & Settings
+- **Functionality**: Connect to AI Foundry, Azure OpenAI, custom GPT endpoints with prompt customization and mood detection controls
+- **Purpose**: Allow organizations to use their own AI infrastructure while maintaining privacy and customization
+- **Trigger**: Settings access, first-time setup, or AI provider changes
+- **Progression**: Settings → AI Configuration → Select provider → Enter credentials → Test connection → Configure prompts → Enable features
+- **Success criteria**: Seamless AI provider switching, secure credential storage, custom prompt validation
 
 ### User Profile & Consent Management
 - **Functionality**: Granular privacy controls, language preferences, context packs, consent tracking
@@ -61,6 +68,9 @@ Privacy-first messaging infrastructure with hyperlocal AI assistance, designed f
 - **Regional Variations**: Multi-language support with cultural context awareness
 - **Emergency Situations**: Priority routing for safety alerts with appropriate escalation
 - **Data Corruption**: Automatic backup verification and recovery protocols
+- **AI Provider Failures**: Graceful fallback to basic responses when custom AI is unavailable
+- **Configuration Errors**: Clear validation and helpful error messages for AI setup
+- **Model Compatibility**: Automatic detection and adaptation to different AI model capabilities
 
 ## Design Direction
 The design should feel trustworthy and transparent - like a reliable neighborhood friend who respects boundaries. Modern Indian aesthetic with warm, approachable colors that convey security and intelligence without being overwhelming. Clean, minimal interface that works well on diverse device capabilities and network conditions.

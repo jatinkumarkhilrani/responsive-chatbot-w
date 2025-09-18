@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { useAIService } from '../ai/EnhancedAIService'
 
 interface Message {
   id: string
@@ -34,10 +35,16 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
   const [messages, setMessages] = useKV<Message[]>(`chat-messages-${chatId}`, [])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const aiService = useAIService()
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    // Initialize AI service with current config
+    aiService.initializeConfig()
+  }, [])
 
   const sendMessage = async () => {
     if (!message.trim()) return
@@ -55,14 +62,43 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
     setIsTyping(true)
 
     try {
-      const aiResponse = await generateAIResponse(userMessage.content, userConsents)
+      // Use the enhanced AI service for generating responses
+      const [moodAnalysis, locationContext] = await Promise.all([
+        aiService.detectMood(userMessage.content),
+        userConsents.locationServices ? aiService.getHyperlocalContext('Bangalore', userMessage.content) : Promise.resolve({ area: '', suggestions: [] })
+      ])
+
+      // Convert messages to AI service format
+      const aiServiceMessages = (messages || []).map(msg => ({
+        id: msg.id,
+        content: msg.content,
+        sender: msg.sender === 'user' ? 'user' : 'ai',
+        timestamp: new Date(msg.timestamp),
+        type: msg.type,
+        metadata: msg.metadata
+      }))
+
+      const aiResponseContent = await aiService.generateResponse(
+        userMessage.content,
+        {
+          mood: moodAnalysis,
+          location: locationContext,
+          messageHistory: aiServiceMessages as any,
+          isGroupMention: userMessage.content.toLowerCase().includes('@sahaay'),
+          specificRequest: userMessage.content
+        }
+      )
+
       const aiMessage: Message = {
         id: `msg-${Date.now() + 1}`,
-        content: aiResponse.content,
+        content: aiResponseContent,
         sender: 'ai',
         timestamp: new Date().toISOString(),
         type: 'text',
-        metadata: aiResponse.metadata
+        metadata: {
+          confidence: moodAnalysis.confidence,
+          disclaimer: 'AI-generated response. Verify important information independently.'
+        }
       }
 
       setTimeout(() => {
@@ -71,7 +107,8 @@ export function ChatInterface({ chatId, userConsents, onBack }: ChatInterfacePro
       }, 1000)
     } catch (error) {
       setIsTyping(false)
-      toast.error('Failed to get AI response')
+      toast.error('Failed to get AI response. Check your AI configuration in settings.')
+      console.error('AI response error:', error)
     }
   }
 

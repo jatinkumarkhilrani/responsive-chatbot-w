@@ -13,7 +13,7 @@
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
-        "build:github": "tsc -b --noCheck && vite build --mode production",
+        "build:github": "GITHUB_PAGES=true tsc -b --noCheck && vite build --base=/sahaay-ai-messaging/",
         "lint": "eslint .",
         "optimize": "vite optimize",
         "preview": "vite preview",

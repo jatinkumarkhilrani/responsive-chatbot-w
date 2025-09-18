@@ -123,41 +123,41 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-full lg:max-w-4xl mx-auto p-4 md:p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="max-w-full lg:max-w-4xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary flex items-center justify-center">
-                <Gear className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-primary flex items-center justify-center">
+                <Gear className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-primary-foreground" />
               </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold">Settings</h1>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Settings</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Manage your privacy, AI configuration, and app preferences
                 </p>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="ai" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-              <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 py-2">
+          <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
+              <TabsTrigger value="ai" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
                 AI Config
               </TabsTrigger>
-              <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 py-2">
+              <TabsTrigger value="privacy" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
                 Privacy
               </TabsTrigger>
-              <TabsTrigger value="data" className="text-xs sm:text-sm px-2 py-2">
+              <TabsTrigger value="data" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
                 Data
               </TabsTrigger>
-              <TabsTrigger value="about" className="text-xs sm:text-sm px-2 py-2">
+              <TabsTrigger value="about" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
                 About
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="ai" className="space-y-4">
+            <TabsContent value="ai" className="space-y-3 sm:space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
                     <Robot className="w-4 h-4 sm:w-5 sm:h-5" />
                     AI Provider Configuration
                   </CardTitle>
@@ -165,25 +165,25 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     Configure your AI provider for enhanced functionality and customization
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col gap-3 p-3 border rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-3 h-3 rounded-full mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <h3 className="font-medium text-sm sm:text-base">Current Provider</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground break-words">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
+                      <Badge variant={providerStatus.color as any} className="text-xs shrink-0">
+                        {providerStatus.status}
+                      </Badge>
                     </div>
-                    <Badge variant={providerStatus.color as any} className="text-xs">
-                      {providerStatus.status}
-                    </Badge>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col gap-2">
                     <AIConfigDialog />
                     <TestConfigButton aiConfig={aiConfig} />
                   </div>
@@ -199,27 +199,27 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">AI Features Status</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">AI Features Status</CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
                     Current status of AI-powered features based on your configuration
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="text-center p-3 border rounded-lg">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
                       <div className="text-sm sm:text-lg font-bold">
                         {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                       </div>
                       <div className="text-xs text-muted-foreground">Mood Detection</div>
                     </div>
-                    <div className="text-center p-3 border rounded-lg">
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
                       <div className="text-sm sm:text-lg font-bold">
                         {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                       </div>
                       <div className="text-xs text-muted-foreground">Hyperlocal AI</div>
                     </div>
-                    <div className="text-center p-3 border rounded-lg">
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
                       <div className="text-sm sm:text-lg font-bold">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
@@ -238,30 +238,30 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               />
             </TabsContent>
 
-            <TabsContent value="data" className="space-y-4">
+            <TabsContent value="data" className="space-y-3 sm:space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">Data Overview</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">Data Overview</CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
                     Current data stored in your Sahaay app
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-lg sm:text-2xl font-bold">{(chats || []).length}</div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
+                      <div className="text-base sm:text-lg md:text-2xl font-bold">{(chats || []).length}</div>
                       <div className="text-xs text-muted-foreground">Conversations</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-lg sm:text-2xl font-bold">{(groups || []).length}</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
+                      <div className="text-base sm:text-lg md:text-2xl font-bold">{(groups || []).length}</div>
                       <div className="text-xs text-muted-foreground">Groups</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-lg sm:text-2xl font-bold">{(contextPacks || []).length}</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
+                      <div className="text-base sm:text-lg md:text-2xl font-bold">{(contextPacks || []).length}</div>
                       <div className="text-xs text-muted-foreground">Context Packs</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-lg sm:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg">
+                      <div className="text-base sm:text-lg md:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
                       <div className="text-xs text-muted-foreground">Privacy Settings</div>
                     </div>
                   </div>
@@ -269,19 +269,19 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">Data Management</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">Data Management</CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
                     Export or clear your data
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button onClick={exportUserData} disabled={isExporting} className="gap-2 text-sm">
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <Button onClick={exportUserData} disabled={isExporting} className="w-full gap-2 text-sm">
                       <Download className="w-4 h-4" />
                       {isExporting ? 'Exporting...' : 'Export All Data'}
                     </Button>
-                    <Button variant="outline" className="gap-2 text-sm" disabled>
+                    <Button variant="outline" className="w-full gap-2 text-sm" disabled>
                       <Upload className="w-4 h-4" />
                       Import Data (Coming Soon)
                     </Button>
@@ -295,9 +295,9 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     </AlertDescription>
                   </Alert>
 
-                  <div className="pt-4 border-t">
+                  <div className="pt-3 sm:pt-4 border-t">
                     <h4 className="font-medium text-destructive mb-2 text-sm sm:text-base">Danger Zone</h4>
-                    <Button variant="destructive" onClick={clearAllData} className="gap-2 text-sm">
+                    <Button variant="destructive" onClick={clearAllData} className="w-full gap-2 text-sm">
                       <Trash className="w-4 h-4" />
                       Clear All Data
                     </Button>
@@ -309,21 +309,21 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
             </TabsContent>
 
-            <TabsContent value="about" className="space-y-4">
+            <TabsContent value="about" className="space-y-3 sm:space-y-4">
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base sm:text-lg">About Sahaay</CardTitle>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">About Sahaay</CardTitle>
                   <CardDescription className="text-xs sm:text-sm">
                     Privacy-first AI messaging companion for India
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="p-2 sm:p-3 border rounded-lg">
                       <h4 className="font-medium text-sm">Version</h4>
                       <p className="text-xs text-muted-foreground">1.0.0 Beta</p>
                     </div>
-                    <div>
+                    <div className="p-2 sm:p-3 border rounded-lg">
                       <h4 className="font-medium text-sm">Build</h4>
                       <p className="text-xs text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
                     </div>

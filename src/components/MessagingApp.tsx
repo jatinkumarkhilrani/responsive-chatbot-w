@@ -38,36 +38,36 @@ export function MessagingApp() {
         activeChatId ? 'hidden sm:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
         <div className="p-3 sm:p-4 border-b border-border">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-primary flex items-center justify-center">
               <ShieldCheck className="w-3 h-3 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
-            <div>
-              <h1 className="font-bold text-base sm:text-lg">Sahaay</h1>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-bold text-sm sm:text-base md:text-lg">Sahaay</h1>
               <p className="text-xs text-muted-foreground">Privacy-first messaging</p>
             </div>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-5 mx-2 sm:mx-4 mt-2 sm:mt-4 h-auto">
-            <TabsTrigger value="chats" className="flex items-center gap-1 text-xs py-2">
+          <TabsList className="grid w-full grid-cols-5 mx-2 sm:mx-4 mt-2 sm:mt-4 h-auto p-1">
+            <TabsTrigger value="chats" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
               <ChatCircle className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Chats</span>
             </TabsTrigger>
-            <TabsTrigger value="groups" className="flex items-center gap-1 text-xs py-2">
+            <TabsTrigger value="groups" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
               <Users className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="ai" className="flex items-center gap-1 text-xs py-2">
+            <TabsTrigger value="ai" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
               <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">AI</span>
             </TabsTrigger>
-            <TabsTrigger value="debug" className="flex items-center gap-1 text-xs py-2">
+            <TabsTrigger value="debug" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
               <TestTube className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Debug</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs py-2">
+            <TabsTrigger value="settings" className="flex items-center gap-1 text-xs py-2 px-1 sm:px-2">
               <Gear className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Settings</span>
             </TabsTrigger>
@@ -123,11 +123,11 @@ export function MessagingApp() {
           <div className="h-full flex items-center justify-center p-4 sm:p-8">
             <div className="text-center max-w-md">
               <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-lg sm:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
-              <p className="text-sm sm:text-base text-muted-foreground mb-6">
+              <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6">
                 Your privacy-first AI messaging companion. Select a chat to start or create a new conversation.
               </p>
-              <div className="space-y-3 text-xs sm:text-sm">
+              <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                 <div className="flex items-center gap-2 justify-center">
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span>Privacy-first design</span>
@@ -265,8 +265,8 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border">
-        <Button onClick={createNewChat} className="w-full">
+      <div className="p-3 sm:p-4 border-b border-border">
+        <Button onClick={createNewChat} className="w-full text-sm">
           <Plus className="w-4 h-4 mr-2" />
           New Chat with Sahaay
         </Button>
@@ -276,36 +276,36 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
         {chatList.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground">
             <Robot className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No chats yet. Start a conversation with Sahaay!</p>
+            <p className="text-sm">No chats yet. Start a conversation with Sahaay!</p>
           </div>
         ) : (
           <div className="space-y-1 p-2">
             {chatList.map((chat) => (
               <Card 
                 key={chat.id}
-                className={`p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
+                className={`p-2 sm:p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
                   activeChatId === chat.id ? 'bg-primary/10 border-primary' : ''
                 }`}
                 onClick={() => onChatSelect(chat.id)}
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     {chat.isAI ? (
-                      <Robot className="w-5 h-5 text-primary" />
+                      <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     ) : (
                       <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-accent" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium truncate">{chat.name}</h3>
+                      <h3 className="font-medium text-sm truncate">{chat.name}</h3>
                       {chat.isAI && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs shrink-0">
                           AI
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {chat.lastMessage}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -313,7 +313,7 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
                     </p>
                   </div>
                   {chat.unread > 0 && (
-                    <Badge className="bg-accent text-accent-foreground">
+                    <Badge className="bg-accent text-accent-foreground text-xs shrink-0">
                       {chat.unread}
                     </Badge>
                   )}

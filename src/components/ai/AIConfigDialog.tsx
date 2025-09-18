@@ -209,13 +209,13 @@ export function AIConfigDialog() {
           AI Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg leading-tight">
+            <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
             AI Configuration
           </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
+          <DialogDescription className="text-xs sm:text-sm leading-relaxed">
             Configure your AI provider and customize Sahaay's behavior while maintaining privacy and security.
           </DialogDescription>
         </DialogHeader>
@@ -253,11 +253,11 @@ export function AIConfigDialog() {
 
               <div className="grid grid-cols-1 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="endpoint" className="text-xs sm:text-sm">API Endpoint</Label>
+                  <Label htmlFor="endpoint" className="text-xs sm:text-sm font-medium">API Endpoint</Label>
                   <Input
                     id="endpoint"
                     type="url"
-                    className="text-sm font-mono"
+                    className="text-sm font-mono min-h-[44px] w-full"
                     style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' 
@@ -270,18 +270,20 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.endpoint || ''}
                     onChange={(e) => updateConfig({ endpoint: e.target.value })}
+                    readOnly={false}
+                    autoComplete="url"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {currentConfig.provider === 'ai-foundry' ? 
                       'Leave empty to use built-in Spark AI, or enter custom endpoint' : 
                       'Full API endpoint URL including https://'}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="model" className="text-xs sm:text-sm">Model</Label>
+                  <Label htmlFor="model" className="text-xs sm:text-sm font-medium">Model</Label>
                   <Input
                     id="model"
-                    className="text-sm"
+                    className="text-sm min-h-[44px] w-full"
                     style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' ? 'your-deployment-name' :
@@ -290,20 +292,22 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.model || ''}
                     onChange={(e) => updateConfig({ model: e.target.value })}
+                    readOnly={false}
+                    autoComplete="off"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {currentConfig.provider === 'azure' ? 'Azure deployment name' : 'Model identifier'}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="api-key" className="text-xs sm:text-sm">API Key</Label>
+                <Label htmlFor="api-key" className="text-xs sm:text-sm font-medium">API Key</Label>
                 <div className="flex flex-col gap-2">
                   <Input
                     id="api-key"
                     type="password"
-                    className="text-sm font-mono"
+                    className="text-sm font-mono min-h-[44px] w-full"
                     style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' ? 'Azure API key' :
@@ -313,19 +317,21 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.apiKey || ''}
                     onChange={(e) => updateConfig({ apiKey: e.target.value })}
+                    readOnly={false}
+                    autoComplete="new-password"
                   />
                   <Button 
                     onClick={testConnection} 
                     disabled={isTestingConnection}
                     variant="outline"
                     size="sm"
-                    className="w-full gap-2 text-xs sm:text-sm"
+                    className="w-full gap-2 text-xs sm:text-sm min-h-[44px]"
                   >
-                    <TestTube className="w-4 h-4" />
+                    <TestTube className="w-4 h-4 shrink-0" />
                     {isTestingConnection ? 'Testing...' : 'Test Connection'}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
                     'Built-in AI requires no API key - leave empty unless using custom endpoint' : 
                     'Your API key is stored locally and never shared'}

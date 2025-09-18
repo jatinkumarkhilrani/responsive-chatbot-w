@@ -7,7 +7,9 @@
   "background_color": "#ffffff",
   "theme_color": "#4338ca",
   "orientation": "portrait-primary",
-  "categories": ["productivity", "social", "communication"],
+  "categories": ["productivity", "communication", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/favicon.svg",
@@ -17,16 +19,22 @@
     },
     {
       "src": "/favicon.ico",
-      "sizes": "48x48",
+      "sizes": "32x32",
       "type": "image/x-icon"
     }
   ],
   "screenshots": [
     {
-      "src": "/og-image.png",
-      "sizes": "1200x630",
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-narrow.png", 
+      "sizes": "360x640",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }

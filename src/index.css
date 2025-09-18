@@ -94,6 +94,14 @@ body {
   }
 }
 
+/* Viewport responsive adjustments */
+@media (max-width: 475px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 /* Prevent text overflow and ensure readability */
 .text-ellipsis {
   overflow: hidden;
@@ -111,5 +119,17 @@ body {
 @media (max-width: 768px) {
   input, textarea, select {
     font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px; /* Better touch targets */
+  }
+  
+  /* Ensure proper dialog sizing on mobile */
+  [role="dialog"] {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  /* Better button spacing on mobile */
+  button {
+    min-height: 44px;
   }
 }

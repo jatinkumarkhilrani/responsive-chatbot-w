@@ -4,10 +4,10 @@
     "version": "1.0.0",
     "type": "module",
     "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
-    "homepage": "https://username.github.io/sahaay-ai-messaging/",
+    "homepage": "https://jatin-kumar-khilrani.github.io/sahaay-ai-messaging/",
     "repository": {
         "type": "git",
-        "url": "https://github.com/username/sahaay-ai-messaging.git"
+        "url": "https://github.com/jatin-kumar-khilrani/sahaay-ai-messaging.git"
     },
     "scripts": {
         "dev": "vite",
@@ -88,6 +88,7 @@
         "@eslint/js": "^9.21.0",
         "@tailwindcss/postcss": "^4.1.8",
         "@types/d3": "^7.4.3",
+        "@types/node": "^24.5.2",
         "@types/react": "^19.0.10",
         "@types/react-dom": "^19.0.4",
         "@types/three": "^0.180.0",

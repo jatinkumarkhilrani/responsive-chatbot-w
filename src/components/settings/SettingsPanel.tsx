@@ -121,48 +121,48 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   const providerStatus = getAIProviderStatus()
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto max-w-6xl p-4 md:p-6 space-y-6">
-          <div className="flex flex-col gap-3 mb-6">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
+      <div className="flex-1 overflow-y-auto settings-content">
+        <div className="container mx-auto max-w-full lg:max-w-6xl p-3 md:p-4 lg:p-6 space-y-4">
+          <div className="flex flex-col gap-2 mb-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                <Gear className="w-5 h-5 md:w-6 md:h-6 text-primary-foreground" />
+              <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                <Gear className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-primary-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg md:text-xl lg:text-2xl font-bold leading-tight">Settings</h1>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                <h1 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold leading-tight">Settings</h1>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1 leading-relaxed">
                   Manage your privacy, AI configuration, and app preferences
                 </p>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="ai" className="space-y-6">
-            <div className="w-full overflow-x-auto">
-              <TabsList className="inline-flex h-12 items-center justify-start w-max p-1 bg-muted rounded-lg">
-                <TabsTrigger value="ai" className="text-sm px-4 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Robot className="w-4 h-4 mr-2 shrink-0" />
-                  AI Configuration
+          <Tabs defaultValue="ai" className="space-y-4">
+            <div className="w-full overflow-x-auto pb-2">
+              <TabsList className="settings-tabs-list h-auto items-center justify-start w-max p-1 bg-muted rounded-lg">
+                <TabsTrigger value="ai" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
+                  <Robot className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+                  <span className="hidden xs:inline">AI Config</span>
                 </TabsTrigger>
-                <TabsTrigger value="privacy" className="text-sm px-4 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Shield className="w-4 h-4 mr-2 shrink-0" />
-                  Privacy Settings
+                <TabsTrigger value="privacy" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
+                  <Shield className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+                  <span className="hidden xs:inline">Privacy</span>
                 </TabsTrigger>
-                <TabsTrigger value="data" className="text-sm px-4 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Download className="w-4 h-4 mr-2 shrink-0" />
-                  Data Management
+                <TabsTrigger value="data" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
+                  <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+                  <span className="hidden xs:inline">Data</span>
                 </TabsTrigger>
-                <TabsTrigger value="about" className="text-sm px-4 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Gear className="w-4 h-4 mr-2 shrink-0" />
-                  About Sahaay
+                <TabsTrigger value="about" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
+                  <Gear className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
+                  <span className="hidden xs:inline">About</span>
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value="ai" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
+            <TabsContent value="ai" className="space-y-4">
+              <Card className="settings-card">
+                <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-base md:text-lg">
                     <Robot className="w-5 h-5" />
                     AI Provider Configuration
@@ -171,32 +171,34 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     Configure your AI provider for enhanced functionality and customization
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex flex-col gap-4 p-4 border rounded-lg bg-card">
-                    <div className="flex flex-col md:flex-row md:items-start gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1 shrink-0 ${
+                <CardContent className="space-y-4">
+                  <div className="p-3 border rounded-lg bg-card">
+                    <div className="provider-status-container">
+                      <div className={`w-3 h-3 rounded-full shrink-0 mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
                       <div className="min-w-0 flex-1 space-y-2">
-                        <h3 className="font-medium text-base leading-tight">Current Provider</h3>
-                        <p className="text-sm text-muted-foreground break-words leading-relaxed">
+                        <h3 className="font-medium text-sm md:text-base leading-tight">Current Provider</h3>
+                        <p className="text-xs md:text-sm text-muted-foreground break-words leading-relaxed">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
-                      <Badge variant={providerStatus.color as any} className="text-sm shrink-0 self-start">
-                        {providerStatus.status}
-                      </Badge>
+                      <div className="shrink-0 self-start">
+                        <Badge variant={providerStatus.color as any} className="text-xs">
+                          {providerStatus.status}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="responsive-flex">
                     <AIConfigDialog />
                     <TestConfigButton aiConfig={aiConfig} />
                   </div>
 
                   <Alert>
                     <Shield className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
+                    <AlertDescription className="text-xs md:text-sm">
                       <strong>Privacy Note:</strong> When using external AI providers, your API key is stored locally 
                       and never shared. All communication happens directly between your device and the AI provider.
                     </AlertDescription>
@@ -204,32 +206,32 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-6">
+              <Card className="settings-card">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-base md:text-lg">AI Features Status</CardTitle>
                   <CardDescription className="text-sm">
                     Current status of AI-powered features based on your configuration
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-lg font-bold">
+                  <div className="status-grid">
+                    <div className="feature-status-card border rounded-lg">
+                      <div className="text-sm md:text-base font-bold">
                         {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-sm text-muted-foreground">Mood Detection</div>
+                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Mood Detection</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-lg font-bold">
+                    <div className="feature-status-card border rounded-lg">
+                      <div className="text-sm md:text-base font-bold">
                         {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-sm text-muted-foreground">Hyperlocal AI</div>
+                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Hyperlocal AI</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-lg font-bold">
+                    <div className="feature-status-card border rounded-lg">
+                      <div className="text-sm md:text-base font-bold">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-sm text-muted-foreground">Group Intelligence</div>
+                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Group Intelligence</div>
                     </div>
                   </div>
                 </CardContent>
@@ -246,70 +248,70 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </div>
             </TabsContent>
 
-            <TabsContent value="data" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-6">
+            <TabsContent value="data" className="space-y-4">
+              <Card className="settings-card">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-base md:text-lg">Data Overview</CardTitle>
                   <CardDescription className="text-sm">
                     Current data stored in your Sahaay app
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-2xl font-bold">{(chats || []).length}</div>
-                      <div className="text-sm text-muted-foreground">Conversations</div>
+                  <div className="responsive-grid">
+                    <div className="text-center p-3 border rounded-lg space-y-2">
+                      <div className="text-xl md:text-2xl font-bold">{(chats || []).length}</div>
+                      <div className="text-xs md:text-sm text-muted-foreground">Conversations</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-2xl font-bold">{(groups || []).length}</div>
-                      <div className="text-sm text-muted-foreground">Groups</div>
+                    <div className="text-center p-3 border rounded-lg space-y-2">
+                      <div className="text-xl md:text-2xl font-bold">{(groups || []).length}</div>
+                      <div className="text-xs md:text-sm text-muted-foreground">Groups</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-2xl font-bold">{(contextPacks || []).length}</div>
-                      <div className="text-sm text-muted-foreground">Context Packs</div>
+                    <div className="text-center p-3 border rounded-lg space-y-2">
+                      <div className="text-xl md:text-2xl font-bold">{(contextPacks || []).length}</div>
+                      <div className="text-xs md:text-sm text-muted-foreground">Context Packs</div>
                     </div>
-                    <div className="text-center p-4 border rounded-lg space-y-2">
-                      <div className="text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
-                      <div className="text-sm text-muted-foreground">Privacy Settings</div>
+                    <div className="text-center p-3 border rounded-lg space-y-2">
+                      <div className="text-xl md:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
+                      <div className="text-xs md:text-sm text-muted-foreground">Privacy Settings</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-6">
+              <Card className="settings-card">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-base md:text-lg">Data Management</CardTitle>
                   <CardDescription className="text-sm">
                     Export or clear your data
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button onClick={exportUserData} disabled={isExporting} className="flex-1 gap-2">
+                <CardContent className="space-y-4">
+                  <div className="responsive-flex">
+                    <Button onClick={exportUserData} disabled={isExporting} className="gap-2 text-sm">
                       <Download className="w-4 h-4" />
                       {isExporting ? 'Exporting...' : 'Export All Data'}
                     </Button>
-                    <Button variant="outline" className="flex-1 gap-2" disabled>
+                    <Button variant="outline" className="gap-2 text-sm" disabled>
                       <Upload className="w-4 h-4" />
-                      Import Data (Coming Soon)
+                      Import Data (Soon)
                     </Button>
                   </div>
 
                   <Alert>
                     <Shield className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
+                    <AlertDescription className="text-xs md:text-sm">
                       Your data is stored locally on your device and never shared with external services 
                       without your explicit consent. Exports include all your conversations, settings, and preferences.
                     </AlertDescription>
                   </Alert>
 
-                  <div className="pt-6 border-t space-y-4">
-                    <h4 className="font-medium text-destructive text-base">Danger Zone</h4>
-                    <Button variant="destructive" onClick={clearAllData} className="w-full gap-2">
+                  <div className="pt-4 border-t space-y-3">
+                    <h4 className="font-medium text-destructive text-sm md:text-base">Danger Zone</h4>
+                    <Button variant="destructive" onClick={clearAllData} className="w-full gap-2 text-sm">
                       <Trash className="w-4 h-4" />
                       Clear All Data
                     </Button>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       This will permanently delete all your conversations, groups, and settings. This action cannot be undone.
                     </p>
                   </div>

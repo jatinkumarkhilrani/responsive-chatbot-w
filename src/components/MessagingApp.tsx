@@ -103,10 +103,10 @@ export function MessagingApp() {
         </Tabs>
       </div>
 
-      {/* Main Chat Area - Fixed to take full remaining width */}
-      <div className={`flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      {/* Main Chat Area - Ensure full width usage */}
+      <div className={`flex-1 min-w-0 max-w-full ${activeChatId ? 'flex' : 'hidden sm:flex'} chat-interface-container`}>
         {activeChatId ? (
-          <div className="w-full h-full">
+          <div className="w-full h-full max-w-full overflow-hidden">
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}
@@ -122,7 +122,7 @@ export function MessagingApp() {
             />
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center p-4 sm:p-8 w-full">
+          <div className="h-full flex items-center justify-center p-4 sm:p-8 w-full max-w-full">
             <div className="text-center max-w-md">
               <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import { ChatCircle, Gear, ShieldCheck, Robot, Users, Plus, TestTube, Brain, MapPin } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -14,18 +14,23 @@ import { DebugPanel } from './Debug/DebugPanel'
 import { SettingsPanel } from './settings/SettingsPanel'
 import { handleKVError } from '../utils/errorHandling'
 
-export function MessagingApp() {
+export const MessagingApp = memo(function MessagingApp() {
   const [activeTab, setActiveTab] = useState('chats')
   const [activeChatId, setActiveChatId] = useKV<string | null>('active-chat-id', null)
   const [userConsents, setUserConsents] = useKV<Record<string, boolean>>('user-consents', {})
 
-  const hasPrivacySetup = Object.keys(userConsents || {}).length > 0
+  const hasPrivacySetup = userConsents && Object.keys(userConsents).length > 0
 
   // Handle consent completion
-  const handleConsentComplete = (consents: Record<string, boolean>) => {
+  const handleConsentComplete = useCallback((consents: Record<string, boolean>) => {
     setUserConsents(consents)
     toast.success('Privacy settings saved successfully!')
-  }
+  }, [setUserConsents])
+
+  // Handle back navigation from chat
+  const handleBackFromChat = useCallback(() => {
+    setActiveChatId(null)
+  }, [setActiveChatId])
 
   if (!hasPrivacySetup) {
     return <PrivacySettings onComplete={handleConsentComplete} />
@@ -78,9 +83,6 @@ export function MessagingApp() {
               <ChatList 
                 activeChatId={activeChatId || null} 
                 onChatSelect={setActiveChatId}
-                onChatUpdate={(chatId, lastMessage) => {
-                  // This will be handled inside ChatList component
-                }}
                 userConsents={userConsents || {}}
               />
             </TabsContent>
@@ -110,46 +112,45 @@ export function MessagingApp() {
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}
-              onBack={() => setActiveChatId(null)}
-              onChatUpdate={(chatId, lastMessage) => {
-                // Find and update the chat in the list
-                // This is a bit hacky but works for the current architecture
-                const event = new CustomEvent('updateChatLastMessage', { 
-                  detail: { chatId, lastMessage } 
-                })
-                window.dispatchEvent(event)
-              }}
+              onBack={handleBackFromChat}
             />
           </div>
         ) : (
-          <div className="h-full w-full flex items-center justify-center p-4 sm:p-8">
-            <div className="text-center max-w-md mx-auto">
-              <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
-              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6">
-                Your privacy-first AI messaging companion. Select a chat to start or create a new conversation.
-              </p>
-              <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-                <div className="flex items-center gap-2 justify-center">
-                  <ShieldCheck className="w-4 h-4 text-primary" />
-                  <span>Privacy-first design</span>
-                </div>
-                <div className="flex items-center gap-2 justify-center">
-                  <Brain className="w-4 h-4 text-primary" />
-                  <span>AI-powered assistance</span>
-                </div>
-                <div className="flex items-center gap-2 justify-center">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span>Hyperlocal intelligence</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <WelcomeScreen />
         )}
       </div>
     </div>
   )
-}
+})
+
+// Separate welcome screen component to optimize rendering
+const WelcomeScreen = memo(function WelcomeScreen() {
+  return (
+    <div className="h-full w-full flex items-center justify-center p-4 sm:p-8">
+      <div className="text-center max-w-md mx-auto">
+        <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6">
+          Your privacy-first AI messaging companion. Select a chat to start or create a new conversation.
+        </p>
+        <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-2 justify-center">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <span>Privacy-first design</span>
+          </div>
+          <div className="flex items-center gap-2 justify-center">
+            <Brain className="w-4 h-4 text-primary" />
+            <span>AI-powered assistance</span>
+          </div>
+          <div className="flex items-center gap-2 justify-center">
+            <MapPin className="w-4 h-4 text-primary" />
+            <span>Hyperlocal intelligence</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})
 
 interface Chat {
   id: string
@@ -164,44 +165,13 @@ interface Chat {
 interface ChatListProps {
   activeChatId: string | null
   onChatSelect: (chatId: string) => void
-  onChatUpdate?: (chatId: string, lastMessage: string) => void
   userConsents: Record<string, boolean>
 }
 
-function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: ChatListProps) {
+const ChatList = memo(function ChatList({ activeChatId, onChatSelect, userConsents }: ChatListProps) {
   const [chats, setChats] = useKV<Chat[]>('user-chats', [])
 
-  const updateChatLastMessage = (chatId: string, lastMessage: string) => {
-    setChats(prev => {
-      const currentChats = prev || []
-      return currentChats.map(chat => 
-        chat.id === chatId 
-          ? { ...chat, lastMessage: lastMessage.substring(0, 100), timestamp: new Date().toISOString() }
-          : chat
-      )
-    })
-  }
-
-  // Listen for chat updates
-  useEffect(() => {
-    const handleChatUpdate = (event: CustomEvent) => {
-      const { chatId, lastMessage } = event.detail
-      updateChatLastMessage(chatId, lastMessage)
-    }
-
-    window.addEventListener('updateChatLastMessage', handleChatUpdate as EventListener)
-    
-    return () => {
-      window.removeEventListener('updateChatLastMessage', handleChatUpdate as EventListener)
-    }
-  }, [])
-
-  // Cleanup duplicates on component mount
-  useEffect(() => {
-    cleanupDuplicateChats()
-  }, [])
-
-  const createNewChat = async () => {
+  const createNewChat = useCallback(async () => {
     try {
       const chatId = `chat-${Date.now()}`
       const newChat: Chat = {
@@ -230,9 +200,9 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
           return currentChats
         }
         
-        // Limit to maximum 50 chats to prevent memory issues
+        // Limit to maximum 20 chats to prevent memory issues
         const newChats = [newChat, ...currentChats]
-        return newChats.slice(0, 50)
+        return newChats.slice(0, 20)
       })
       
       onChatSelect(chatId)
@@ -242,26 +212,7 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
       console.error('Error creating new chat:', appError)
       toast.error('Failed to create new chat. Please try again.')
     }
-  }
-
-  const cleanupDuplicateChats = () => {
-    setChats(prev => {
-      const currentChats = prev || []
-      // Remove duplicate chats based on name and empty lastMessage
-      const seen = new Set()
-      return currentChats.filter(chat => {
-        if (chat.isAI && chat.name === 'Sahaay Assistant' && 
-            (chat.lastMessage === 'Ready to help with your queries' || 
-             chat.lastMessage === 'I can help with routes, bills, group summaries and more.')) {
-          if (seen.has('empty-sahaay')) {
-            return false // Remove duplicate
-          }
-          seen.add('empty-sahaay')
-        }
-        return true
-      })
-    })
-  }
+  }, [setChats, onChatSelect])
 
   const chatList = chats || []
 
@@ -283,49 +234,72 @@ function ChatList({ activeChatId, onChatSelect, onChatUpdate, userConsents }: Ch
         ) : (
           <div className="space-y-1 p-2">
             {chatList.map((chat) => (
-              <Card 
+              <ChatListItem 
                 key={chat.id}
-                className={`p-2 sm:p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
-                  activeChatId === chat.id ? 'bg-primary/10 border-primary' : ''
-                }`}
-                onClick={() => onChatSelect(chat.id)}
-              >
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    {chat.isAI ? (
-                      <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                    ) : (
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-accent" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-sm truncate">{chat.name}</h3>
-                      {chat.isAI && (
-                        <Badge variant="secondary" className="text-xs shrink-0">
-                          AI
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {chat.lastMessage}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(chat.timestamp).toLocaleTimeString()}
-                    </p>
-                  </div>
-                  {chat.unread > 0 && (
-                    <Badge className="bg-accent text-accent-foreground text-xs shrink-0">
-                      {chat.unread}
-                    </Badge>
-                  )}
-                </div>
-              </Card>
+                chat={chat}
+                isActive={activeChatId === chat.id}
+                onSelect={onChatSelect}
+              />
             ))}
           </div>
         )}
       </div>
     </div>
   )
-}
+})
+
+// Separate chat list item component for better performance
+const ChatListItem = memo(function ChatListItem({ 
+  chat, 
+  isActive, 
+  onSelect 
+}: { 
+  chat: Chat
+  isActive: boolean
+  onSelect: (chatId: string) => void 
+}) {
+  const handleClick = useCallback(() => {
+    onSelect(chat.id)
+  }, [chat.id, onSelect])
+
+  return (
+    <Card 
+      className={`p-2 sm:p-3 cursor-pointer transition-colors hover:bg-muted/50 ${
+        isActive ? 'bg-primary/10 border-primary' : ''
+      }`}
+      onClick={handleClick}
+    >
+      <div className="flex items-start gap-2 sm:gap-3">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          {chat.isAI ? (
+            <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+          ) : (
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-accent" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium text-sm truncate">{chat.name}</h3>
+            {chat.isAI && (
+              <Badge variant="secondary" className="text-xs shrink-0">
+                AI
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {chat.lastMessage}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {new Date(chat.timestamp).toLocaleTimeString()}
+          </p>
+        </div>
+        {chat.unread > 0 && (
+          <Badge className="bg-accent text-accent-foreground text-xs shrink-0">
+            {chat.unread}
+          </Badge>
+        )}
+      </div>
+    </Card>
+  )
+})
 

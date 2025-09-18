@@ -11,7 +11,7 @@
     },
     "scripts": {
         "dev": "vite",
-        "build": "tsc -b && vite build",
+        "build": "tsc -b && vite build --config vite.config.github.ts",
         "build:github": "tsc -b && vite build --config vite.config.github.ts",
         "build:standalone": "tsc -b && vite build --config vite.config.github.ts && touch dist/.nojekyll && cp dist/index.html dist/404.html",
         "lint": "eslint .",
@@ -19,7 +19,7 @@
         "preview": "vite preview",
         "predeploy": "npm run build:standalone",
         "deploy": "gh-pages -d dist",
-        "deploy:setup": "npm install --legacy-peer-deps && npm run build:standalone",
+        "deploy:setup": "npm install && npm run build:standalone",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {

@@ -209,7 +209,7 @@ export function AIConfigDialog() {
           AI Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
@@ -257,7 +257,8 @@ export function AIConfigDialog() {
                   <Input
                     id="endpoint"
                     type="url"
-                    className="text-xs sm:text-sm"
+                    className="text-sm font-mono"
+                    style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' 
                         ? 'https://your-resource.openai.azure.com'
@@ -280,7 +281,8 @@ export function AIConfigDialog() {
                   <Label htmlFor="model" className="text-xs sm:text-sm">Model</Label>
                   <Input
                     id="model"
-                    className="text-xs sm:text-sm"
+                    className="text-sm"
+                    style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' ? 'your-deployment-name' :
                       currentConfig.provider === 'openai' ? 'gpt-4o' :
@@ -301,7 +303,8 @@ export function AIConfigDialog() {
                   <Input
                     id="api-key"
                     type="password"
-                    className="text-xs sm:text-sm"
+                    className="text-sm font-mono"
+                    style={{ fontSize: '16px' }}
                     placeholder={
                       currentConfig.provider === 'azure' ? 'Azure API key' :
                       currentConfig.provider === 'openai' ? 'sk-...' :

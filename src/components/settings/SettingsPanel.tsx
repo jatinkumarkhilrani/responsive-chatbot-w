@@ -123,15 +123,15 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-full lg:max-w-4xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
-          <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-primary flex items-center justify-center">
+        <div className="w-full max-w-none sm:max-w-full lg:max-w-4xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
                 <Gear className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-primary-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Settings</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+                <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold">Settings</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                   Manage your privacy, AI configuration, and app preferences
                 </p>
               </div>
@@ -139,18 +139,26 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
           </div>
 
           <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
-              <TabsTrigger value="ai" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
-                AI Config
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1 gap-1">
+              <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
+                <Robot className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <span className="hidden xs:inline">AI Config</span>
+                <span className="xs:hidden">AI</span>
               </TabsTrigger>
-              <TabsTrigger value="privacy" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
-                Privacy
+              <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <span className="hidden xs:inline">Privacy</span>
+                <span className="xs:hidden">Privacy</span>
               </TabsTrigger>
-              <TabsTrigger value="data" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
-                Data
+              <TabsTrigger value="data" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
+                <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <span className="hidden xs:inline">Data</span>
+                <span className="xs:hidden">Data</span>
               </TabsTrigger>
-              <TabsTrigger value="about" className="text-xs sm:text-sm px-1 py-2 sm:px-2">
-                About
+              <TabsTrigger value="about" className="text-xs sm:text-sm px-2 py-2 whitespace-nowrap">
+                <Gear className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <span className="hidden xs:inline">About</span>
+                <span className="xs:hidden">About</span>
               </TabsTrigger>
             </TabsList>
 
@@ -167,17 +175,17 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
                   <div className="flex flex-col gap-3 p-3 border rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-3 h-3 rounded-full mt-1 ${
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full mt-1.5 sm:mt-1 shrink-0 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
                       <div className="min-w-0 flex-1">
                         <h3 className="font-medium text-sm sm:text-base">Current Provider</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground break-words">
+                        <p className="text-xs sm:text-sm text-muted-foreground break-words mt-0.5">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
-                      <Badge variant={providerStatus.color as any} className="text-xs shrink-0">
+                      <Badge variant={providerStatus.color as any} className="text-xs shrink-0 self-start">
                         {providerStatus.status}
                       </Badge>
                     </div>

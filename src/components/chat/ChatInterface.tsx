@@ -9,6 +9,7 @@ import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { useAIService } from '../ai/EnhancedAIService'
 import { handleKVError, sanitizeKVKey, isValidChatId } from '../../utils/errorHandling'
+import { EnhancedKV } from '../../utils/kvStorage'
 
 // Helper function for fallback suggestions
 function getFallbackSuggestion(message: string): string {

@@ -121,65 +121,65 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   const providerStatus = getAIProviderStatus()
 
   return (
-    <div className="h-full flex flex-col bg-background overflow-hidden">
-      <div className="flex-1 overflow-y-auto settings-content">
-        <div className="container mx-auto max-w-full lg:max-w-6xl p-3 md:p-4 lg:p-6 space-y-4">
-          <div className="flex flex-col gap-2 mb-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                <Gear className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-primary-foreground" />
+    <div className="h-full flex flex-col bg-background">
+      <div className="flex-1 overflow-y-auto">
+        <div className="w-full max-w-none p-2 sm:p-3 md:p-4 lg:p-6 space-y-3 sm:space-y-4">
+          <div className="flex flex-col gap-2 mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                <Gear className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold leading-tight">Settings</h1>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1 leading-relaxed">
+                <h1 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-tight">Settings</h1>
+                <p className="text-xs sm:text-xs md:text-sm text-muted-foreground mt-0.5 sm:mt-1 leading-relaxed">
                   Manage your privacy, AI configuration, and app preferences
                 </p>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="ai" className="space-y-4">
+          <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4">
             <div className="w-full overflow-x-auto pb-2">
-              <TabsList className="settings-tabs-list h-auto items-center justify-start w-max p-1 bg-muted rounded-lg">
-                <TabsTrigger value="ai" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Robot className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
-                  <span className="hidden xs:inline">AI Config</span>
+              <TabsList className="h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg">
+                <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2">
+                  <Robot className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                  <span>AI Config</span>
                 </TabsTrigger>
-                <TabsTrigger value="privacy" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Shield className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
-                  <span className="hidden xs:inline">Privacy</span>
+                <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2">
+                  <Shield className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                  <span>Privacy</span>
                 </TabsTrigger>
-                <TabsTrigger value="data" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
-                  <span className="hidden xs:inline">Data</span>
+                <TabsTrigger value="data" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2">
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                  <span>Data</span>
                 </TabsTrigger>
-                <TabsTrigger value="about" className="text-xs md:text-sm px-3 py-2 whitespace-nowrap data-[state=active]:bg-background">
-                  <Gear className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 shrink-0" />
-                  <span className="hidden xs:inline">About</span>
+                <TabsTrigger value="about" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2">
+                  <Gear className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                  <span>About</span>
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value="ai" className="space-y-4">
-              <Card className="settings-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                    <Robot className="w-5 h-5" />
+            <TabsContent value="ai" className="space-y-3 sm:space-y-4">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
+                    <Robot className="w-4 h-4 sm:w-5 sm:h-5" />
                     AI Provider Configuration
                   </CardTitle>
-                  <CardDescription className="text-sm">
+                  <CardDescription className="text-xs sm:text-sm">
                     Configure your AI provider for enhanced functionality and customization
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-3 border rounded-lg bg-card">
-                    <div className="provider-status-container">
-                      <div className={`w-3 h-3 rounded-full shrink-0 mt-1 ${
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="p-2 sm:p-3 border rounded-lg bg-card">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <h3 className="font-medium text-sm md:text-base leading-tight">Current Provider</h3>
-                        <p className="text-xs md:text-sm text-muted-foreground break-words leading-relaxed">
+                      <div className="min-w-0 flex-1 space-y-1 sm:space-y-2">
+                        <h3 className="font-medium text-xs sm:text-sm md:text-base leading-tight">Current Provider</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground break-words leading-relaxed">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
@@ -191,14 +191,14 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     </div>
                   </div>
 
-                  <div className="responsive-flex">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <AIConfigDialog />
                     <TestConfigButton aiConfig={aiConfig} />
                   </div>
 
                   <Alert>
-                    <Shield className="h-4 w-4" />
-                    <AlertDescription className="text-xs md:text-sm">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
                       <strong>Privacy Note:</strong> When using external AI providers, your API key is stored locally 
                       and never shared. All communication happens directly between your device and the AI provider.
                     </AlertDescription>
@@ -206,40 +206,40 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </CardContent>
               </Card>
 
-              <Card className="settings-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base md:text-lg">AI Features Status</CardTitle>
-                  <CardDescription className="text-sm">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">AI Features Status</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Current status of AI-powered features based on your configuration
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="status-grid">
-                    <div className="feature-status-card border rounded-lg">
-                      <div className="text-sm md:text-base font-bold">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                    <div className="p-3 sm:p-4 border rounded-lg text-center bg-card">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Mood Detection</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Mood Detection</div>
                     </div>
-                    <div className="feature-status-card border rounded-lg">
-                      <div className="text-sm md:text-base font-bold">
+                    <div className="p-3 sm:p-4 border rounded-lg text-center bg-card">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Hyperlocal AI</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Hyperlocal AI</div>
                     </div>
-                    <div className="feature-status-card border rounded-lg">
-                      <div className="text-sm md:text-base font-bold">
+                    <div className="p-3 sm:p-4 border rounded-lg text-center bg-card sm:col-span-2 lg:col-span-1">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs md:text-sm text-muted-foreground mt-1">Group Intelligence</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Group Intelligence</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="privacy" className="space-y-6">
-              <div className="max-w-4xl">
+            <TabsContent value="privacy" className="space-y-3 sm:space-y-6">
+              <div className="max-w-none">
                 <PrivacySettings 
                   initialConsents={userConsents}
                   onComplete={onConsentUpdate}
@@ -248,70 +248,70 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </div>
             </TabsContent>
 
-            <TabsContent value="data" className="space-y-4">
-              <Card className="settings-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base md:text-lg">Data Overview</CardTitle>
-                  <CardDescription className="text-sm">
+            <TabsContent value="data" className="space-y-3 sm:space-y-4">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">Data Overview</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Current data stored in your Sahaay app
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="responsive-grid">
-                    <div className="text-center p-3 border rounded-lg space-y-2">
-                      <div className="text-xl md:text-2xl font-bold">{(chats || []).length}</div>
-                      <div className="text-xs md:text-sm text-muted-foreground">Conversations</div>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                    <div className="text-center p-2 sm:p-3 border rounded-lg space-y-1 sm:space-y-2">
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold">{(chats || []).length}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Conversations</div>
                     </div>
-                    <div className="text-center p-3 border rounded-lg space-y-2">
-                      <div className="text-xl md:text-2xl font-bold">{(groups || []).length}</div>
-                      <div className="text-xs md:text-sm text-muted-foreground">Groups</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg space-y-1 sm:space-y-2">
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold">{(groups || []).length}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Groups</div>
                     </div>
-                    <div className="text-center p-3 border rounded-lg space-y-2">
-                      <div className="text-xl md:text-2xl font-bold">{(contextPacks || []).length}</div>
-                      <div className="text-xs md:text-sm text-muted-foreground">Context Packs</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg space-y-1 sm:space-y-2">
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold">{(contextPacks || []).length}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Context Packs</div>
                     </div>
-                    <div className="text-center p-3 border rounded-lg space-y-2">
-                      <div className="text-xl md:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
-                      <div className="text-xs md:text-sm text-muted-foreground">Privacy Settings</div>
+                    <div className="text-center p-2 sm:p-3 border rounded-lg space-y-1 sm:space-y-2">
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold">{Object.keys(userConsents || {}).length}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Privacy Settings</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="settings-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-base md:text-lg">Data Management</CardTitle>
-                  <CardDescription className="text-sm">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">Data Management</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Export or clear your data
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="responsive-flex">
-                    <Button onClick={exportUserData} disabled={isExporting} className="gap-2 text-sm">
-                      <Download className="w-4 h-4" />
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <Button onClick={exportUserData} disabled={isExporting} className="gap-2 text-xs sm:text-sm">
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                       {isExporting ? 'Exporting...' : 'Export All Data'}
                     </Button>
-                    <Button variant="outline" className="gap-2 text-sm" disabled>
-                      <Upload className="w-4 h-4" />
+                    <Button variant="outline" className="gap-2 text-xs sm:text-sm" disabled>
+                      <Upload className="w-3 h-3 sm:w-4 sm:h-4" />
                       Import Data (Soon)
                     </Button>
                   </div>
 
                   <Alert>
-                    <Shield className="h-4 w-4" />
-                    <AlertDescription className="text-xs md:text-sm">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
                       Your data is stored locally on your device and never shared with external services 
                       without your explicit consent. Exports include all your conversations, settings, and preferences.
                     </AlertDescription>
                   </Alert>
 
-                  <div className="pt-4 border-t space-y-3">
-                    <h4 className="font-medium text-destructive text-sm md:text-base">Danger Zone</h4>
-                    <Button variant="destructive" onClick={clearAllData} className="w-full gap-2 text-sm">
-                      <Trash className="w-4 h-4" />
+                  <div className="pt-3 sm:pt-4 border-t space-y-2 sm:space-y-3">
+                    <h4 className="font-medium text-destructive text-xs sm:text-sm md:text-base">Danger Zone</h4>
+                    <Button variant="destructive" onClick={clearAllData} className="w-full gap-2 text-xs sm:text-sm">
+                      <Trash className="w-3 h-3 sm:w-4 sm:h-4" />
                       Clear All Data
                     </Button>
-                    <p className="text-xs md:text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       This will permanently delete all your conversations, groups, and settings. This action cannot be undone.
                     </p>
                   </div>
@@ -319,29 +319,29 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </Card>
             </TabsContent>
 
-            <TabsContent value="about" className="space-y-6">
+            <TabsContent value="about" className="space-y-3 sm:space-y-6">
               <Card>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-base md:text-lg">About Sahaay</CardTitle>
-                  <CardDescription className="text-sm">
+                <CardHeader className="pb-4 sm:pb-6">
+                  <CardTitle className="text-sm sm:text-base md:text-lg">About Sahaay</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     Privacy-first AI messaging companion for India
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 border rounded-lg space-y-2">
-                      <h4 className="font-medium">Version</h4>
-                      <p className="text-sm text-muted-foreground">1.0.0 Beta</p>
+                <CardContent className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                    <div className="p-2 sm:p-4 border rounded-lg space-y-1 sm:space-y-2">
+                      <h4 className="font-medium text-xs sm:text-sm">Version</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">1.0.0 Beta</p>
                     </div>
-                    <div className="p-4 border rounded-lg space-y-2">
-                      <h4 className="font-medium">Build</h4>
-                      <p className="text-sm text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
+                    <div className="p-2 sm:p-4 border rounded-lg space-y-1 sm:space-y-2">
+                      <h4 className="font-medium text-xs sm:text-sm">Build</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Key Features</h4>
-                    <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+                  <div className="space-y-2 sm:space-y-4">
+                    <h4 className="font-medium text-xs sm:text-sm">Key Features</h4>
+                    <ul className="list-disc list-inside space-y-1 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
                       <li>Privacy-first design with local data storage</li>
                       <li>Configurable AI providers (Azure, OpenAI, AI Foundry)</li>
                       <li>Hyperlocal intelligence for Indian context</li>
@@ -353,8 +353,8 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </div>
 
                   <Alert>
-                    <Shield className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <AlertDescription className="text-xs sm:text-sm">
                       Sahaay is designed with privacy as the foundation. All data processing happens on your device, 
                       and you have complete control over what information is shared and processed.
                     </AlertDescription>
@@ -401,9 +401,9 @@ function TestConfigButton({ aiConfig }: { aiConfig: any }) {
       return
     }
 
-    // For external providers, require endpoint and API key
-    if (!aiConfig.endpoint || !aiConfig.apiKey) {
-      toast.error('Please configure endpoint and API key first')
+    // For external providers, validate configuration first
+    if (!aiConfig.endpoint || !aiConfig.apiKey || !aiConfig.model) {
+      toast.error('Please configure API endpoint, key, and model first')
       return
     }
 
@@ -411,94 +411,107 @@ function TestConfigButton({ aiConfig }: { aiConfig: any }) {
     setConnectionStatus('idle')
 
     try {
-      let apiUrl = aiConfig.endpoint
-      let headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      }
-      
-      let requestBody: any
+      // Test connection based on provider
+      const testPrompt = 'Test connection - respond with "Connection successful"'
+      let response
 
-      // Configure request based on provider
-      switch (aiConfig.provider) {
-        case 'azure':
-          apiUrl = `${aiConfig.endpoint}/openai/deployments/${aiConfig.model || 'gpt-4o'}/chat/completions?api-version=2024-08-01-preview`
-          headers['api-key'] = aiConfig.apiKey
-          requestBody = {
-            messages: [{ role: 'user', content: 'Test connection' }],
-            max_tokens: 10
-          }
-          break
-
-        case 'openai':
-          apiUrl = `${aiConfig.endpoint}/v1/chat/completions`
-          headers['Authorization'] = `Bearer ${aiConfig.apiKey}`
-          requestBody = {
-            model: aiConfig.model || 'gpt-4o',
-            messages: [{ role: 'user', content: 'Test connection' }],
-            max_tokens: 10
-          }
-          break
-
-        case 'ai-foundry':
-        case 'custom':
-          apiUrl = `${aiConfig.endpoint}/chat/completions`
-          headers['Authorization'] = `Bearer ${aiConfig.apiKey}`
-          requestBody = {
-            model: aiConfig.model || 'gpt-4o',
-            messages: [{ role: 'user', content: 'Test connection' }],
-            max_tokens: 10
-          }
-          break
-
-        default:
-          throw new Error(`Unsupported AI provider: ${aiConfig.provider}`)
-      }
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody)
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`)
-      }
-
-      const data = await response.json()
-      
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        setConnectionStatus('success')
-        toast.success(`${aiConfig.provider.toUpperCase()} connected successfully!`)
+      if (aiConfig.provider === 'azure') {
+        response = await testAzureConnection(aiConfig, testPrompt)
+      } else if (aiConfig.provider === 'openai') {
+        response = await testOpenAIConnection(aiConfig, testPrompt)
       } else {
-        throw new Error('Invalid response format from AI provider')
+        throw new Error(`Unsupported provider: ${aiConfig.provider}`)
+      }
+
+      if (response && response.trim()) {
+        setConnectionStatus('success')
+        toast.success(`${aiConfig.provider.toUpperCase()} connection successful!`)
+      } else {
+        throw new Error('Empty response received')
       }
     } catch (error: any) {
       setConnectionStatus('error')
-      const errorMessage = error?.message || 'Unknown connection error'
-      toast.error(`Connection failed: ${errorMessage}`)
-      console.error('AI connection test failed:', error)
+      toast.error(`Connection failed: ${error.message}`)
     } finally {
       setIsTestingConnection(false)
     }
   }
 
+  const getButtonVariant = () => {
+    if (connectionStatus === 'success') return 'default'
+    if (connectionStatus === 'error') return 'destructive'
+    return 'outline'
+  }
+
+  const getButtonText = () => {
+    if (isTestingConnection) return 'Testing...'
+    if (connectionStatus === 'success') return 'Connected'
+    if (connectionStatus === 'error') return 'Failed'
+    return 'Test Connection'
+  }
+
+  const getIcon = () => {
+    if (isTestingConnection) return <TestTube className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+    if (connectionStatus === 'success') return <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+    if (connectionStatus === 'error') return <Warning className="w-3 h-3 sm:w-4 sm:h-4" />
+    return <TestTube className="w-3 h-3 sm:w-4 sm:h-4" />
+  }
+
   return (
-    <Button 
-      variant="outline" 
-      size="sm" 
-      className="gap-2 text-sm h-10 min-w-[140px] flex-shrink-0"
+    <Button
+      variant={getButtonVariant()}
       onClick={testConnection}
       disabled={isTestingConnection}
+      className="gap-2 text-xs sm:text-sm flex-1 sm:flex-none"
     >
-      {connectionStatus === 'success' ? (
-        <CheckCircle className="w-4 h-4 text-success" />
-      ) : connectionStatus === 'error' ? (
-        <Warning className="w-4 h-4 text-destructive" />
-      ) : (
-        <TestTube className="w-4 h-4" />
-      )}
-      {isTestingConnection ? 'Testing...' : 'Test Connection'}
+      {getIcon()}
+      {getButtonText()}
     </Button>
   )
+}
+
+// Helper functions for testing connections
+async function testAzureConnection(config: any, prompt: string) {
+  const response = await fetch(`${config.endpoint}/openai/deployments/${config.model}/chat/completions?api-version=2024-02-15-preview`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': config.apiKey
+    },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 50,
+      temperature: 0.1
+    })
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content || ''
+}
+
+async function testOpenAIConnection(config: any, prompt: string) {
+  const response = await fetch(`${config.endpoint}/v1/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 50,
+      temperature: 0.1
+    })
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content || ''
 }

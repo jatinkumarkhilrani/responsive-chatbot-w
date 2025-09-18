@@ -282,6 +282,8 @@ body {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 640px) {
@@ -289,6 +291,14 @@ body {
     height: 100vh;
     position: relative;
   }
+}
+
+/* Better flex layouts for full-width components */
+.full-width-flex {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
 }
 
 /* Fix settings tabs scrolling */

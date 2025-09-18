@@ -32,7 +32,7 @@ export function MessagingApp() {
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen w-full bg-background overflow-hidden">
       {/* Sidebar */}
       <div className={`w-full sm:w-80 lg:w-96 border-r border-border bg-card flex flex-col sm:flex-none ${
         activeChatId ? 'hidden sm:flex' : 'flex'
@@ -104,9 +104,9 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area - Ensure full width usage */}
-      <div className={`flex-1 min-w-0 max-w-full ${activeChatId ? 'flex' : 'hidden sm:flex'} chat-interface-container`}>
+      <div className={`flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
-          <div className="w-full h-full max-w-full overflow-hidden">
+          <div className="w-full h-full flex flex-col overflow-hidden">
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}
@@ -122,8 +122,8 @@ export function MessagingApp() {
             />
           </div>
         ) : (
-          <div className="h-full flex items-center justify-center p-4 sm:p-8 w-full max-w-full">
-            <div className="text-center max-w-md">
+          <div className="h-full w-full flex items-center justify-center p-4 sm:p-8">
+            <div className="text-center max-w-md mx-auto">
               <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>
               <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-4 sm:mb-6">

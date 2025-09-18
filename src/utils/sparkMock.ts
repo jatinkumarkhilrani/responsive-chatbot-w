@@ -102,20 +102,40 @@ export function initializeSparkMock() {
       
       kv: {
         keys: async (): Promise<string[]> => {
-          // This will be handled by our LocalStorageKV implementation
-          throw new Error('Use EnhancedKV instead')
+          // Use localStorage with our prefix
+          const keys: string[] = []
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i)
+            if (key && key.startsWith('sahaay-kv-')) {
+              keys.push(key.replace('sahaay-kv-', ''))
+            }
+          }
+          return keys
         },
         get: async <T>(key: string): Promise<T | undefined> => {
-          // This will be handled by our LocalStorageKV implementation
-          throw new Error('Use EnhancedKV instead')
+          try {
+            const item = localStorage.getItem(`sahaay-kv-${key}`)
+            return item ? JSON.parse(item) : undefined
+          } catch (error) {
+            console.warn('Mock KV get error:', error)
+            return undefined
+          }
         },
         set: async <T>(key: string, value: T): Promise<void> => {
-          // This will be handled by our LocalStorageKV implementation
-          throw new Error('Use EnhancedKV instead')
+          try {
+            localStorage.setItem(`sahaay-kv-${key}`, JSON.stringify(value))
+          } catch (error) {
+            console.warn('Mock KV set error:', error)
+            throw error
+          }
         },
         delete: async (key: string): Promise<void> => {
-          // This will be handled by our LocalStorageKV implementation
-          throw new Error('Use EnhancedKV instead')
+          try {
+            localStorage.removeItem(`sahaay-kv-${key}`)
+          } catch (error) {
+            console.warn('Mock KV delete error:', error)
+            throw error
+          }
         }
       }
     }

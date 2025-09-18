@@ -48,6 +48,11 @@
           );
         }
       }(window.location))
+      
+      // GitHub Pages base path detection
+      window.GITHUB_PAGES_BASE = window.location.hostname === 'jatin-kumar-khilrani.github.io' 
+        ? '/responsive-chatbot-w/' 
+        : '/';
     </script>
     
     <!-- Service Worker Registration -->

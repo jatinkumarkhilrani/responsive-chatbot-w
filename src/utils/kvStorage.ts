@@ -39,12 +39,8 @@ export interface KVOptions {
   fallbackValue?: any
 }
 
-// Check if Spark KV is available
-const isSparkAvailable = () => {
-  return typeof window !== 'undefined' && 
-         window.spark && 
-         window.spark.kv
-}
+// For standalone deployment, always use localStorage
+const isSparkAvailable = () => false
 
 // LocalStorage fallback implementation
 class LocalStorageKV {

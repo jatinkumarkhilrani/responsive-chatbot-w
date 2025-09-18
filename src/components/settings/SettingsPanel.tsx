@@ -139,22 +139,22 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
           </div>
 
           <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4 md:space-y-6 w-full">
-            <div className="settings-tabs-container w-full overflow-x-auto scrollbar-hide">
-              <TabsList className="settings-tabs-list h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg gap-1 overflow-x-auto scrollbar-hide">
-                <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0 min-w-fit">
-                  <Robot className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+            <div className="w-full overflow-x-auto scrollbar-hide">
+              <TabsList className="h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg gap-1">
+                <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0">
+                  <Robot className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span>AI Config</span>
                 </TabsTrigger>
-                <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0 min-w-fit">
-                  <Shield className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                <TabsTrigger value="privacy" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0">
+                  <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span>Privacy</span>
                 </TabsTrigger>
-                <TabsTrigger value="data" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0 min-w-fit">
-                  <Download className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                <TabsTrigger value="data" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0">
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span>Data</span>
                 </TabsTrigger>
-                <TabsTrigger value="about" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0 min-w-fit">
-                  <Gear className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
+                <TabsTrigger value="about" className="text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2 shrink-0">
+                  <Gear className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span>About</span>
                 </TabsTrigger>
               </TabsList>
@@ -172,18 +172,18 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6">
-                  <div className="provider-status-container p-3 sm:p-4 border rounded-lg bg-card/50 w-full overflow-hidden">
-                    <div className="flex flex-col sm:flex-row items-start gap-3 w-full">
+                  <div className="provider-status-layout w-full">
+                    <div className="flex flex-col sm:flex-row items-start gap-3 p-3 sm:p-4 border rounded-lg bg-card/50 w-full">
                       <div className={`w-3 h-3 rounded-full shrink-0 mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
-                      <div className="min-w-0 flex-1 space-y-2 w-full">
-                        <h3 className="font-medium text-sm sm:text-base leading-tight break-words">Current Provider</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground break-words leading-relaxed">
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <h3 className="font-medium text-sm sm:text-base leading-tight">Current Provider</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed break-words">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
-                      <div className="shrink-0 self-start">
+                      <div className="shrink-0 self-start mt-1 sm:mt-0">
                         <Badge variant={providerStatus.color as any} className="text-xs whitespace-nowrap">
                           {providerStatus.status}
                         </Badge>
@@ -191,7 +191,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     </div>
                   </div>
 
-                  <div className="responsive-flex-container w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                     <AIConfigDialog />
                     <TestConfigButton aiConfig={aiConfig} />
                   </div>
@@ -214,24 +214,24 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-3 sm:p-6">
-                  <div className="ai-features-grid status-grid w-full">
-                    <div className="feature-status-card border rounded-lg bg-card/50 min-h-fit">
-                      <div className="text-sm sm:text-base font-bold mb-2 break-words">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full">
+                    <div className="p-3 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground break-words">Mood Detection</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Mood Detection</div>
                     </div>
-                    <div className="feature-status-card border rounded-lg bg-card/50 min-h-fit">
-                      <div className="text-sm sm:text-base font-bold mb-2 break-words">
+                    <div className="p-3 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground break-words">Hyperlocal AI</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Hyperlocal AI</div>
                     </div>
-                    <div className="feature-status-card border rounded-lg bg-card/50 min-h-fit">
-                      <div className="text-sm sm:text-base font-bold mb-2 break-words">
+                    <div className="p-3 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
+                      <div className="text-sm sm:text-base font-bold mb-1">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground break-words">Group Intelligence</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Group Intelligence</div>
                     </div>
                   </div>
                 </CardContent>

@@ -18,7 +18,7 @@
         "preview": "vite preview",
         "predeploy": "npm run build:github",
         "deploy": "gh-pages -d dist",
-        "deploy:setup": "npm install && npm run build:github && touch dist/.nojekyll && cp dist/index.html dist/404.html",
+        "deploy:setup": "npm install --legacy-peer-deps && npm run build:github && touch dist/.nojekyll && cp dist/index.html dist/404.html",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {

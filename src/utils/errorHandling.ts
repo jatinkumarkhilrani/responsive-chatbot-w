@@ -66,8 +66,12 @@ export function isValidChatId(chatId: string): boolean {
 }
 
 export function sanitizeKVKey(key: string): string {
-  // Remove special characters that might cause issues
-  return key.replace(/[^a-zA-Z0-9\-_]/g, '-')
+  // Remove special characters that might cause issues and ensure valid KV key format
+  return key
+    .replace(/[^a-zA-Z0-9\-_]/g, '-')
+    .replace(/--+/g, '-')  // Replace multiple dashes with single dash
+    .replace(/^-|-$/g, '')  // Remove leading/trailing dashes
+    .toLowerCase()
 }
 
 export function validateAIConfig(config: any): { isValid: boolean; errors: string[] } {
@@ -86,7 +90,19 @@ export function validateAIConfig(config: any): { isValid: boolean; errors: strin
     errors.push('Model name is required')
   }
   
-  if (config.provider !== 'ai-foundry' || (config.endpoint && config.apiKey)) {
+  // For AI Foundry, allow both built-in (no endpoint/key) and custom (both endpoint and key)
+  if (config.provider === 'ai-foundry') {
+    // If either endpoint or apiKey is provided, both must be provided
+    if ((config.endpoint && !config.apiKey) || (!config.endpoint && config.apiKey)) {
+      errors.push('For AI Foundry custom endpoints, both endpoint URL and API key are required')
+    }
+    
+    // If endpoint is provided, validate it
+    if (config.endpoint && !isValidUrl(config.endpoint)) {
+      errors.push('Invalid endpoint URL format')
+    }
+  } else {
+    // For other providers, both endpoint and apiKey are required
     if (!config.endpoint) {
       errors.push('Endpoint URL is required for external providers')
     }

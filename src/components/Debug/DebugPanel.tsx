@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { TestTube, Wrench } from '@phosphor-icons/react'
+import { TestTube, Wrench, Database } from '@phosphor-icons/react'
 import { UITester } from './UITester'
 import { HealthChecker } from './HealthChecker'
+import { KVDiagnostics } from './KVDiagnostics'
 
 export function DebugPanel() {
   return (
@@ -18,10 +19,14 @@ export function DebugPanel() {
         </div>
 
         <Tabs defaultValue="health" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="health" className="flex items-center gap-2">
               <Wrench className="w-4 h-4" />
               Health Check
+            </TabsTrigger>
+            <TabsTrigger value="kv" className="flex items-center gap-2">
+              <Database className="w-4 h-4" />
+              KV Storage
             </TabsTrigger>
             <TabsTrigger value="testing" className="flex items-center gap-2">
               <TestTube className="w-4 h-4" />
@@ -31,6 +36,10 @@ export function DebugPanel() {
 
           <TabsContent value="health">
             <HealthChecker />
+          </TabsContent>
+
+          <TabsContent value="kv">
+            <KVDiagnostics />
           </TabsContent>
 
           <TabsContent value="testing">

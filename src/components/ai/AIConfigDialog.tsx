@@ -61,7 +61,35 @@ export function AIConfigDialog() {
   }
 
   const testConnection = async () => {
-    if (currentConfig.provider !== 'ai-foundry' && (!currentConfig.endpoint || !currentConfig.apiKey)) {
+    // For ai-foundry without custom endpoint, always allow testing
+    if (currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint) {
+      // Test using built-in Spark AI
+      setIsTestingConnection(true)
+      setConnectionStatus('idle')
+      
+      try {
+        const testPrompt = (window as any).spark.llmPrompt`Test connection - respond with "Connected successfully"`
+        const response = await (window as any).spark.llm(testPrompt, currentConfig.model || 'gpt-4o')
+        
+        if (response && response.trim()) {
+          setConnectionStatus('success')
+          toast.success('Built-in AI connected successfully!')
+        } else {
+          throw new Error('Empty response received')
+        }
+      } catch (error) {
+        setConnectionStatus('error')
+        const errorMessage = error instanceof Error ? error.message : 'Unknown connection error'
+        toast.error(`Built-in AI connection failed: ${errorMessage}`)
+        console.error('Built-in AI connection test failed:', error)
+      } finally {
+        setIsTestingConnection(false)
+      }
+      return
+    }
+
+    // For external providers or AI Foundry with custom endpoint
+    if (!currentConfig.endpoint || !currentConfig.apiKey) {
       toast.error('Please provide endpoint and API key first')
       return
     }
@@ -70,17 +98,9 @@ export function AIConfigDialog() {
     setConnectionStatus('idle')
 
     try {
-      if (currentConfig.provider === 'ai-foundry') {
-        // Test using Spark's built-in AI
-        const testPrompt = (window as any).spark.llmPrompt`Test connection - respond with "Connected successfully"`
-        const response = await (window as any).spark.llm(testPrompt, currentConfig.model || 'gpt-4o')
-        
-        if (response && response.trim()) {
-          setConnectionStatus('success')
-          toast.success('AI provider connected successfully!')
-        } else {
-          throw new Error('Empty response received')
-        }
+      if (currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint) {
+        // This case is already handled above
+        return
       } else {
         // Test external AI provider by making a simple API call
         let apiUrl = currentConfig.endpoint
@@ -248,11 +268,10 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.endpoint}
                     onChange={(e) => updateConfig({ endpoint: e.target.value })}
-                    disabled={currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
-                      'Leave empty to use built-in Spark AI' : 
+                    {currentConfig.provider === 'ai-foundry' ? 
+                      'Leave empty to use built-in Spark AI, or enter custom endpoint' : 
                       'Full API endpoint URL including https://'}
                   </p>
                 </div>
@@ -283,16 +302,15 @@ export function AIConfigDialog() {
                     placeholder={
                       currentConfig.provider === 'azure' ? 'Azure API key' :
                       currentConfig.provider === 'openai' ? 'sk-...' :
-                      currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 'Not required for built-in AI' :
+                      currentConfig.provider === 'ai-foundry' ? (currentConfig.endpoint ? 'API key for custom endpoint' : 'Not required for built-in AI') :
                       'API key'
                     }
                     value={currentConfig.apiKey}
                     onChange={(e) => updateConfig({ apiKey: e.target.value })}
-                    disabled={currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint}
                   />
                   <Button 
                     onClick={testConnection} 
-                    disabled={isTestingConnection || (currentConfig.provider !== 'ai-foundry' && (!currentConfig.endpoint || !currentConfig.apiKey))}
+                    disabled={isTestingConnection}
                     variant="outline"
                     size="sm"
                     className="gap-2"
@@ -303,7 +321,7 @@ export function AIConfigDialog() {
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
-                    'Built-in AI requires no API key' : 
+                    'Built-in AI requires no API key - leave empty unless using custom endpoint' : 
                     'Your API key is stored locally and never shared'}
                 </p>
                 {connectionStatus === 'success' && (

@@ -29,6 +29,8 @@ export function HealthChecker() {
     const testSuite = [
       { name: 'KV Storage Availability', test: testKVStorage, category: 'storage' as const },
       { name: 'KV Read/Write Operations', test: testKVOperations, category: 'storage' as const },
+      { name: 'KV Key Listing', test: testKVKeyListing, category: 'storage' as const },
+      { name: 'Chat Message Storage', test: testChatMessageStorage, category: 'storage' as const },
       { name: 'Chat ID Validation', test: testChatValidation, category: 'validation' as const },
       { name: 'AI Service Initialization', test: testAIService, category: 'ai' as const },
       { name: 'Spark API Access', test: testSparkAPI, category: 'network' as const },
@@ -101,6 +103,52 @@ export function HealthChecker() {
     }
   }
 
+  const testKVKeyListing = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
+    try {
+      const keys = await (window as any).spark.kv.keys()
+      
+      if (!Array.isArray(keys)) {
+        throw new Error('Keys method did not return an array')
+      }
+      
+      return { 
+        status: 'passed', 
+        message: `KV key listing working correctly (${keys.length} keys found)`,
+        details: keys.length > 0 ? `Sample keys: ${keys.slice(0, 5).join(', ')}` : 'No keys found'
+      }
+    } catch (error) {
+      return { status: 'failed', message: 'KV key listing failed', details: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
+
+  const testChatMessageStorage = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
+    try {
+      const testChatId = 'chat-test-health-check'
+      const testKey = `chat-messages-${testChatId}`
+      const testMessages = [
+        {
+          id: 'msg-test-1',
+          content: 'Test message',
+          sender: 'user',
+          timestamp: new Date().toISOString(),
+          type: 'text'
+        }
+      ]
+      
+      await (window as any).spark.kv.set(testKey, testMessages)
+      const retrieved = await (window as any).spark.kv.get(testKey)
+      
+      if (!retrieved || !Array.isArray(retrieved) || retrieved.length !== 1) {
+        throw new Error('Chat message storage integrity check failed')
+      }
+      
+      await (window as any).spark.kv.delete(testKey)
+      return { status: 'passed', message: 'Chat message storage working correctly' }
+    } catch (error) {
+      return { status: 'failed', message: 'Chat message storage failed', details: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
+
   const testChatValidation = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
     try {
       const { isValidChatId } = await import('../../utils/errorHandling')
@@ -128,6 +176,7 @@ export function HealthChecker() {
 
   const testAIService = async (): Promise<Omit<TestResult, 'name' | 'category'>> => {
     try {
+      // Import the AI service
       const { aiService } = await import('../ai/EnhancedAIService')
       await aiService.initializeConfig()
       
@@ -136,7 +185,10 @@ export function HealthChecker() {
         return { status: 'warning', message: 'AI service initialized but missing configuration' }
       }
       
-      return { status: 'passed', message: 'AI service initialized successfully' }
+      return { 
+        status: 'passed', 
+        message: `AI service initialized successfully (Provider: ${config.provider}, Model: ${config.model})` 
+      }
     } catch (error) {
       return { status: 'failed', message: 'AI service initialization failed', details: error instanceof Error ? error.message : 'Unknown error' }
     }

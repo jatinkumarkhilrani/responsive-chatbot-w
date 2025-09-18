@@ -69,7 +69,10 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
   }
   
   const sanitizedChatId = sanitizeKVKey(chatId)
-  const [messages, setMessages] = useKV<Message[]>(`chat-messages-${sanitizedChatId}`, [])
+  const kvKey = `chat-messages-${sanitizedChatId}`
+  
+  // Use a more defensive approach to KV storage with error handling
+  const [messages, setMessages] = useKV<Message[]>(kvKey, [])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const aiService = useAIService()
@@ -90,6 +93,16 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
     initializeAI()
   }, [aiService])
 
+  // Add debug logging for KV storage
+  useEffect(() => {
+    console.log('ChatInterface mounted with:', {
+      chatId,
+      sanitizedChatId,
+      kvKey,
+      messagesLength: messages?.length || 0
+    })
+  }, [chatId, sanitizedChatId, kvKey, messages])
+
   const sendMessage = async () => {
     if (!message.trim() || isSending) return
 
@@ -103,12 +116,17 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
     }
 
     try {
+      console.log('Attempting to save user message to KV key:', kvKey)
       setMessages(prev => {
         const currentMessages = prev || []
-        return [...currentMessages, userMessage]
+        console.log('Current messages length:', currentMessages.length)
+        const updatedMessages = [...currentMessages, userMessage]
+        console.log('Updated messages length:', updatedMessages.length)
+        return updatedMessages
       })
     } catch (error) {
-      const appError = handleKVError(error, 'add user message')
+      console.error('KV Storage Error Details:', error)
+      const appError = handleKVError(error, 'add user message', kvKey)
       toast.error(appError.message)
       setIsSending(false)
       return

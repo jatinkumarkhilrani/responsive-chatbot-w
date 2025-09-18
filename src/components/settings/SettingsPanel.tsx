@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../../hooks/useKV'
 import { toast } from 'sonner'
 import { AIConfigDialog } from '../ai/AIConfigDialog'
 import { PrivacySettings } from '../privacy/PrivacySettings'
@@ -121,9 +121,9 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
   const providerStatus = getAIProviderStatus()
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="settings-tab-content h-full flex flex-col bg-background">
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-none p-2 sm:p-3 md:p-4 lg:p-6 space-y-3 sm:space-y-4">
+        <div className="settings-content w-full max-w-none p-2 sm:p-3 md:p-4 lg:p-6 space-y-3 sm:space-y-4">
           <div className="flex flex-col gap-2 mb-3 sm:mb-4">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-lg bg-primary flex items-center justify-center shrink-0">
@@ -139,8 +139,8 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
           </div>
 
           <Tabs defaultValue="ai" className="space-y-3 sm:space-y-4">
-            <div className="w-full overflow-x-auto pb-2">
-              <TabsList className="h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg">
+            <div className="settings-tabs-container w-full overflow-x-auto pb-2">
+              <TabsList className="settings-tabs-list h-auto flex items-center justify-start w-max min-w-full sm:min-w-0 p-1 bg-muted rounded-lg">
                 <TabsTrigger value="ai" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 whitespace-nowrap data-[state=active]:bg-background flex items-center gap-1 sm:gap-2">
                   <Robot className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
                   <span>AI Config</span>
@@ -160,7 +160,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
               </TabsList>
             </div>
 
-            <TabsContent value="ai" className="space-y-3 sm:space-y-4">
+            <TabsContent value="ai" className="settings-tab-content space-y-3 sm:space-y-4">
               <Card>
                 <CardHeader className="pb-3 sm:pb-4">
                   <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
@@ -172,14 +172,14 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 sm:space-y-4">
-                  <div className="p-2 sm:p-3 border rounded-lg bg-card">
+                  <div className="provider-status-layout p-2 sm:p-3 border rounded-lg bg-card">
                     <div className="flex items-start gap-2 sm:gap-3">
                       <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 mt-1 ${
                         providerStatus.color === 'default' ? 'bg-success' : 'bg-secondary'
                       }`} />
                       <div className="min-w-0 flex-1 space-y-1 sm:space-y-2">
-                        <h3 className="font-medium text-xs sm:text-sm md:text-base leading-tight">Current Provider</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground break-words leading-relaxed">
+                        <h3 className="font-medium text-xs sm:text-sm md:text-base leading-tight card-text-content">Current Provider</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground break-words leading-relaxed card-text-content">
                           {aiConfig?.provider?.toUpperCase() || 'AI-FOUNDRY'} - {aiConfig?.model || 'gpt-4o'}
                         </p>
                       </div>
@@ -214,32 +214,32 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                  <div className="ai-features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                     <div className="p-3 sm:p-4 border rounded-lg text-center bg-card">
-                      <div className="text-sm sm:text-base font-bold mb-1">
+                      <div className="text-sm sm:text-base font-bold mb-1 card-text-content">
                         {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground">Mood Detection</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground card-text-content">Mood Detection</div>
                     </div>
                     <div className="p-3 sm:p-4 border rounded-lg text-center bg-card">
-                      <div className="text-sm sm:text-base font-bold mb-1">
+                      <div className="text-sm sm:text-base font-bold mb-1 card-text-content">
                         {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground">Hyperlocal AI</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground card-text-content">Hyperlocal AI</div>
                     </div>
                     <div className="p-3 sm:p-4 border rounded-lg text-center bg-card sm:col-span-2 lg:col-span-1">
-                      <div className="text-sm sm:text-base font-bold mb-1">
+                      <div className="text-sm sm:text-base font-bold mb-1 card-text-content">
                         {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                       </div>
-                      <div className="text-xs sm:text-sm text-muted-foreground">Group Intelligence</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground card-text-content">Group Intelligence</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="privacy" className="space-y-3 sm:space-y-6">
-              <div className="max-w-none">
+            <TabsContent value="privacy" className="settings-tab-content space-y-3 sm:space-y-6">
+              <div className="max-w-none w-full">
                 <PrivacySettings 
                   initialConsents={userConsents}
                   onComplete={onConsentUpdate}

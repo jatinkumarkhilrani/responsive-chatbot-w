@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../../hooks/useKV'
 import { toast } from 'sonner'
 import { sanitizeKVKey, isValidChatId } from '../../utils/errorHandling'
 

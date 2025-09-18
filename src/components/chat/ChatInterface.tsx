@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../../hooks/useKV'
 import { toast } from 'sonner'
 import { useAIService } from '../ai/EnhancedAIService'
 import { handleKVError, sanitizeKVKey, isValidChatId } from '../../utils/errorHandling'
@@ -340,7 +340,7 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="chat-container h-full flex flex-col bg-background">
       {/* Header */}
       <div className="p-4 border-b border-border bg-card flex items-center gap-3" role="banner">
         <Button variant="ghost" size="icon" onClick={onBack} aria-label="Go back to chat list">
@@ -359,7 +359,7 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" role="main" aria-live="polite" aria-label="Chat messages">
+      <div className="chat-messages-area flex-1 overflow-y-auto p-4 space-y-4" role="main" aria-live="polite" aria-label="Chat messages">
         {messages?.length === 0 && (
           <div className="text-center py-8">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -412,7 +412,7 @@ export function ChatInterface({ chatId, userConsents, onBack, onChatUpdate }: Ch
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-border bg-card" role="form" aria-label="Message input">
+      <div className="chat-input-area p-4 border-t border-border bg-card" role="form" aria-label="Message input">
         <div className="flex items-end gap-2">
           <Button
             variant="outline"

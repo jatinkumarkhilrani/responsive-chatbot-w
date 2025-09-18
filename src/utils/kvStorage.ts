@@ -1,5 +1,6 @@
 /**
  * Enhanced KV storage utilities with better error handling and retries
+ * Falls back to localStorage when Spark KV is not available
  */
 
 export class KVStorageError extends Error {
@@ -13,6 +14,60 @@ export interface KVOptions {
   retries?: number
   timeout?: number
   fallbackValue?: any
+}
+
+// Check if Spark KV is available
+const isSparkAvailable = () => {
+  return typeof window !== 'undefined' && 
+         window.spark && 
+         window.spark.kv
+}
+
+// LocalStorage fallback implementation
+class LocalStorageKV {
+  static async get<T>(key: string): Promise<T | undefined> {
+    try {
+      const item = localStorage.getItem(`sahaay-kv-${key}`)
+      return item ? JSON.parse(item) : undefined
+    } catch (error) {
+      console.warn('LocalStorage get error:', error)
+      return undefined
+    }
+  }
+
+  static async set<T>(key: string, value: T): Promise<void> {
+    try {
+      localStorage.setItem(`sahaay-kv-${key}`, JSON.stringify(value))
+    } catch (error) {
+      console.warn('LocalStorage set error:', error)
+      throw error
+    }
+  }
+
+  static async delete(key: string): Promise<void> {
+    try {
+      localStorage.removeItem(`sahaay-kv-${key}`)
+    } catch (error) {
+      console.warn('LocalStorage delete error:', error)
+      throw error
+    }
+  }
+
+  static async keys(): Promise<string[]> {
+    try {
+      const keys: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('sahaay-kv-')) {
+          keys.push(key.replace('sahaay-kv-', ''))
+        }
+      }
+      return keys
+    } catch (error) {
+      console.warn('LocalStorage keys error:', error)
+      return []
+    }
+  }
 }
 
 export class EnhancedKV {
@@ -50,7 +105,14 @@ export class EnhancedKV {
   static async get<T>(key: string, defaultValue?: T, options?: KVOptions): Promise<T> {
     try {
       return await this.retryOperation(async () => {
-        const value = await (window as any).spark.kv.get(key)
+        let value: T | undefined
+        
+        if (isSparkAvailable()) {
+          value = await (window as any).spark.kv.get(key)
+        } else {
+          value = await LocalStorageKV.get<T>(key)
+        }
+        
         return value !== undefined ? value : (defaultValue as T)
       }, options)
     } catch (error) {
@@ -68,7 +130,11 @@ export class EnhancedKV {
   static async set<T>(key: string, value: T, options?: KVOptions): Promise<void> {
     try {
       await this.retryOperation(async () => {
-        await (window as any).spark.kv.set(key, value)
+        if (isSparkAvailable()) {
+          await (window as any).spark.kv.set(key, value)
+        } else {
+          await LocalStorageKV.set(key, value)
+        }
       }, options)
     } catch (error) {
       console.error(`Failed to set KV key "${key}":`, error)
@@ -79,7 +145,11 @@ export class EnhancedKV {
   static async delete(key: string, options?: KVOptions): Promise<void> {
     try {
       await this.retryOperation(async () => {
-        await (window as any).spark.kv.delete(key)
+        if (isSparkAvailable()) {
+          await (window as any).spark.kv.delete(key)
+        } else {
+          await LocalStorageKV.delete(key)
+        }
       }, options)
     } catch (error) {
       console.error(`Failed to delete KV key "${key}":`, error)
@@ -90,7 +160,11 @@ export class EnhancedKV {
   static async keys(options?: KVOptions): Promise<string[]> {
     try {
       return await this.retryOperation(async () => {
-        return await (window as any).spark.kv.keys()
+        if (isSparkAvailable()) {
+          return await (window as any).spark.kv.keys()
+        } else {
+          return await LocalStorageKV.keys()
+        }
       }, options)
     } catch (error) {
       console.error('Failed to get KV keys:', error)

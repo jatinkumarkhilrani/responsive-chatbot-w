@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../hooks/useKV'
 import { toast } from 'sonner'
 import { ChatInterface } from './chat/ChatInterface'
 import { PrivacySettings } from './privacy/PrivacySettings'
@@ -32,10 +32,10 @@ export function MessagingApp() {
   }
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
+    <div className="messaging-app-container flex h-screen w-full bg-background overflow-hidden">
       {/* Sidebar */}
-      <div className={`w-full sm:w-80 lg:w-96 border-r border-border bg-card flex flex-col sm:flex-none ${
-        activeChatId ? 'hidden sm:flex' : 'flex'
+      <div className={`sidebar-container w-full sm:w-80 lg:w-96 ${
+        activeChatId ? 'has-active-chat hidden sm:flex' : 'flex'
       }`} role="navigation" aria-label="Chat navigation">
         <div className="p-3 sm:p-4 border-b border-border">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -104,9 +104,9 @@ export function MessagingApp() {
       </div>
 
       {/* Main Chat Area - Ensure full width usage */}
-      <div className={`flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      <div className={`main-content-area flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
-          <div className="w-full h-full flex flex-col overflow-hidden">
+          <div className="chat-interface-wrapper w-full h-full">
             <ChatInterface 
               chatId={activeChatId} 
               userConsents={userConsents || {}}

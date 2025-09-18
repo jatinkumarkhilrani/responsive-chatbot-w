@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '../../hooks/useKV'
 import { toast } from 'sonner'
 import { AIConfigDialog } from './AIConfigDialog'
 

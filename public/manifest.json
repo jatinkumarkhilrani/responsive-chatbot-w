@@ -2,21 +2,21 @@
   "name": "Sahaay - Privacy-First AI Messaging",
   "short_name": "Sahaay",
   "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
-  "start_url": "/",
+  "start_url": "/sahaay-ai-messaging/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4338ca",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "/sahaay-ai-messaging/",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/sahaay-ai-messaging/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/sahaay-ai-messaging/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
@@ -29,15 +29,15 @@
       "name": "New Chat",
       "short_name": "Chat",
       "description": "Start a new conversation",
-      "url": "/chat",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "/sahaay-ai-messaging/chat",
+      "icons": [{ "src": "/sahaay-ai-messaging/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Settings",
       "short_name": "Settings",
       "description": "Manage your AI and privacy settings",
-      "url": "/settings",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "/sahaay-ai-messaging/settings",
+      "icons": [{ "src": "/sahaay-ai-messaging/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

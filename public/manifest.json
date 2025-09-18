@@ -1,15 +1,12 @@
 {
   "name": "Sahaay - Privacy-First AI Messaging",
   "short_name": "Sahaay",
-  "description": "Privacy-first AI messaging companion for India with hyperlocal intelligence",
+  "description": "WhatsApp-like messaging with AI capabilities, privacy-first design, and hyperlocal intelligence for India.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4338ca",
   "orientation": "portrait-primary",
-  "categories": ["productivity", "communication", "utilities"],
-  "lang": "en-US",
-  "dir": "ltr",
   "icons": [
     {
       "src": "/favicon.svg",
@@ -19,22 +16,28 @@
     },
     {
       "src": "/favicon.ico",
-      "sizes": "32x32",
+      "sizes": "48x48",
       "type": "image/x-icon"
     }
   ],
+  "categories": ["productivity", "social", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
   "screenshots": [
     {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
+      "src": "/screenshot-mobile.png",
+      "sizes": "375x812",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "narrow",
+      "label": "Sahaay mobile interface"
     },
     {
-      "src": "/screenshot-narrow.png", 
-      "sizes": "360x640",
+      "src": "/screenshot-desktop.png", 
+      "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "wide",
+      "label": "Sahaay desktop interface"
     }
   ]
 }

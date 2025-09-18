@@ -133,3 +133,102 @@ body {
     min-height: 44px;
   }
 }
+
+/* Fix tab content overflow issues */
+.tab-content-container {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* Better grid layouts for cards */
+.responsive-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Ensure proper card spacing */
+.card-content {
+  padding: 1rem;
+}
+
+@media (max-width: 640px) {
+  .card-content {
+    padding: 0.75rem;
+  }
+}
+
+/* Fix overlapping text in feature status cards */
+.feature-status-card {
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .feature-status-card {
+    min-height: 70px;
+    padding: 0.75rem;
+  }
+}
+
+/* Better spacing for settings content */
+.settings-content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.settings-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.settings-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Improve form field spacing */
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .form-field {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Better responsive flex layouts */
+.responsive-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.responsive-flex > * {
+  flex: 1;
+  min-width: 200px;
+}
+
+@media (max-width: 640px) {
+  .responsive-flex {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .responsive-flex > * {
+    min-width: auto;
+  }
+}

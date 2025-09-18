@@ -209,56 +209,55 @@ export function AIConfigDialog() {
           AI Settings
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-auto p-4 sm:p-6">
-        <DialogHeader className="space-y-2">
-          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg leading-tight">
-            <Robot className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+      <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[95vh] overflow-y-auto mx-auto">
+        <DialogHeader className="space-y-3 pb-6">
+          <DialogTitle className="flex items-center gap-3 text-lg md:text-xl leading-tight">
+            <Robot className="w-6 h-6 text-primary shrink-0" />
             AI Configuration
           </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm leading-relaxed">
+          <DialogDescription className="text-sm leading-relaxed">
             Configure your AI provider and customize Sahaay's behavior while maintaining privacy and security.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-8">
           {/* Provider Selection */}
           <Card>
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="text-sm sm:text-base">AI Provider</CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
+            <CardHeader className="pb-6">
+              <CardTitle className="text-base md:text-lg">AI Provider</CardTitle>
+              <CardDescription className="text-sm">
                 Choose your AI provider for enhanced security and customization
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="provider" className="text-xs sm:text-sm">Provider</Label>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="provider" className="text-sm font-medium">Provider</Label>
                 <Select 
                   value={currentConfig.provider} 
                   onValueChange={(value: AIConfig['provider']) => updateConfig({ provider: value })}
                 >
-                  <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectTrigger className="text-sm h-12">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-foundry" className="text-xs sm:text-sm">Microsoft AI Foundry</SelectItem>
-                    <SelectItem value="azure" className="text-xs sm:text-sm">Azure OpenAI</SelectItem>
-                    <SelectItem value="openai" className="text-xs sm:text-sm">OpenAI API</SelectItem>
-                    <SelectItem value="custom" className="text-xs sm:text-sm">Custom Endpoint</SelectItem>
+                    <SelectItem value="ai-foundry" className="text-sm">Microsoft AI Foundry</SelectItem>
+                    <SelectItem value="azure" className="text-sm">Azure OpenAI</SelectItem>
+                    <SelectItem value="openai" className="text-sm">OpenAI API</SelectItem>
+                    <SelectItem value="custom" className="text-sm">Custom Endpoint</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {getProviderDescription(currentConfig.provider)}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="endpoint" className="text-xs sm:text-sm font-medium">API Endpoint</Label>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="endpoint" className="text-sm font-medium">API Endpoint</Label>
                   <Input
                     id="endpoint"
                     type="url"
-                    className="text-sm font-mono min-h-[44px] w-full"
-                    style={{ fontSize: '16px' }}
+                    className="text-sm font-mono h-12"
                     placeholder={
                       currentConfig.provider === 'azure' 
                         ? 'https://your-resource.openai.azure.com'
@@ -270,21 +269,19 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.endpoint || ''}
                     onChange={(e) => updateConfig({ endpoint: e.target.value })}
-                    readOnly={false}
                     autoComplete="url"
                   />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {currentConfig.provider === 'ai-foundry' ? 
                       'Leave empty to use built-in Spark AI, or enter custom endpoint' : 
                       'Full API endpoint URL including https://'}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="model" className="text-xs sm:text-sm font-medium">Model</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="model" className="text-sm font-medium">Model</Label>
                   <Input
                     id="model"
-                    className="text-sm min-h-[44px] w-full"
-                    style={{ fontSize: '16px' }}
+                    className="text-sm h-12"
                     placeholder={
                       currentConfig.provider === 'azure' ? 'your-deployment-name' :
                       currentConfig.provider === 'openai' ? 'gpt-4o' :
@@ -292,23 +289,21 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.model || ''}
                     onChange={(e) => updateConfig({ model: e.target.value })}
-                    readOnly={false}
                     autoComplete="off"
                   />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {currentConfig.provider === 'azure' ? 'Azure deployment name' : 'Model identifier'}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="api-key" className="text-xs sm:text-sm font-medium">API Key</Label>
-                <div className="flex flex-col gap-2">
+              <div className="space-y-3">
+                <Label htmlFor="api-key" className="text-sm font-medium">API Key</Label>
+                <div className="space-y-4">
                   <Input
                     id="api-key"
                     type="password"
-                    className="text-sm font-mono min-h-[44px] w-full"
-                    style={{ fontSize: '16px' }}
+                    className="text-sm font-mono h-12"
                     placeholder={
                       currentConfig.provider === 'azure' ? 'Azure API key' :
                       currentConfig.provider === 'openai' ? 'sk-...' :
@@ -317,21 +312,20 @@ export function AIConfigDialog() {
                     }
                     value={currentConfig.apiKey || ''}
                     onChange={(e) => updateConfig({ apiKey: e.target.value })}
-                    readOnly={false}
                     autoComplete="new-password"
                   />
                   <Button 
                     onClick={testConnection} 
                     disabled={isTestingConnection}
                     variant="outline"
-                    size="sm"
-                    className="w-full gap-2 text-xs sm:text-sm min-h-[44px]"
+                    size="lg"
+                    className="w-full gap-2"
                   >
                     <TestTube className="w-4 h-4 shrink-0" />
                     {isTestingConnection ? 'Testing...' : 'Test Connection'}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {currentConfig.provider === 'ai-foundry' && !currentConfig.endpoint ? 
                     'Built-in AI requires no API key - leave empty unless using custom endpoint' : 
                     'Your API key is stored locally and never shared'}
@@ -339,13 +333,13 @@ export function AIConfigDialog() {
                 {connectionStatus === 'success' && (
                   <Alert className="border-success text-success">
                     <CheckCircle className="h-4 w-4" />
-                    <AlertDescription className="text-xs sm:text-sm">Connection successful!</AlertDescription>
+                    <AlertDescription className="text-sm">Connection successful!</AlertDescription>
                   </Alert>
                 )}
                 {connectionStatus === 'error' && (
                   <Alert variant="destructive">
                     <Warning className="h-4 w-4" />
-                    <AlertDescription className="text-xs sm:text-sm">Failed to connect. Check your credentials.</AlertDescription>
+                    <AlertDescription className="text-sm">Failed to connect. Check your credentials.</AlertDescription>
                   </Alert>
                 )}
               </div>
@@ -354,15 +348,15 @@ export function AIConfigDialog() {
 
           {/* Model Configuration */}
           <Card>
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="text-sm sm:text-base">Model Behavior</CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
+            <CardHeader className="pb-6">
+              <CardTitle className="text-base md:text-lg">Model Behavior</CardTitle>
+              <CardDescription className="text-sm">
                 Customize how Sahaay responds and behaves
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="temperature" className="text-xs sm:text-sm">Temperature: {currentConfig.temperature ?? 0.7}</Label>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label htmlFor="temperature" className="text-sm font-medium">Temperature: {currentConfig.temperature ?? 0.7}</Label>
                 <input
                   id="temperature"
                   type="range"
@@ -371,25 +365,25 @@ export function AIConfigDialog() {
                   step="0.1"
                   value={currentConfig.temperature ?? 0.7}
                   onChange={(e) => updateConfig({ temperature: parseFloat(e.target.value) })}
-                  className="w-full"
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Focused</span>
                   <span>Creative</span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="system-prompt" className="text-xs sm:text-sm">System Prompt</Label>
+              <div className="space-y-3">
+                <Label htmlFor="system-prompt" className="text-sm font-medium">System Prompt</Label>
                 <Textarea
                   id="system-prompt"
-                  rows={4}
-                  className="text-xs sm:text-sm"
+                  rows={6}
+                  className="text-sm"
                   placeholder="Define how Sahaay should behave..."
                   value={currentConfig.systemPrompt || ''}
                   onChange={(e) => updateConfig({ systemPrompt: e.target.value })}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   This prompt defines Sahaay's personality and behavior guidelines
                 </p>
               </div>
@@ -398,80 +392,82 @@ export function AIConfigDialog() {
 
           {/* Feature Toggles */}
           <Card>
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+            <CardHeader className="pb-6">
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Shield className="w-5 h-5" />
                 Privacy-First Features
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
+              <CardDescription className="text-sm">
                 Enable AI capabilities with granular privacy controls
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col gap-2 p-3 border rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5 flex-1 min-w-0">
-                    <Label className="text-xs sm:text-sm">Mood Detection</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Analyze message tone to provide empathetic responses
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Switch
-                      checked={currentConfig.moodDetectionEnabled}
-                      onCheckedChange={(checked) => updateConfig({ moodDetectionEnabled: checked })}
-                    />
-                    <Badge variant={currentConfig.moodDetectionEnabled ? "default" : "secondary"} className="text-xs">
-                      {currentConfig.moodDetectionEnabled ? 'On' : 'Off'}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 p-3 border rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5 flex-1 min-w-0">
-                    <Label className="text-xs sm:text-sm">Hyperlocal Intelligence</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Provide location-aware suggestions and local context
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Switch
-                      checked={currentConfig.hyperlocalEnabled}
-                      onCheckedChange={(checked) => updateConfig({ hyperlocalEnabled: checked })}
-                    />
-                    <Badge variant={currentConfig.hyperlocalEnabled ? "default" : "secondary"} className="text-xs">
-                      {currentConfig.hyperlocalEnabled ? 'On' : 'Off'}
-                    </Badge>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-4 p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <Label className="text-sm font-medium">Mood Detection</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Analyze message tone to provide empathetic responses
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <Switch
+                        checked={currentConfig.moodDetectionEnabled}
+                        onCheckedChange={(checked) => updateConfig({ moodDetectionEnabled: checked })}
+                      />
+                      <Badge variant={currentConfig.moodDetectionEnabled ? "default" : "secondary"} className="text-sm">
+                        {currentConfig.moodDetectionEnabled ? 'On' : 'Off'}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-2 p-3 border rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5 flex-1 min-w-0">
-                    <Label className="text-xs sm:text-sm">Group Intelligence</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Summarize conversations and track group dynamics
-                    </p>
+                <div className="flex flex-col gap-4 p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <Label className="text-sm font-medium">Hyperlocal Intelligence</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Provide location-aware suggestions and local context
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <Switch
+                        checked={currentConfig.hyperlocalEnabled}
+                        onCheckedChange={(checked) => updateConfig({ hyperlocalEnabled: checked })}
+                      />
+                      <Badge variant={currentConfig.hyperlocalEnabled ? "default" : "secondary"} className="text-sm">
+                        {currentConfig.hyperlocalEnabled ? 'On' : 'Off'}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Switch
-                      checked={currentConfig.groupIntelligenceEnabled}
-                      onCheckedChange={(checked) => updateConfig({ groupIntelligenceEnabled: checked })}
-                    />
-                    <Badge variant={currentConfig.groupIntelligenceEnabled ? "default" : "secondary"} className="text-xs">
-                      {currentConfig.groupIntelligenceEnabled ? 'On' : 'Off'}
-                    </Badge>
+                </div>
+
+                <div className="flex flex-col gap-4 p-4 border rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <Label className="text-sm font-medium">Group Intelligence</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Summarize conversations and track group dynamics
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <Switch
+                        checked={currentConfig.groupIntelligenceEnabled}
+                        onCheckedChange={(checked) => updateConfig({ groupIntelligenceEnabled: checked })}
+                      />
+                      <Badge variant={currentConfig.groupIntelligenceEnabled ? "default" : "secondary"} className="text-sm">
+                        {currentConfig.groupIntelligenceEnabled ? 'On' : 'Off'}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex flex-col gap-2 pt-2">
-            <Button variant="outline" onClick={() => setIsOpen(false)} className="w-full text-xs sm:text-sm">
+          <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
+            <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1">
               Cancel
             </Button>
             <Button onClick={() => {
@@ -490,7 +486,7 @@ export function AIConfigDialog() {
                 const appError = handleAIError(error, 'save configuration')
                 toast.error(appError.message)
               }
-            }} className="w-full text-xs sm:text-sm">
+            }} className="flex-1">
               Save Configuration
             </Button>
           </div>

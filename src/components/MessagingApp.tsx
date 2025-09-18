@@ -103,24 +103,26 @@ export function MessagingApp() {
         </Tabs>
       </div>
 
-      {/* Main Chat Area */}
-      <div className={`flex-1 min-w-0 ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
+      {/* Main Chat Area - Fixed to take full remaining width */}
+      <div className={`flex-1 min-w-0 w-full ${activeChatId ? 'flex' : 'hidden sm:flex'}`}>
         {activeChatId ? (
-          <ChatInterface 
-            chatId={activeChatId} 
-            userConsents={userConsents || {}}
-            onBack={() => setActiveChatId(null)}
-            onChatUpdate={(chatId, lastMessage) => {
-              // Find and update the chat in the list
-              // This is a bit hacky but works for the current architecture
-              const event = new CustomEvent('updateChatLastMessage', { 
-                detail: { chatId, lastMessage } 
-              })
-              window.dispatchEvent(event)
-            }}
-          />
+          <div className="w-full h-full">
+            <ChatInterface 
+              chatId={activeChatId} 
+              userConsents={userConsents || {}}
+              onBack={() => setActiveChatId(null)}
+              onChatUpdate={(chatId, lastMessage) => {
+                // Find and update the chat in the list
+                // This is a bit hacky but works for the current architecture
+                const event = new CustomEvent('updateChatLastMessage', { 
+                  detail: { chatId, lastMessage } 
+                })
+                window.dispatchEvent(event)
+              }}
+            />
+          </div>
         ) : (
-          <div className="h-full flex items-center justify-center p-4 sm:p-8">
+          <div className="h-full flex items-center justify-center p-4 sm:p-8 w-full">
             <div className="text-center max-w-md">
               <Robot className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
               <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-2">Welcome to Sahaay</h2>

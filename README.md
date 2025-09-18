@@ -1,23 +1,88 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+# Sahaay - Privacy-First AI Messaging
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+A WhatsApp-like messaging app with advanced AI capabilities, privacy-first design, and hyperlocal intelligence for India.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+## Features
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+- 🔒 **Privacy-First Design**: All data stored locally on your device
+- 🤖 **Configurable AI Providers**: Support for Azure OpenAI, OpenAI API, AI Foundry, and custom endpoints  
+- 🌍 **Hyperlocal Intelligence**: Location-aware suggestions and local context for India
+- 😊 **Mood Detection**: Analyze message tone for empathetic responses
+- 👥 **Group Intelligence**: Conversation summaries and group dynamics
+- 💰 **Bill Processing**: Upload and process utility bills with payment assistance
+- 🗺️ **Route Optimization**: Traffic insights and route planning
+- 📱 **Mobile-First**: Responsive design optimized for mobile devices
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+## Live Demo
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+Visit the live application: [https://username.github.io/sahaay-ai-messaging/](https://username.github.io/sahaay-ai-messaging/)
 
-📄 License For Spark Template Resources 
+## Quick Start
 
-The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
+1. Open the application in your browser
+2. Complete the privacy consent flow
+3. Configure your AI provider in Settings → AI Configuration
+4. Start chatting with Sahaay!
+
+## Privacy & Compliance
+
+- **DPDPB (India) Aligned**: Purpose limitation, data minimization, user rights
+- **Consent-First**: Granular controls for mood detection, location, and group features
+- **Local Storage**: All data remains on your device
+- **No External Tracking**: Privacy-focused architecture
+
+## Technology Stack
+
+- **Frontend**: React 19, TypeScript, Tailwind CSS
+- **UI Components**: Radix UI, shadcn/ui
+- **Icons**: Phosphor Icons
+- **Build Tool**: Vite
+- **Deployment**: GitHub Pages
+
+## Configuration
+
+### AI Providers Supported
+
+- **Microsoft AI Foundry**: Built-in support with optional custom endpoints
+- **Azure OpenAI**: Enterprise-grade OpenAI with Azure security
+- **OpenAI API**: Direct integration with OpenAI's latest models
+- **Custom Endpoints**: Support for self-hosted or third-party AI services
+
+### Environment Setup
+
+No environment variables required for basic usage. AI provider configuration is done through the UI.
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Build for GitHub Pages
+npm run build:github
+
+# Deploy to GitHub Pages
+npm run deploy
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Disclaimer
+
+Sahaay is an AI-powered assistant and should not be used for medical, financial, or legal advice. Always verify important information independently.

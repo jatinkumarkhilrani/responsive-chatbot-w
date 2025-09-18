@@ -1,183 +1,102 @@
-# Chatbot Control Center
+# Sahaay - Privacy-First AI Messaging Companion
 
-A developer-controlled chatbot interface that enables fine-tuned conversation management with real-time response customization.
+Privacy-first messaging infrastructure with hyperlocal AI assistance, designed for India's diverse needs while maintaining strict data protection and user consent protocols.
 
 **Experience Qualities**:
-1. **Intuitive** - Natural conversation flow with clear developer controls
-2. **Responsive** - Instant feedback and seamless mobile experience  
-3. **Professional** - Clean, focused interface for development workflows
+1. **Trustworthy** - Every AI interaction is transparent with clear consent and data usage explanations
+2. **Contextual** - Understands your neighborhood, preferences, and communication patterns without compromising privacy
+3. **Respectful** - Acts only when invited, maintains group etiquette, and provides culturally appropriate responses
 
-**Complexity Level**: Light Application (multiple features with basic state)
-- Manages conversation state, developer controls, and real-time chat functionality while maintaining simplicity
+**Complexity Level**: Complex Application (advanced functionality, accounts)
+- Requires sophisticated AI processing, real-time messaging, privacy controls, compliance frameworks, and multi-modal input handling across diverse Indian contexts.
 
 ## Essential Features
 
-**Chat Interface**
-- Functionality: Real-time conversation display with message bubbles
-- Purpose: Provides natural chat experience for testing bot responses
-- Trigger: User types message and presses send
-- Progression: User input → Display in chat → Generate bot response → Show response
-- Success criteria: Messages appear instantly, conversation flows naturally
+### Core Messaging Infrastructure
+- **Functionality**: Real-time messaging with end-to-end encryption, group chats, media sharing
+- **Purpose**: Foundation for AI-enhanced communication while maintaining privacy
+- **Trigger**: User opens app or receives message
+- **Progression**: Open app → select chat → compose/send → receive responses → view message history
+- **Success criteria**: Messages deliver instantly, encryption status visible, offline sync works
 
-**Developer Response Control**
-- Functionality: Override/customize bot responses before they're sent
-- Purpose: Allows fine-tuning and testing of conversation flows
-- Trigger: Developer toggles control mode or edits pending response
-- Progression: Bot generates response → Developer reviews → Edit if needed → Approve/Send
-- Success criteria: Developer can modify any response before user sees it
+### AI Companion (Sahaay)
+- **Functionality**: Context-aware AI assistant with mood detection, route optimization, bill processing, group summarization
+- **Purpose**: Provide intelligent assistance without compromising user privacy
+- **Trigger**: @mention in groups, direct message to bot, specific keywords, or user request
+- **Progression**: User mentions @Sahaay → AI analyzes context → provides relevant response → offers follow-up actions
+- **Success criteria**: Responses are contextual, respectful, and actionable with clear disclaimers
 
-**Conversation History**
-- Functionality: Persistent chat history across sessions
-- Purpose: Maintains context for ongoing conversations and testing
-- Trigger: App loads or conversation continues
-- Progression: Load saved history → Display in chat → Continue conversation
-- Success criteria: All messages persist between sessions
+### User Profile & Consent Management
+- **Functionality**: Granular privacy controls, language preferences, context packs, consent tracking
+- **Purpose**: Give users complete control over their data and AI interactions
+- **Trigger**: First-time setup, settings access, or consent prompts
+- **Progression**: Settings → Privacy controls → Enable/disable features → Set preferences → Save with timestamps
+- **Success criteria**: All AI features require explicit consent, easy to revoke, transparent data usage
 
-**Mobile-Responsive Chat**
-- Functionality: Full chat functionality on mobile devices
-- Purpose: Enables testing and use on phones/tablets
-- Trigger: App accessed on mobile device
-- Progression: Mobile detection → Responsive layout → Touch-optimized interface
-- Success criteria: All features work smoothly on mobile screens
+### Hyperlocal Intelligence
+- **Functionality**: Neighborhood-aware suggestions, traffic patterns, local services, safety monitoring
+- **Purpose**: Provide relevant local context while protecting location privacy
+- **Trigger**: Location-based queries, safety alerts, or route requests
+- **Progression**: User asks about location → Check consent → Access local graph → Provide contextual response
+- **Success criteria**: Suggestions are accurate to user's area, privacy controls respected
 
-## Edge Case Handling
+### Smart Bill Processing
+- **Functionality**: OCR for utility bills, payment link generation, reminder systems
+- **Purpose**: Simplify bill management without storing sensitive payment data
+- **Trigger**: Photo upload of bill or payment reminder
+- **Progression**: Upload bill photo → OCR processing → Extract details → Offer UPI payment → Generate deep link
+- **Success criteria**: Accurate extraction, secure payment flows, no sensitive data storage
 
-- **Empty Messages**: Prevent sending blank messages with validation
-- **Long Messages**: Auto-wrap and scroll for lengthy text
-- **Network Issues**: Show connection status and retry options
-- **No History**: Display welcome message for new conversations
-- **LLM Errors**: Graceful fallback with error messaging
-
-## Design Direction
-
-The design should feel professional and developer-focused while maintaining approachability - clean lines, generous spacing, and intuitive controls that don't distract from the conversation flow.
-
-## Color Selection
-
-Complementary (opposite colors) - Using a calming blue-orange palette to create focus areas while maintaining readability and professional appearance.
-
-- **Primary Color**: Deep Blue (oklch(0.45 0.15 230)) - Communicates trust and professionalism for main actions
-- **Secondary Colors**: Light Gray (oklch(0.95 0.02 230)) - Supporting neutral background areas
-- **Accent Color**: Warm Orange (oklch(0.65 0.15 50)) - Attention-grabbing highlight for developer controls and CTAs
-- **Foreground/Background Pairings**: 
-  - Background (Light Blue #F8FAFC): Dark Blue text (oklch(0.25 0.1 230)) - Ratio 8.2:1 ✓
-  - Primary (Deep Blue): White text (oklch(1 0 0)) - Ratio 7.1:1 ✓
-  - Accent (Warm Orange): White text (oklch(1 0 0)) - Ratio 4.8:1 ✓
-  - Card (Pure White): Dark text (oklch(0.15 0 0)) - Ratio 12.6:1 ✓
-
-## Font Selection
-
-Modern, technical typeface that conveys clarity and precision while remaining friendly - Inter provides excellent readability across devices and scales.
-
-- **Typographic Hierarchy**:
-  - H1 (App Title): Inter Bold/24px/tight letter spacing
-  - H2 (Section Headers): Inter Semibold/18px/normal spacing  
-  - Body (Messages): Inter Regular/16px/relaxed line height
-  - Small (Timestamps): Inter Medium/12px/wide letter spacing
-
-## Animations
-
-Subtle functional animations that enhance usability without distraction - message send/receive should feel instant and satisfying, with gentle transitions for developer controls.
-
-- **Purposeful Meaning**: Smooth message appearance conveys successful communication, control panel slides reinforce developer authority
-- **Hierarchy of Movement**: Message bubbles have priority, then control toggles, background elements remain static
-
-## Component Selection
-
-- **Components**: Dialog for settings, Card for messages, Button for actions, Input for text entry, Switch for developer mode, Badge for status indicators
-- **Customizations**: Custom message bubble component with tail indicators, floating action button for mobile controls
-- **States**: Messages (sending/sent/error), Controls (enabled/disabled), Connection (online/offline/connecting)
-- **Icon Selection**: Send arrow, Settings gear, Edit pencil, Mobile phone, Desktop monitor
-- **Spacing**: Consistent 16px base unit with 8px for tight spacing, 24px for section separation
-- **Mobile**: Collapsible developer panel, bottom-fixed input area, full-height scrollable chat, touch-optimized button sizes (44px minimum)# Chatbot Control Center
-
-A developer-controlled chatbot interface that enables fine-tuned conversation management with real-time response customization.
-
-**Experience Qualities**:
-1. **Intuitive** - Natural conversation flow with clear developer controls
-2. **Responsive** - Instant feedback and seamless mobile experience  
-3. **Professional** - Clean, focused interface for development workflows
-
-**Complexity Level**: Light Application (multiple features with basic state)
-- Manages conversation state, developer controls, and real-time chat functionality while maintaining simplicity
-
-## Essential Features
-
-**Chat Interface**
-- Functionality: Real-time conversation display with message bubbles
-- Purpose: Provides natural chat experience for testing bot responses
-- Trigger: User types message and presses send
-- Progression: User input → Display in chat → Generate bot response → Show response
-- Success criteria: Messages appear instantly, conversation flows naturally
-
-**Developer Response Control**
-- Functionality: Override/customize bot responses before they're sent
-- Purpose: Allows fine-tuning and testing of conversation flows
-- Trigger: Developer toggles control mode or edits pending response
-- Progression: Bot generates response → Developer reviews → Edit if needed → Approve/Send
-- Success criteria: Developer can modify any response before user sees it
-
-**Conversation History**
-- Functionality: Persistent chat history across sessions
-- Purpose: Maintains context for ongoing conversations and testing
-- Trigger: App loads or conversation continues
-- Progression: Load saved history → Display in chat → Continue conversation
-- Success criteria: All messages persist between sessions
-
-**Mobile-Responsive Chat**
-- Functionality: Full chat functionality on mobile devices
-- Purpose: Enables testing and use on phones/tablets
-- Trigger: App accessed on mobile device
-- Progression: Mobile detection → Responsive layout → Touch-optimized interface
-- Success criteria: All features work smoothly on mobile screens
+### Group Intelligence
+- **Functionality**: Meeting summarization, action item tracking, participation analytics
+- **Purpose**: Help groups stay organized while respecting individual privacy
+- **Trigger**: @mention for summary, scheduled summaries, or explicit requests
+- **Progression**: @Sahaay summary → Analyze recent messages → Generate summary → Share with transparency note
+- **Success criteria**: Summaries are accurate, non-intrusive, and clearly attributed to AI
 
 ## Edge Case Handling
-
-- **Empty Messages**: Prevent sending blank messages with validation
-- **Long Messages**: Auto-wrap and scroll for lengthy text
-- **Network Issues**: Show connection status and retry options
-- **No History**: Display welcome message for new conversations
-- **LLM Errors**: Graceful fallback with error messaging
+- **Connectivity Issues**: Offline mode with message queuing and sync when reconnected
+- **Privacy Violations**: Immediate data deletion, user notification, and consent re-verification
+- **AI Hallucinations**: Clear disclaimers, confidence scores, and human override options
+- **Regional Variations**: Multi-language support with cultural context awareness
+- **Emergency Situations**: Priority routing for safety alerts with appropriate escalation
+- **Data Corruption**: Automatic backup verification and recovery protocols
 
 ## Design Direction
-
-The design should feel professional and developer-focused while maintaining approachability - clean lines, generous spacing, and intuitive controls that don't distract from the conversation flow.
+The design should feel trustworthy and transparent - like a reliable neighborhood friend who respects boundaries. Modern Indian aesthetic with warm, approachable colors that convey security and intelligence without being overwhelming. Clean, minimal interface that works well on diverse device capabilities and network conditions.
 
 ## Color Selection
+Triadic color scheme with trust-building blues, warm accent colors, and clear status indicators.
 
-Complementary (opposite colors) - Using a calming blue-orange palette to create focus areas while maintaining readability and professional appearance.
-
-- **Primary Color**: Deep Blue (oklch(0.45 0.15 230)) - Communicates trust and professionalism for main actions
-- **Secondary Colors**: Light Gray (oklch(0.95 0.02 230)) - Supporting neutral background areas
-- **Accent Color**: Warm Orange (oklch(0.65 0.15 50)) - Attention-grabbing highlight for developer controls and CTAs
+- **Primary Color**: Deep Ocean Blue (oklch(0.45 0.15 240)) - Conveys trust, reliability, and technological sophistication
+- **Secondary Colors**: Warm Sand (oklch(0.85 0.05 80)) for comfort and Sage Green (oklch(0.65 0.08 150)) for safety
+- **Accent Color**: Vibrant Orange (oklch(0.70 0.15 50)) for CTAs and important notifications
 - **Foreground/Background Pairings**: 
-  - Background (Light Blue #F8FAFC): Dark Blue text (oklch(0.25 0.1 230)) - Ratio 8.2:1 ✓
-  - Primary (Deep Blue): White text (oklch(1 0 0)) - Ratio 7.1:1 ✓
-  - Accent (Warm Orange): White text (oklch(1 0 0)) - Ratio 4.8:1 ✓
-  - Card (Pure White): Dark text (oklch(0.15 0 0)) - Ratio 12.6:1 ✓
+  - Background (White oklch(1 0 0)): Dark Gray text (oklch(0.25 0 0)) - Ratio 12.6:1 ✓
+  - Primary (Deep Blue oklch(0.45 0.15 240)): White text (oklch(1 0 0)) - Ratio 7.2:1 ✓
+  - Accent (Orange oklch(0.70 0.15 50)): Dark Blue text (oklch(0.25 0 0)) - Ratio 5.8:1 ✓
+  - Secondary (Sand oklch(0.85 0.05 80)): Dark Gray text (oklch(0.25 0 0)) - Ratio 8.4:1 ✓
 
 ## Font Selection
+Inter for its excellent multilingual support and readability across diverse Indian languages, with clear hierarchy that works well for both English and Devanagari scripts.
 
-Modern, technical typeface that conveys clarity and precision while remaining friendly - Inter provides excellent readability across devices and scales.
-
-- **Typographic Hierarchy**:
-  - H1 (App Title): Inter Bold/24px/tight letter spacing
-  - H2 (Section Headers): Inter Semibold/18px/normal spacing  
-  - Body (Messages): Inter Regular/16px/relaxed line height
-  - Small (Timestamps): Inter Medium/12px/wide letter spacing
+- **Typographic Hierarchy**: 
+  - H1 (App Title): Inter Bold/32px/tight letter spacing
+  - H2 (Chat Names): Inter SemiBold/18px/normal spacing
+  - H3 (AI Assistant): Inter Medium/16px with colored accent
+  - Body (Messages): Inter Regular/15px/relaxed line height
+  - Caption (Timestamps): Inter Regular/12px/muted color
 
 ## Animations
+Subtle, purposeful animations that enhance trust and provide clear feedback - smooth transitions that feel natural rather than flashy, with respect for device performance limitations common in India.
 
-Subtle functional animations that enhance usability without distraction - message send/receive should feel instant and satisfying, with gentle transitions for developer controls.
-
-- **Purposeful Meaning**: Smooth message appearance conveys successful communication, control panel slides reinforce developer authority
-- **Hierarchy of Movement**: Message bubbles have priority, then control toggles, background elements remain static
+- **Purposeful Meaning**: Gentle transitions reinforce privacy (lock icons), AI thinking (subtle pulse), and message delivery (check animations)
+- **Hierarchy of Movement**: Priority to safety alerts > AI responses > general messaging > UI polish
 
 ## Component Selection
-
-- **Components**: Dialog for settings, Card for messages, Button for actions, Input for text entry, Switch for developer mode, Badge for status indicators
-- **Customizations**: Custom message bubble component with tail indicators, floating action button for mobile controls
-- **States**: Messages (sending/sent/error), Controls (enabled/disabled), Connection (online/offline/connecting)
-- **Icon Selection**: Send arrow, Settings gear, Edit pencil, Mobile phone, Desktop monitor
-- **Spacing**: Consistent 16px base unit with 8px for tight spacing, 24px for section separation
-- **Mobile**: Collapsible developer panel, bottom-fixed input area, full-height scrollable chat, touch-optimized button sizes (44px minimum)
+- **Components**: Card-based chat interface, Dialog for consent forms, Tabs for different AI features, Alert for safety notifications, Form for settings, Badge for consent status
+- **Customizations**: Consent toggle components, AI confidence indicators, local language selectors, offline status indicators
+- **States**: Clear active/inactive states for AI features, consent status, connectivity, and safety monitoring
+- **Icon Selection**: Shield for privacy, Bot for AI, MapPin for location, Bell for notifications, Settings for controls
+- **Spacing**: Generous padding (16px) for touch targets, 8px gaps for readability, 24px section spacing
+- **Mobile**: Responsive design with large touch targets, swipe gestures for chat navigation, pull-to-refresh for message sync

@@ -1,5 +1,7 @@
+import { MessagingApp } from './components/MessagingApp'
+
 function App() {
-    return <div></div>
+    return <MessagingApp />
 }
 
 export default App

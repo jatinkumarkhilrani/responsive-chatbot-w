@@ -118,7 +118,7 @@ export const useAppStore = create<AppState>()(
       setSettingsOpen: (open) => set({ settingsOpen: open }),
 
       // Chat actions
-      createChat: (title, type = 'individual') => {
+      createChat: (title: string, type: 'individual' | 'group' = 'individual') => {
         const id = `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         const newChat: Chat = {
           id,

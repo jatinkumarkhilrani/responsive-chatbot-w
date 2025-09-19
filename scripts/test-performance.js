@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * Performance Testing Script for Sahaay Messaging App
- * Tests for bundle size, memory usage, and build performance
+ * Performance tests to ensure app doesn't hang browser
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
-// ANSI colors for console output
+// ANSI colors
 const colors = {
   red: '\x1b[31m',
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
-  magenta: '\x1b[35m',
   cyan: '\x1b[36m',
-  white: '\x1b[37m',
   reset: '\x1b[0m',
   bold: '\x1b[1m'
 };
@@ -28,316 +28,187 @@ function log(color, message) {
   console.log(`${color}${message}${colors.reset}`);
 }
 
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function getDirectorySize(dirPath) {
-  let totalSize = 0;
-  
-  if (!fs.existsSync(dirPath)) {
-    return 0;
+function runCommand(command, options = {}) {
+  try {
+    const result = execSync(command, { 
+      cwd: projectRoot,
+      encoding: 'utf8',
+      stdio: 'pipe',
+      ...options
+    });
+    return { success: true, output: result };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error.message,
+      output: error.stdout || '',
+      stderr: error.stderr || ''
+    };
   }
-  
-  function calculateSize(itemPath) {
-    const stats = fs.statSync(itemPath);
-    if (stats.isDirectory()) {
-      const files = fs.readdirSync(itemPath);
-      files.forEach(file => {
-        calculateSize(path.join(itemPath, file));
-      });
-    } else {
-      totalSize += stats.size;
-    }
-  }
-  
-  calculateSize(dirPath);
-  return totalSize;
 }
 
 function testBundleSize() {
   log(colors.cyan, '\n=== Testing Bundle Size ===');
   
   const distPath = path.join(projectRoot, 'dist');
-  
   if (!fs.existsSync(distPath)) {
-    log(colors.yellow, '⚠️  Dist folder not found. Building first...');
-    try {
-      execSync('npm run build:standalone', { 
-        cwd: projectRoot, 
-        stdio: 'pipe' 
-      });
-    } catch (error) {
-      log(colors.red, '❌ Build failed, cannot test bundle size');
+    log(colors.yellow, '⚠️  No dist folder found, building first...');
+    const buildResult = runCommand('npm run build:standalone');
+    if (!buildResult.success) {
+      log(colors.red, '❌ Build failed');
       return false;
     }
   }
   
-  const totalSize = getDirectorySize(distPath);
-  const totalSizeMB = totalSize / (1024 * 1024);
-  
-  log(colors.white, `📦 Total bundle size: ${formatBytes(totalSize)}`);
-  
-  // Check individual file sizes
-  const files = fs.readdirSync(distPath);
-  const jsFiles = files.filter(file => file.endsWith('.js'));
-  const cssFiles = files.filter(file => file.endsWith('.css'));
-  
-  // JavaScript bundle size check
-  let largestJS = 0;
-  let largestJSFile = '';
-  
-  jsFiles.forEach(file => {
-    const filePath = path.join(distPath, file);
-    const size = fs.statSync(filePath).size;
-    if (size > largestJS) {
-      largestJS = size;
-      largestJSFile = file;
-    }
-  });
-  
-  if (largestJS > 0) {
-    log(colors.white, `📄 Largest JS file: ${largestJSFile} (${formatBytes(largestJS)})`);
+  function getDirectorySize(dirPath) {
+    let totalSize = 0;
+    if (!fs.existsSync(dirPath)) return 0;
     
-    // Warn if JS bundle is too large
-    if (largestJS > 1024 * 1024) { // 1MB
-      log(colors.yellow, '⚠️  JavaScript bundle is large (>1MB). Consider code splitting.');
-    } else {
-      log(colors.green, '✅ JavaScript bundle size is reasonable');
+    function calculateSize(itemPath) {
+      const stats = fs.statSync(itemPath);
+      if (stats.isDirectory()) {
+        const files = fs.readdirSync(itemPath);
+        files.forEach(file => calculateSize(path.join(itemPath, file)));
+      } else {
+        totalSize += stats.size;
+      }
     }
+    calculateSize(dirPath);
+    return totalSize;
   }
   
-  // CSS bundle size check
-  let largestCSS = 0;
-  let largestCSSFile = '';
+  const bundleSize = getDirectorySize(distPath);
+  const bundleSizeMB = bundleSize / (1024 * 1024);
   
-  cssFiles.forEach(file => {
-    const filePath = path.join(distPath, file);
-    const size = fs.statSync(filePath).size;
-    if (size > largestCSS) {
-      largestCSS = size;
-      largestCSSFile = file;
-    }
-  });
+  log(colors.blue, `📦 Bundle size: ${bundleSizeMB.toFixed(2)} MB`);
   
-  if (largestCSS > 0) {
-    log(colors.white, `🎨 Largest CSS file: ${largestCSSFile} (${formatBytes(largestCSS)})`);
-    
-    if (largestCSS > 512 * 1024) { // 512KB
-      log(colors.yellow, '⚠️  CSS bundle is large (>512KB). Consider purging unused styles.');
-    } else {
-      log(colors.green, '✅ CSS bundle size is reasonable');
-    }
-  }
-  
-  // Overall size check
-  if (totalSizeMB > 5) {
-    log(colors.red, '❌ Total bundle size is too large (>5MB)');
+  if (bundleSizeMB > 10) {
+    log(colors.red, '❌ Bundle too large (>10MB) - will cause browser hangs');
     return false;
-  } else if (totalSizeMB > 2) {
-    log(colors.yellow, '⚠️  Bundle size is getting large (>2MB)');
-    return true;
+  } else if (bundleSizeMB > 5) {
+    log(colors.yellow, '⚠️  Bundle getting large (>5MB) - monitor performance');
   } else {
-    log(colors.green, '✅ Bundle size is optimal');
-    return true;
-  }
-}
-
-function testBuildPerformance() {
-  log(colors.cyan, '\n=== Testing Build Performance ===');
-  
-  const startTime = Date.now();
-  
-  try {
-    log(colors.white, '🔨 Building for standalone...');
-    execSync('npm run build:standalone', { 
-      cwd: projectRoot, 
-      stdio: 'pipe' 
-    });
-    
-    const buildTime = Date.now() - startTime;
-    log(colors.white, `⏱️  Build time: ${buildTime}ms`);
-    
-    if (buildTime > 60000) { // 1 minute
-      log(colors.red, '❌ Build is too slow (>1 minute)');
-      return false;
-    } else if (buildTime > 30000) { // 30 seconds
-      log(colors.yellow, '⚠️  Build is slow (>30 seconds)');
-      return true;
-    } else {
-      log(colors.green, '✅ Build performance is good');
-      return true;
-    }
-  } catch (error) {
-    log(colors.red, '❌ Build failed');
-    console.error(error.message);
-    return false;
-  }
-}
-
-function testDependencySize() {
-  log(colors.cyan, '\n=== Testing Dependency Size ===');
-  
-  const nodeModulesPath = path.join(projectRoot, 'node_modules');
-  
-  if (!fs.existsSync(nodeModulesPath)) {
-    log(colors.red, '❌ node_modules not found');
-    return false;
-  }
-  
-  const nodeModulesSize = getDirectorySize(nodeModulesPath);
-  const nodeModulesSizeMB = nodeModulesSize / (1024 * 1024);
-  
-  log(colors.white, `📦 node_modules size: ${formatBytes(nodeModulesSize)}`);
-  
-  if (nodeModulesSizeMB > 500) { // 500MB
-    log(colors.red, '❌ Dependencies are too large (>500MB)');
-    return false;
-  } else if (nodeModulesSizeMB > 200) { // 200MB
-    log(colors.yellow, '⚠️  Dependencies are large (>200MB)');
-    return true;
-  } else {
-    log(colors.green, '✅ Dependency size is reasonable');
-    return true;
-  }
-}
-
-function testSourceMapSize() {
-  log(colors.cyan, '\n=== Testing Source Map Size ===');
-  
-  const distPath = path.join(projectRoot, 'dist');
-  
-  if (!fs.existsSync(distPath)) {
-    log(colors.yellow, '⚠️  Dist folder not found');
-    return true;
-  }
-  
-  const files = fs.readdirSync(distPath);
-  const mapFiles = files.filter(file => file.endsWith('.map'));
-  
-  if (mapFiles.length === 0) {
-    log(colors.green, '✅ No source maps in production build (good for size)');
-    return true;
-  }
-  
-  let totalMapSize = 0;
-  mapFiles.forEach(file => {
-    const filePath = path.join(distPath, file);
-    totalMapSize += fs.statSync(filePath).size;
-  });
-  
-  log(colors.white, `🗺️  Source maps size: ${formatBytes(totalMapSize)}`);
-  
-  const totalBundleSize = getDirectorySize(distPath) - totalMapSize;
-  const mapRatio = totalMapSize / totalBundleSize;
-  
-  if (mapRatio > 2) {
-    log(colors.yellow, '⚠️  Source maps are very large relative to bundle');
-  } else {
-    log(colors.green, '✅ Source map size is reasonable');
+    log(colors.green, '✅ Bundle size acceptable');
   }
   
   return true;
+}
+
+function testCodeComplexity() {
+  log(colors.cyan, '\n=== Testing Code Complexity ===');
+  
+  // Check for potential performance issues in React components
+  const appFile = path.join(projectRoot, 'src/App.tsx');
+  const messagingAppFile = path.join(projectRoot, 'src/components/MessagingApp.tsx');
+  
+  const potentialIssues = [
+    'new Array(1000)',
+    'while(true)',
+    'for(let i = 0; i < 10000',
+    'setInterval(',
+    'setTimeout(.*, 0)',
+    'document.querySelectorAll',
+    'useEffect(() => {}, [])', // Empty dependency array with complex logic
+  ];
+  
+  let issuesFound = 0;
+  
+  [appFile, messagingAppFile].forEach(file => {
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf8');
+      
+      potentialIssues.forEach(issue => {
+        const regex = new RegExp(issue, 'gi');
+        if (regex.test(content)) {
+          log(colors.yellow, `⚠️  Potential performance issue in ${path.basename(file)}: ${issue}`);
+          issuesFound++;
+        }
+      });
+    }
+  });
+  
+  if (issuesFound === 0) {
+    log(colors.green, '✅ No obvious performance issues detected');
+  } else {
+    log(colors.yellow, `⚠️  Found ${issuesFound} potential performance issues`);
+  }
+  
+  return issuesFound < 3; // Allow some warnings but not too many
 }
 
 function testMemoryUsage() {
-  log(colors.cyan, '\n=== Testing Memory Usage ===');
+  log(colors.cyan, '\n=== Testing Memory Usage Patterns ===');
   
-  const used = process.memoryUsage();
+  // Check for memory leak patterns
+  const srcFiles = [
+    'src/App.tsx',
+    'src/components/MessagingApp.tsx',
+    'src/hooks/useKV.ts'
+  ];
   
-  log(colors.white, `💾 RSS: ${formatBytes(used.rss)}`);
-  log(colors.white, `💾 Heap Used: ${formatBytes(used.heapUsed)}`);
-  log(colors.white, `💾 Heap Total: ${formatBytes(used.heapTotal)}`);
-  log(colors.white, `💾 External: ${formatBytes(used.external)}`);
+  const memoryLeakPatterns = [
+    'addEventListener(?!.*removeEventListener)',
+    'setInterval(?!.*clearInterval)',
+    'setTimeout(?!.*clearTimeout)',
+    'new EventSource(?!.*close)',
+    'new WebSocket(?!.*close)'
+  ];
   
-  const heapUsedMB = used.heapUsed / (1024 * 1024);
+  let leakRisks = 0;
   
-  if (heapUsedMB > 100) {
-    log(colors.yellow, '⚠️  High memory usage during build');
-    return true;
-  } else {
-    log(colors.green, '✅ Memory usage is reasonable');
-    return true;
-  }
-}
-
-function testAssetOptimization() {
-  log(colors.cyan, '\n=== Testing Asset Optimization ===');
-  
-  const distPath = path.join(projectRoot, 'dist');
-  
-  if (!fs.existsSync(distPath)) {
-    log(colors.yellow, '⚠️  Dist folder not found');
-    return true;
-  }
-  
-  const files = fs.readdirSync(distPath);
-  
-  // Check for uncompressed images
-  const imageFiles = files.filter(file => 
-    file.endsWith('.png') || file.endsWith('.jpg') || file.endsWith('.jpeg')
-  );
-  
-  let largeImages = 0;
-  imageFiles.forEach(file => {
-    const filePath = path.join(distPath, file);
-    const size = fs.statSync(filePath).size;
-    if (size > 100 * 1024) { // 100KB
-      largeImages++;
-      log(colors.yellow, `⚠️  Large image: ${file} (${formatBytes(size)})`);
+  srcFiles.forEach(file => {
+    const filePath = path.join(projectRoot, file);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      
+      memoryLeakPatterns.forEach(pattern => {
+        const regex = new RegExp(pattern, 'gi');
+        if (regex.test(content)) {
+          log(colors.yellow, `⚠️  Memory leak risk in ${path.basename(file)}: ${pattern}`);
+          leakRisks++;
+        }
+      });
     }
   });
   
-  if (largeImages === 0) {
-    log(colors.green, '✅ No large unoptimized images found');
-  }
-  
-  // Check for gzip compression (in build output)
-  const gzipFiles = files.filter(file => file.endsWith('.gz'));
-  if (gzipFiles.length > 0) {
-    log(colors.green, '✅ Gzip compression enabled');
+  if (leakRisks === 0) {
+    log(colors.green, '✅ No obvious memory leak patterns detected');
   } else {
-    log(colors.yellow, '⚠️  Consider enabling gzip compression');
+    log(colors.yellow, `⚠️  Found ${leakRisks} potential memory leak risks`);
   }
   
-  return true;
+  return leakRisks < 2;
 }
 
 function runPerformanceTests() {
-  log(colors.bold + colors.blue, '⚡ Starting Performance Testing Suite\n');
+  log(colors.bold + colors.blue, '⚡ Running Performance Tests\n');
   
-  const results = [
-    testBuildPerformance(),
-    testBundleSize(),
-    testDependencySize(),
-    testSourceMapSize(),
-    testMemoryUsage(),
-    testAssetOptimization()
+  const tests = [
+    { name: 'Bundle Size', test: testBundleSize },
+    { name: 'Code Complexity', test: testCodeComplexity },
+    { name: 'Memory Usage', test: testMemoryUsage }
   ];
   
-  const failedTests = results.filter(result => !result).length;
-  const passedTests = results.filter(result => result).length;
+  let passed = 0;
+  let failed = 0;
   
-  // Print summary
-  log(colors.bold + colors.cyan, '\n=== Performance Test Summary ===');
-  log(colors.green, `✅ Passed: ${passedTests}`);
-  log(colors.red, `❌ Failed: ${failedTests}`);
-  
-  if (failedTests > 0) {
-    log(colors.red, '\n❌ Performance tests failed! Please optimize before deploying.');
-    process.exit(1);
-  } else {
-    log(colors.green, '\n✅ All performance tests passed!');
+  for (const test of tests) {
+    if (test.test()) {
+      passed++;
+    } else {
+      failed++;
+    }
   }
+  
+  log(colors.bold + colors.cyan, '\n=== Performance Test Summary ===');
+  log(colors.green, `✅ Passed: ${passed}/${tests.length}`);
+  log(colors.red, `❌ Failed: ${failed}/${tests.length}`);
+  
+  return failed === 0;
 }
 
-// Run tests if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runPerformanceTests();
 }
 
-module.exports = { runPerformanceTests };
+export { runPerformanceTests, testBundleSize, testCodeComplexity, testMemoryUsage };

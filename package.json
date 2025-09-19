@@ -7,9 +7,25 @@
         "dev": "vite",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
+        "build:github-pages": "vite build --config vite.config.github.ts",
+        "build:standalone": "vite build --config vite.config.standalone.ts",
+        "build:github": "npm run build:github-pages",
         "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
         "optimize": "vite optimize",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "test:types": "tsc --noEmit",
+        "test:comprehensive": "node scripts/test-comprehensive.js",
+        "test:ui": "node scripts/test-ui.js",
+        "test:performance": "node scripts/test-performance.js",
+        "test:basic": "node scripts/test-basic.js",
+        "test:build": "npm run build:standalone && npm run build:github-pages",
+        "test:ci": "npm run test:types && npm run test:comprehensive",
+        "test": "npm run test:ci",
+        "precommit": "npm run test:ci",
+        "deploy:github": "npm run build:github-pages",
+        "deploy:standalone": "npm run build:standalone",
+        "postinstall": "husky install"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",
@@ -72,7 +88,8 @@
         "tw-animate-css": "^1.2.4",
         "uuid": "^11.1.0",
         "vaul": "^1.1.2",
-        "zod": "^3.25.76"
+        "zod": "^3.25.76",
+        "zustand": "^5.0.8"
     },
     "devDependencies": {
         "@eslint/js": "^9.21.0",
@@ -85,6 +102,7 @@
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.19",
         "globals": "^16.0.0",
+        "husky": "^9.1.7",
         "tailwindcss": "^4.1.11",
         "typescript": "~5.7.2",
         "typescript-eslint": "^8.38.0",

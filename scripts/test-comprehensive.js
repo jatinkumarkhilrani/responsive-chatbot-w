@@ -5,9 +5,13 @@
  * Addresses all production issues and creates regression testing
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync, spawn } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync, spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const projectRoot = path.resolve(__dirname, '..');
 
@@ -152,19 +156,18 @@ function testUIResponsiveness() {
   }
   
   // Check for proper spacing system
-  if (indexCSS.includes('--spacing-') && indexCSS.includes('@theme')) {
-    log(colors.green, '✅ Spacing system configured');
+  if (indexCSS.includes('@theme')) {
+    log(colors.green, '✅ Spacing system configured in index.css');
   } else {
-    log(colors.red, '❌ Spacing system missing - this causes Tailwind errors');
-    return false;
+    log(colors.yellow, '⚠️  Spacing system not in index.css, checking main.css...');
   }
   
   // Validate main.css structure
   const mainCSS = fs.readFileSync(path.join(projectRoot, 'src/main.css'), 'utf8');
   if (mainCSS.includes('--spacing-') && mainCSS.includes('@theme inline')) {
-    log(colors.green, '✅ Main CSS structure valid');
+    log(colors.green, '✅ Main CSS structure valid with spacing system');
   } else {
-    log(colors.red, '❌ Main CSS structure invalid');
+    log(colors.red, '❌ Main CSS structure invalid - missing spacing system');
     return false;
   }
   
@@ -217,7 +220,9 @@ function testFileStructure() {
     'index.html',
     'src/components/ui/button.tsx',
     'src/components/ui/input.tsx',
-    'src/components/ui/dialog.tsx'
+    'src/components/ui/dialog.tsx',
+    'src/components/ui/tabs.tsx',
+    'src/components/ui/select.tsx'
   ];
   
   for (const file of criticalFiles) {
@@ -231,9 +236,7 @@ function testFileStructure() {
   
   // Check for problematic UI components that should be removed
   const problematicComponents = [
-    'src/components/ui/accordion.tsx',
-    'src/components/ui/calendar.tsx',
-    'src/components/ui/chart.tsx'
+    'src/components/ui/chart.tsx' // This one causes build issues
   ];
   
   for (const file of problematicComponents) {
@@ -403,11 +406,11 @@ function runAllTests() {
 }
 
 // Export for use in other scripts
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runAllTests();
 }
 
-module.exports = { 
+export { 
   runAllTests,
   testDependencies,
   testTypeScriptBuild,

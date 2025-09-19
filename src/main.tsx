@@ -1,19 +1,17 @@
 import { createRoot } from 'react-dom/client'
-import { ErrorBoundary } from "react-error-boundary";
 
 import App from './App.tsx'
-import { ErrorFallback } from './ErrorFallback.tsx'
+import { initializeSparkMock } from './utils/sparkMock'
 
 import "./main.css"
 import "./index.css"
+
+// Initialize Spark mock for standalone deployment
+initializeSparkMock()
 
 const root = document.getElementById('root')
 if (!root) {
   throw new Error('Root element not found')
 }
 
-createRoot(root).render(
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <App />
-  </ErrorBoundary>
-)
+createRoot(root).render(<App />)

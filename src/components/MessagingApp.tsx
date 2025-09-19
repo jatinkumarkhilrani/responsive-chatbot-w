@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState, useMemo } from 'react'
+import { memo, useCallback, useState, useMemo } from 'react'
 import { 
   PaperPlaneTilt,
   List,

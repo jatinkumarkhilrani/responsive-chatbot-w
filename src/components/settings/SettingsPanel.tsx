@@ -130,38 +130,27 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
           <div className="p-4 sm:p-6">
             <Tabs defaultValue="ai" className="space-y-6">
               {/* Tab Navigation */}
-              <TabsList className="grid w-full grid-cols-4 gap-1 h-auto p-1 bg-muted">
+              <TabsList className="grid w-full grid-cols-3 gap-1 h-auto p-1 bg-muted">
                 <TabsTrigger 
                   value="ai" 
-                  className="text-xs sm:text-sm px-2 py-3 data-[state=active]:bg-background flex items-center justify-center gap-2 flex-col sm:flex-row"
+                  className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background flex items-center justify-center gap-1"
                 >
-                  <Robot className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline">AI Config</span>
-                  <span className="sm:hidden">AI</span>
+                  <Robot className="w-4 h-4" />
+                  <span>AI Config</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="privacy" 
-                  className="text-xs sm:text-sm px-2 py-3 data-[state=active]:bg-background flex items-center justify-center gap-2 flex-col sm:flex-row"
+                  className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background flex items-center justify-center gap-1"
                 >
-                  <Shield className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline">Privacy</span>
-                  <span className="sm:hidden">Privacy</span>
+                  <Shield className="w-4 h-4" />
+                  <span>Privacy</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="data" 
-                  className="text-xs sm:text-sm px-2 py-3 data-[state=active]:bg-background flex items-center justify-center gap-2 flex-col sm:flex-row"
+                  className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background flex items-center justify-center gap-1"
                 >
-                  <Download className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline">Data</span>
-                  <span className="sm:hidden">Data</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="about" 
-                  className="text-xs sm:text-sm px-2 py-3 data-[state=active]:bg-background flex items-center justify-center gap-2 flex-col sm:flex-row"
-                >
-                  <Gear className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline">About</span>
-                  <span className="sm:hidden">About</span>
+                  <Download className="w-4 h-4" />
+                  <span>Data</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -199,7 +188,7 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                     </div>
 
                     {/* Configuration Actions */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                    <div className="space-y-3 sm:flex sm:gap-3 sm:space-y-0">
                       <AIConfigDialog />
                       <TestConfigButton aiConfig={aiConfig} />
                     </div>
@@ -222,25 +211,25 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                       Current status of AI-powered features based on your configuration
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-                      <div className="p-4 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
-                        <div className="text-sm sm:text-base font-bold mb-1">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="space-y-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0">
+                      <div className="p-3 sm:p-4 border rounded-lg bg-card/50 text-center">
+                        <div className="text-sm font-medium mb-1">
                           {userConsents.moodDetection ? 'Enabled' : 'Disabled'}
                         </div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">Mood Detection</div>
+                        <div className="text-xs text-muted-foreground">Mood Detection</div>
                       </div>
-                      <div className="p-4 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
-                        <div className="text-sm sm:text-base font-bold mb-1">
+                      <div className="p-3 sm:p-4 border rounded-lg bg-card/50 text-center">
+                        <div className="text-sm font-medium mb-1">
                           {userConsents.locationServices ? 'Enabled' : 'Disabled'}
                         </div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">Hyperlocal AI</div>
+                        <div className="text-xs text-muted-foreground">Hyperlocal AI</div>
                       </div>
-                      <div className="p-4 border rounded-lg bg-card/50 text-center min-h-[80px] flex flex-col justify-center">
-                        <div className="text-sm sm:text-base font-bold mb-1">
+                      <div className="p-3 sm:p-4 border rounded-lg bg-card/50 text-center">
+                        <div className="text-sm font-medium mb-1">
                           {userConsents.groupSummary ? 'Enabled' : 'Disabled'}
                         </div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">Group Intelligence</div>
+                        <div className="text-xs text-muted-foreground">Group Intelligence</div>
                       </div>
                     </div>
                   </CardContent>
@@ -327,50 +316,6 @@ export function SettingsPanel({ userConsents, onConsentUpdate }: SettingsPanelPr
                 </Card>
               </TabsContent>
 
-              {/* About Tab */}
-              <TabsContent value="about" className="space-y-6 mt-0">
-                <Card>
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-base sm:text-lg">About Sahaay</CardTitle>
-                    <CardDescription className="text-sm">
-                      Privacy-first AI messaging companion for India
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="p-4 border rounded-lg space-y-2">
-                        <h4 className="font-medium text-sm">Version</h4>
-                        <p className="text-sm text-muted-foreground">1.0.0 Beta</p>
-                      </div>
-                      <div className="p-4 border rounded-lg space-y-2">
-                        <h4 className="font-medium text-sm">Build</h4>
-                        <p className="text-sm text-muted-foreground">{new Date().toISOString().split('T')[0]}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-sm">Key Features</h4>
-                      <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                        <li>Privacy-first design with local data storage</li>
-                        <li>Configurable AI providers (Azure, OpenAI, AI Foundry)</li>
-                        <li>Hyperlocal intelligence for Indian context</li>
-                        <li>Mood detection and contextual responses</li>
-                        <li>Group intelligence and conversation summaries</li>
-                        <li>Bill processing and payment assistance</li>
-                        <li>Route optimization and traffic insights</li>
-                      </ul>
-                    </div>
-
-                    <Alert>
-                      <Shield className="h-4 w-4" />
-                      <AlertDescription className="text-sm">
-                        Sahaay is designed with privacy as the foundation. All data processing happens on your device, 
-                        and you have complete control over what information is shared and processed.
-                      </AlertDescription>
-                    </Alert>
-                  </CardContent>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
         </div>

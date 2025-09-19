@@ -22,6 +22,8 @@
         "test:build": "npm run build:standalone && npm run build:github-pages",
         "test:ci": "npm run test:types && npm run test:comprehensive",
         "test": "npm run test:ci",
+        "test:manual": "bash manual-test-runner.sh",
+        "test:build-check": "bash manual-test-runner.sh && npm run build:standalone",
         "precommit": "npm run test:ci",
         "deploy:github": "npm run build:github-pages",
         "deploy:standalone": "npm run build:standalone",

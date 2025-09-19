@@ -37,7 +37,7 @@ jobs:
       run: npm ci --ignore-scripts
       
     - name: Build for GitHub Pages
-      run: npm run build:github
+      run: npm run build:standalone
       env:
         GITHUB_PAGES: true
         

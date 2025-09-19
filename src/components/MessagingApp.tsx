@@ -243,8 +243,8 @@ export const MessagingApp = memo(() => {
 
       {/* Settings Dialog */}
       <SettingsDialog 
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
 
       {/* Sidebar Overlay for Mobile */}

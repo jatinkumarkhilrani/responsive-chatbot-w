@@ -1,58 +1,25 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
-import { resolve } from 'path'
-import { fileURLToPath } from 'url'
+import { defineConfig, PluginOption } from "vite";
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const projectRoot = process.env.PROJECT_ROOT || __dirname
+import sparkPlugin from "@github/spark/spark-vite-plugin";
+import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
+import { resolve } from 'path'
+
+const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
 
 // https://vite.dev/config/
-export default defineConfig(({ command, mode }) => {
-  const isProduction = mode === 'production'
-  const isGitHubPages = process.env.GITHUB_PAGES === 'true'
-  
-  return {
-    plugins: [
-      react(),
-      tailwindcss(),
-    ],
-    resolve: {
-      alias: {
-        '@': resolve(projectRoot, 'src'),
-        '@github/spark/hooks': resolve(projectRoot, 'src/hooks/useKV.ts')
-      }
-    },
-    base: isGitHubPages ? '/responsive-chatbot-w/' : '/',
-    build: {
-      outDir: 'dist',
-      assetsDir: 'assets',
-      sourcemap: false,
-      copyPublicDir: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom'],
-            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-tabs', '@radix-ui/react-select'],
-            'icons-vendor': ['@phosphor-icons/react']
-          }
-        }
-      }
-    },
-    publicDir: 'public',
-    preview: {
-      port: 4173,
-      host: true
-    },
-    optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        '@phosphor-icons/react',
-        '@radix-ui/react-dialog',
-        '@radix-ui/react-tabs',
-        '@radix-ui/react-select'
-      ]
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+    // DO NOT REMOVE
+    createIconImportProxy() as PluginOption,
+    sparkPlugin() as PluginOption,
+  ],
+  resolve: {
+    alias: {
+      '@': resolve(projectRoot, 'src')
     }
-  }
+  },
 });

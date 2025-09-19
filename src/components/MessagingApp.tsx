@@ -8,8 +8,8 @@ import {
 } from '@phosphor-icons/react'
 import { useAppStore } from '../store/appStore'
 import { getAIService } from '../services/aiService'
-import { Button } from '../lightweight/Button'
-import { Input } from '../lightweight/Input'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
 import { ChatList } from './ChatList'
 import { MessageList } from './MessageList'
 import { SettingsDialog } from './SettingsDialog'
@@ -210,7 +210,7 @@ export const MessagingApp = memo(() => {
                 <Button
                   onClick={handleSendMessage}
                   disabled={!messageInput.trim() || isGenerating}
-                  variant="primary"
+                  variant="default"
                   size="sm"
                   className="h-10 px-4"
                 >
@@ -233,7 +233,7 @@ export const MessagingApp = memo(() => {
                 Your privacy-first AI messaging companion for India. 
                 Start a conversation to experience hyperlocal intelligence.
               </p>
-              <Button onClick={handleStartChat} variant="primary">
+              <Button onClick={handleStartChat} variant="default">
                 Start Your First Chat
               </Button>
             </div>

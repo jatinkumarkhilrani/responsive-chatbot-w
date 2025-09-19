@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react'
 import { format, isToday, isYesterday } from 'date-fns'
 import { Trash, Users } from '@phosphor-icons/react'
 import { useAppStore } from '../store/appStore'
-import { Button } from '../lightweight/Button'
+import { Button } from './ui/button'
 
 export const ChatList = memo(() => {
   const { chats, currentChatId, setCurrentChat, deleteChat, setSidebarOpen } = useAppStore()

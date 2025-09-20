@@ -1,38 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# Pre-commit Hook Script
-# This runs comprehensive tests before allowing commits
-
-set -e
-
-echo "🔍 Running pre-commit checks..."
-
-# 1. TypeScript Check
-echo "📝 Checking TypeScript..."
-npm run test:types
-
-# 2. ESLint Check  
-echo "🔍 Running ESLint..."
-npm run lint
-
-# 3. Build Test (GitHub Pages)
-echo "🔨 Testing GitHub Pages build..."
-npm run build:github-pages
-
-# 4. Build Test (Standalone)
-echo "🔨 Testing standalone build..."
-npm run build:standalone
-
-# 5. Comprehensive Tests
-echo "🧪 Running all comprehensive tests..."
-npm run test:all
-
-# 6. Performance Check
-echo "⚡ Performance check..."
-if [ -d "dist" ]; then
-    BUNDLE_SIZE=$(du -sh dist | cut -f1)
-    echo "   Bundle size: $BUNDLE_SIZE"
-fi
-
-echo "✅ All pre-commit checks passed!"
-echo "🚀 Ready to commit"
+npm run test:ci

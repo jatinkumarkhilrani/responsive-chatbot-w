@@ -1,4 +1,5 @@
 import { memo, useCallback, useState, useMemo } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { 
   PaperPlaneTilt,
   List,
@@ -6,254 +7,411 @@ import {
   Plus,
   ChatCircle 
 } from '@phosphor-icons/react'
-import { useAppStore } from '../store/appStore'
-import { getAIService } from '../services/aiService'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import { ChatList } from './ChatList'
-import { MessageList } from './MessageList'
-import { SettingsDialog } from './SettingsDialog'
-import { format } from 'date-fns'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { ScrollArea } from './ui/scroll-area'
 import { toast } from 'sonner'
 
+interface Message {
+  id: string
+  text: string
+  timestamp: number
+  isUser: boolean
+  type?: 'ai' | 'system'
+}
+
+interface Chat {
+  id: string
+  title: string
+  lastMessage?: string
+  timestamp: number
+}
+
+interface AISettings {
+  provider: string
+  apiKey: string
+  endpoint: string
+  model: string
+}
+
+const defaultSettings: AISettings = {
+  provider: 'openai',
+  apiKey: '',
+  endpoint: 'https://api.openai.com/v1',
+  model: 'gpt-4'
+}
+
 export const MessagingApp = memo(() => {
+  // Core state using useKV for persistence
+  const [chats, setChats] = useKV<Chat[]>('sahaay-chats', [])
+  const [messages, setMessages] = useKV<Record<string, Message[]>>('sahaay-messages', {})
+  const [currentChatId, setCurrentChatId] = useKV<string | null>('sahaay-current-chat', null)
+  const [aiSettings, setAiSettings] = useKV<AISettings>('sahaay-ai-settings', defaultSettings)
+  
+  // UI state (doesn't need persistence)
   const [messageInput, setMessageInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  
-  const {
-    currentChatId,
-    sidebarOpen,
-    settingsOpen,
-    chats,
-    messages,
-    settings,
-    isLoading,
-    setCurrentChat,
-    setSidebarOpen,
-    setSettingsOpen,
-    createChat,
-    addMessage,
-  } = useAppStore()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
+  // Computed values
   const currentChat = useMemo(() => 
-    chats.find(chat => chat.id === currentChatId),
+    (chats || []).find(chat => chat.id === currentChatId) || null,
     [chats, currentChatId]
   )
 
   const currentMessages = useMemo(() => 
-    currentChatId ? messages[currentChatId] || [] : [],
+    currentChatId ? (messages || {})[currentChatId] || [] : [],
     [messages, currentChatId]
   )
 
+  // Chat management
   const handleCreateChat = useCallback(() => {
-    const title = `Chat ${chats.length + 1}`
-    const newChatId = createChat(title)
-    setCurrentChat(newChatId)
+    const chatId = `chat-${Date.now()}`
+    const newChat: Chat = {
+      id: chatId,
+      title: `Chat ${(chats || []).length + 1}`,
+      timestamp: Date.now()
+    }
+    
+    setChats(prevChats => [newChat, ...(prevChats || [])])
+    setCurrentChatId(chatId)
     setSidebarOpen(false)
-  }, [chats.length, createChat, setCurrentChat, setSidebarOpen])
+    toast.success('New chat created')
+  }, [chats, setChats, setCurrentChatId])
 
-  const handleSendMessage = useCallback(async () => {
-    if (!messageInput.trim() || !currentChatId) return
+  const handleSelectChat = useCallback((chatId: string) => {
+    setCurrentChatId(chatId)
+    setSidebarOpen(false)
+  }, [setCurrentChatId])
 
-    const userMessage = messageInput.trim()
-    setMessageInput('')
+  // Message handling
+  const addMessage = useCallback((chatId: string, message: Message) => {
+    setMessages(prevMessages => ({
+      ...(prevMessages || {}),
+      [chatId]: [...((prevMessages || {})[chatId] || []), message]
+    }))
+    
+    // Update chat's last message
+    setChats(prevChats => 
+      (prevChats || []).map(chat => 
+        chat.id === chatId 
+          ? { ...chat, lastMessage: message.text, timestamp: message.timestamp }
+          : chat
+      )
+    )
+  }, [setMessages, setChats])
 
-    // Add user message
-    addMessage({
-      content: userMessage,
-      sender: 'user',
-      chatId: currentChatId
-    })
+  const generateAIResponse = useCallback(async (userMessage: string) => {
+    const settings = aiSettings || defaultSettings
+    if (!settings.apiKey) {
+      toast.error('Please configure AI settings first')
+      setSettingsOpen(true)
+      return
+    }
 
-    // Generate AI response if configured
-    if (settings.aiConfig.enabled && settings.aiConfig.apiKey) {
+    try {
       setIsGenerating(true)
       
-      try {
-        const aiService = getAIService(settings.aiConfig)
-        const conversationHistory = currentMessages.slice(-10).map(msg => ({
-          role: msg.sender === 'user' ? 'user' as const : 'assistant' as const,
-          content: msg.content
-        }))
-
-        const response = await aiService.generateResponse(
-          userMessage,
-          conversationHistory,
-          {
-            mood: settings.privacy.moodDetection ? 'auto' : undefined,
-            isGroup: currentChat?.type === 'group'
-          }
-        )
-
-        addMessage({
-          content: response.content,
-          sender: 'ai',
-          chatId: currentChatId,
-          metadata: response.metadata
-        })
-      } catch (error) {
-        console.error('AI Error:', error)
-        toast.error('Failed to generate AI response')
-      } finally {
-        setIsGenerating(false)
+      // Use Spark's LLM API
+      const sparkAPI = (window as any).spark
+      if (!sparkAPI?.llmPrompt || !sparkAPI?.llm) {
+        throw new Error('Spark API not available')
       }
+      
+      const prompt = sparkAPI.llmPrompt`You are Sahaay, a helpful AI assistant for messaging. 
+      Respond to this message in a friendly, helpful way: ${userMessage}`
+      
+      const response = await sparkAPI.llm(prompt, 'gpt-4o-mini')
+      
+      const aiMessage: Message = {
+        id: `msg-${Date.now()}-ai`,
+        text: response,
+        timestamp: Date.now(),
+        isUser: false,
+        type: 'ai'
+      }
+      
+      if (currentChatId) {
+        addMessage(currentChatId, aiMessage)
+      }
+      
+    } catch (error) {
+      console.error('AI response error:', error)
+      toast.error('Failed to generate AI response')
+    } finally {
+      setIsGenerating(false)
     }
-  }, [messageInput, currentChatId, addMessage, settings, currentMessages, currentChat])
+  }, [aiSettings, currentChatId, addMessage])
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+  const handleSendMessage = useCallback(async () => {
+    if (!messageInput.trim()) return
+    
+    let chatId = currentChatId
+    
+    if (!chatId) {
+      // Create new chat
+      chatId = `chat-${Date.now()}`
+      const newChat: Chat = {
+        id: chatId,
+        title: `Chat ${(chats || []).length + 1}`,
+        timestamp: Date.now()
+      }
+      
+      setChats(prevChats => [newChat, ...(prevChats || [])])
+      setCurrentChatId(chatId)
     }
-  }, [handleSendMessage])
-
-  // Auto-create first chat
-  const handleStartChat = useCallback(() => {
-    if (chats.length === 0) {
-      handleCreateChat()
+    
+    const userMessage: Message = {
+      id: `msg-${Date.now()}-user`,
+      text: messageInput.trim(),
+      timestamp: Date.now(),
+      isUser: true
     }
-  }, [chats.length, handleCreateChat])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
+    
+    addMessage(chatId, userMessage)
+    setMessageInput('')
+    
+    // Generate AI response
+    await generateAIResponse(userMessage.text)
+  }, [messageInput, currentChatId, chats, setChats, setCurrentChatId, addMessage, generateAIResponse])
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="messaging-app-container flex bg-background">
       {/* Sidebar */}
-      <div className={`
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        fixed inset-y-0 left-0 z-50 w-80 bg-card border-r border-border
-        transition-transform duration-200 ease-in-out
-        lg:relative lg:translate-x-0 lg:w-80
-      `}>
-        <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h1 className="text-xl font-semibold text-foreground">Sahaay</h1>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSettingsOpen(true)}
-                className="h-8 w-8 p-0"
+      <div className={`sidebar-container bg-card border-r border-border ${
+        sidebarOpen ? 'block' : 'hidden'
+      } sm:block w-80 max-w-sm`}>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h1 className="text-xl font-semibold text-foreground">Sahaay</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <Gear size={20} />
+          </Button>
+        </div>
+        
+        <div className="p-4">
+          <Button 
+            onClick={handleCreateChat}
+            className="w-full"
+          >
+            <Plus size={16} className="mr-2" />
+            New Chat
+          </Button>
+        </div>
+        
+        <ScrollArea className="flex-1 px-4">
+          <div className="space-y-2">
+            {(chats || []).map(chat => (
+              <div
+                key={chat.id}
+                onClick={() => handleSelectChat(chat.id)}
+                className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  currentChatId === chat.id 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'hover:bg-muted'
+                }`}
               >
-                <Gear className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCreateChat}
-                className="h-8 w-8 p-0"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
+                <div className="font-medium truncate">{chat.title}</div>
+                {chat.lastMessage && (
+                  <div className="text-sm opacity-70 truncate mt-1">
+                    {chat.lastMessage}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Main Content */}
+      <div className="main-content-area flex flex-col">
+        {/* Header */}
+        <div className="chat-header flex items-center p-4 border-b border-border bg-card">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="sm:hidden mr-3"
+          >
+            <List size={20} />
+          </Button>
+          <div className="flex items-center space-x-3">
+            <ChatCircle size={24} className="text-primary" />
+            <div>
+              <h2 className="font-semibold">
+                {currentChat?.title || 'Select a chat or start a new one'}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                AI-powered messaging assistant
+              </p>
             </div>
           </div>
+        </div>
 
-          {/* Chat List */}
-          <div className="flex-1 overflow-hidden">
-            <ChatList />
+        {/* Messages */}
+        <ScrollArea className="chat-messages-area flex-1 p-4">
+          {currentMessages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+              <ChatCircle size={64} className="text-muted-foreground" />
+              <div>
+                <h3 className="text-lg font-medium">Welcome to Sahaay</h3>
+                <p className="text-muted-foreground">
+                  Start a conversation with your AI assistant
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {currentMessages.map(message => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.isUser
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground'
+                    }`}
+                  >
+                    <p className="text-sm">{message.text}</p>
+                    <p className="text-xs opacity-70 mt-1">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {isGenerating && (
+                <div className="flex justify-start">
+                  <div className="bg-muted text-foreground max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-pulse">●</div>
+                      <div className="animate-pulse animation-delay-200">●</div>
+                      <div className="animate-pulse animation-delay-400">●</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </ScrollArea>
+
+        {/* Input */}
+        <div className="chat-input-area p-4 border-t border-border bg-card">
+          <div className="flex space-x-2">
+            <Input
+              placeholder="Type your message..."
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSendMessage()
+                }
+              }}
+              className="flex-1"
+              disabled={isGenerating}
+            />
+            <Button 
+              onClick={handleSendMessage}
+              disabled={!messageInput.trim() || isGenerating}
+            >
+              <PaperPlaneTilt size={16} />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {currentChatId ? (
-          <>
-            {/* Chat Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-border bg-card">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden h-8 w-8 p-0"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-medium text-foreground truncate">
-                  {currentChat?.title || 'Chat'}
-                </h2>
-                {currentChat && (
-                  <p className="text-sm text-muted-foreground">
-                    {currentChat.messageCount} messages • Last active {format(new Date(currentChat.lastActivity), 'MMM d, HH:mm')}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 min-h-0">
-              <MessageList 
-                messages={currentMessages}
-                isGenerating={isGenerating}
-              />
-            </div>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-border bg-card">
-              <div className="flex gap-3">
-                <Input
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
-                  className="flex-1"
-                  disabled={isGenerating}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!messageInput.trim() || isGenerating}
-                  variant="default"
-                  size="sm"
-                  className="h-10 px-4"
-                >
-                  <PaperPlaneTilt className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </>
-        ) : (
-          /* Welcome Screen */
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center max-w-md">
-              <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-                <ChatCircle className="w-8 h-8 text-primary" />
-              </div>
-              <h2 className="text-2xl font-semibold text-foreground mb-2">
-                Welcome to Sahaay
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Your privacy-first AI messaging companion for India. 
-                Start a conversation to experience hyperlocal intelligence.
-              </p>
-              <Button onClick={handleStartChat} variant="default">
-                Start Your First Chat
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Settings Dialog */}
-      <SettingsDialog 
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
-
-      {/* Sidebar Overlay for Mobile */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          
+          <Tabs defaultValue="ai-config" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="ai-config">AI Configuration</TabsTrigger>
+              <TabsTrigger value="privacy">Privacy & Features</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="ai-config" className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Provider</label>
+                  <Input
+                    value={(aiSettings || defaultSettings).provider}
+                    onChange={(e) => setAiSettings(prev => ({ 
+                      ...(prev || defaultSettings), 
+                      provider: e.target.value 
+                    }))}
+                    placeholder="openai"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Model</label>
+                  <Input
+                    value={(aiSettings || defaultSettings).model}
+                    onChange={(e) => setAiSettings(prev => ({ 
+                      ...(prev || defaultSettings), 
+                      model: e.target.value 
+                    }))}
+                    placeholder="gpt-4"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">API Endpoint</label>
+                  <Input
+                    value={(aiSettings || defaultSettings).endpoint}
+                    onChange={(e) => setAiSettings(prev => ({ 
+                      ...(prev || defaultSettings), 
+                      endpoint: e.target.value 
+                    }))}
+                    placeholder="https://api.openai.com/v1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">API Key</label>
+                  <Input
+                    type="password"
+                    value={(aiSettings || defaultSettings).apiKey}
+                    onChange={(e) => setAiSettings(prev => ({ 
+                      ...(prev || defaultSettings), 
+                      apiKey: e.target.value 
+                    }))}
+                    placeholder="Enter your API key"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="privacy" className="space-y-4">
+              <div className="space-y-4">
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-medium">Privacy-First Design</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    All your conversations are stored locally in your browser. 
+                    No data is sent to external servers except for AI responses.
+                  </p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h3 className="font-medium">AI Features</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Configure AI settings above to enable intelligent responses 
+                    and conversation assistance.
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 })

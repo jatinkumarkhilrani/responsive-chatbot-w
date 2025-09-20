@@ -29,7 +29,7 @@
         "precommit": "npm run test:ci",
         "deploy:github": "npm run build:github-pages",
         "deploy:standalone": "npm run build:standalone",
-        "postinstall": "echo 'Install complete'"
+        "postinstall": "husky install"
     },
     "dependencies": {
         "@github/spark": "^0.40.1",
@@ -115,9 +115,7 @@
         "vite": "^6.3.5"
     },
     "workspaces": {
-        "packages": [
-            "packages/*"
-        ]
+        "packages": []
     },
     "engines": {
         "node": ">=20.0.0",
